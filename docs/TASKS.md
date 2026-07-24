@@ -9,7 +9,7 @@
 - [x] Faz 5 — `src/visualizer.py` (6 indie-focused grafik, koyu tema)
 - [x] Faz 6 — `src/merge_pipeline.py` (UPSERT: güncelle + yeni ekle)
 - [x] `main.py` güncellendi (`--fetch`, `--snapshot` argümanları)
-- [ ] **Faz 7 — Content Brief** (`docs/CONTENT_BRIEF.md`) ← SIRADAKI
+- [x] **Faz 7 — Content Brief** (`docs/CONTENT_BRIEF.md`)
 - [ ] Faz 8 — Co-op TDS grafiği visualizer'a ekle
 - [ ] Faz 9 — n8n otomasyonu
 
