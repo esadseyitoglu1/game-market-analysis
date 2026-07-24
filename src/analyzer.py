@@ -317,8 +317,8 @@ def run_analysis(snapshot: str = "march2025") -> None:
     print(f"  {len(df):,} oyun yuklendi")
 
     TAG = "Top-Down Shooter"
-    TAGS_LIST = ["Top-Down Shooter", "Action", "RPG", "Horror", "Roguelite",
-                 "Platformer", "Puzzle", "Simulation", "Strategy", "2D"]
+    TAGS_LIST = ["Top-Down Shooter", "Action", "RPG", "Horror", "Rogue-lite",
+                 "Action Roguelike", "Platformer", "Puzzle", "Simulation", "Strategy", "2D"]
 
     SEP = "\n" + "=" * 65 + "\n"
 

@@ -1,21 +1,27 @@
-"""Steam Indie Market — Görselleştirme Modülü
+"""Steam Indie Market — Görselleştirme Modülü (v2)
 
-6 grafik, indie developer ve yatırımcı için anlamlı:
-  1. genre_trend.png         — TDS Steam ortalamasının üzerinde büyüyor (revize)
-  2. market_saturation.png   — Başarı oranı düşüyor mu? (YENİ)
-  3. success_rate_price.png  — Hangi fiyat bandında başarı olasılığı yüksek? (YENİ)
-  4. min_viable_quality.png  — Kaç review skoru gerekli? (YENİ)
-  5. price_review_matrix.png — Fiyat × Kalite → ortalama sahip ısı haritası (YENİ)
-  6. review_distribution.png — TDS review dağılımı + hedef bölge (revize)
+Vizyon:
+  - Tüm indie pazarı, TDS odağı YOK
+  - Medyan kullanılır, ortalama değil
+  - Her grafikte n= örneklem sayısı belirtilir
+  - Arz değil, başarı (talep) gösterilir
+  - Sade, sosyal medyada paylaşılabilir tasarım
+
+5 grafik:
+  1. hype_vs_reality.png  — Hype Balonu vs Gerçek Başarı (tür bazlı)
+  2. the_80pct_cliff.png  — %80 Review Uçurumu
+  3. price_sweet_spot.png — Fiyat Tatlı Noktası (medyan sahip)
+  4. tag_synergy.png      — En İyi Tag Kombinasyonları
+  5. top10_paid_indie.png — Ücretli Indie Top 10
 """
 
 import ast
 import argparse
 from pathlib import Path
+from itertools import combinations
 
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
-import matplotlib.patches as mpatches
 import pandas as pd
 import numpy as np
 
@@ -28,16 +34,21 @@ C = {
     "grid":    "#21262D",
     "text":    "#E6EDF3",
     "muted":   "#8B949E",
-    "tds":     "#4FC3F7",   # senin türün — açık mavi
-    "success": "#56D364",   # başarı — yeşil
-    "warning": "#E3B341",   # dikkat — sarı
-    "danger":  "#F85149",   # tehlike — kırmızı
-    "accent":  "#BC8CFF",   # vurgu — mor
-    "avg":     "#30363D",   # ortalama — koyu gri
+    "blue":    "#4FC3F7",
+    "green":   "#56D364",
+    "yellow":  "#E3B341",
+    "red":     "#F85149",
+    "purple":  "#BC8CFF",
+    "gray":    "#30363D",
 }
 
 PROCESSED_DIR = Path(__file__).resolve().parent.parent / "data" / "processed"
 OUTPUT_DIR    = Path(__file__).resolve().parent.parent / "outputs" / "charts"
+
+MIN_REVIEWS_FOR_QUALITY = 10    # Kalite analizi için minimum review sayısı
+# NOT: Kaggle dataseti pre-filtered — owners_mid düz 10k çıkıyor.
+# Başarı proxy olarak review sayısı kullanıyoruz (doğal dağılımlı).
+SUCCESS_REVIEW_THRESHOLD = 500   # "Görünür" = 500+ review (~15-25k satış)
 
 
 # ---------------------------------------------------------------------------
@@ -66,14 +77,26 @@ def _save(fig, name):
     return p
 
 
+def _note(ax, text):
+    """Grafiğin sol alt köşesine küçük açıklama notu + zorunlu veri kaynağı."""
+    full_text = (
+        f"{text}\n"
+        "Veri: Kaggle (artermiloff/steam-games-dataset, Mart 2025, ~90k oyun) + SteamSpy API  |  "
+        "⚠️ Sahip sayıları SteamSpy tahminidir, Valve resmi rakam paylaşmaz."
+    )
+    ax.text(0.01, -0.10, full_text, transform=ax.transAxes,
+            fontsize=7.5, color=C["muted"], va="top", wrap=True)
+
+
 def _load(snapshot="march2025"):
     df = pd.read_csv(PROCESSED_DIR / f"steam_games_{snapshot}.csv", low_memory=False)
-    df["release_date"] = pd.to_datetime(df["release_date"], errors="coerce")
-    df["release_year"] = df["release_date"].dt.year.astype("Int64")
+    df["release_date"]  = pd.to_datetime(df["release_date"], errors="coerce")
+    df["release_year"]  = df["release_date"].dt.year.astype("Int64")
     df["release_month"] = df["release_date"].dt.month.astype("Int64")
-    df["price"] = pd.to_numeric(df["price"], errors="coerce").fillna(0)
-    df["positive"] = pd.to_numeric(df["positive"], errors="coerce").fillna(0)
-    df["negative"] = pd.to_numeric(df["negative"], errors="coerce").fillna(0)
+    df["price"]         = pd.to_numeric(df["price"], errors="coerce").fillna(0)
+    df["positive"]      = pd.to_numeric(df["positive"], errors="coerce").fillna(0)
+    df["negative"]      = pd.to_numeric(df["negative"], errors="coerce").fillna(0)
+
     total = df["positive"] + df["negative"]
     df["review_score"] = (df["positive"] / total.replace(0, float("nan")) * 100).round(1)
     df["total_reviews"] = total
@@ -82,10 +105,13 @@ def _load(snapshot="march2025"):
         try:
             p = str(val).split(" - ")
             return (int(p[0]) + int(p[1])) // 2 if len(p) == 2 else 0
-        except: return 0
+        except:
+            return 0
 
-    df["owners_mid"] = df.get("estimated_owners_mid",
-                              df["estimated_owners"].apply(_mid) if "estimated_owners" in df.columns else 0)
+    df["owners_mid"] = df.get(
+        "estimated_owners_mid",
+        df["estimated_owners"].apply(_mid) if "estimated_owners" in df.columns else 0
+    )
     df["owners_mid"] = pd.to_numeric(df["owners_mid"], errors="coerce").fillna(0)
 
     def _tags(val):
@@ -93,434 +119,345 @@ def _load(snapshot="march2025"):
         try:
             r = ast.literal_eval(str(val))
             return list(r.keys()) if isinstance(r, dict) else (r if isinstance(r, list) else [])
-        except: return []
+        except:
+            return []
 
     def _genres(val):
         if pd.isna(val): return []
         try:
             r = ast.literal_eval(str(val))
             return r if isinstance(r, list) else []
-        except: return []
+        except:
+            return []
 
     df["tags_list"]   = df["tags"].apply(_tags)
-    df["genres_list"] = df["genres"].apply(_genres) if "genres" in df.columns else [[]] * len(df)
+    df["genres_list"] = df["genres"].apply(_genres) if "genres" in df.columns else [[] for _ in range(len(df))]
     df["is_indie"]    = df["genres_list"].apply(lambda g: "Indie" in g)
-    df["is_tds"]      = df["tags_list"].apply(lambda t: "Top-Down Shooter" in t)
+    df["is_free"]     = df["price"] == 0
+
     return df
 
 
 # ---------------------------------------------------------------------------
-# Grafik 1 — Genre Trend (revize: TDS'i ortalamayla karşılaştır)
+# Grafik 1 — Hype vs Gerçeklik
 # ---------------------------------------------------------------------------
 
-def chart_genre_trend(df):
+def chart_hype_vs_reality(df):
     """
-    TDS büyümesini Steam ortalamasıyla ve yavaş büyüyen türlerle karşılaştır.
-    Mesaj: 'TDS pazar ortalamasının üzerinde büyüyor'
+    Tür başına: oyun sayısı (arz) vs başarı oranı (gerçek talep).
+    Mesaj: 'Herkesin koştuğu türler genellikle tuzaktır.'
+    n = tüm Steam indie oyunlar
     """
-    years  = list(range(2016, 2025))
-    filt   = df[df["release_year"].between(2016, 2024)].copy()
+    indie = df[df["is_indie"] & df["release_year"].between(2019, 2024)].copy()
+    n_total = len(indie)
 
-    # Steam genel
-    steam_yearly = filt.groupby("release_year").size().reindex(years, fill_value=0)
-    steam_base   = steam_yearly[2016]
-    steam_idx    = (steam_yearly / steam_base * 100).values  # endeks (2016=100)
-
-    tag_configs = [
-        ("Top-Down Shooter", C["tds"],     "o",  2.5, True),   # senin türün
-        ("Action Roguelike", C["accent"],  "s",  2.0, True),   # hızlı büyüyen komşu
-        ("RPG",              C["warning"], "^",  1.5, False),  # yavaş komşu
-        ("Strategy",         C["muted"],   "v",  1.5, False),  # yavaş komşu
+    # Analiz edilecek türler (yeterli oyun sayısı olan tag'ler)
+    target_tags = [
+        "Action Roguelike", "Rogue-lite", "Survival", "Battle Royale",
+        "Tower Defense", "Metroidvania", "Platformer", "Puzzle",
+        "Visual Novel", "Top-Down Shooter", "City Builder", "Farming Sim",
+        "Horror", "Bullet Hell", "Deck Building"
     ]
 
-    fig, ax = plt.subplots(figsize=(12, 6))
-
-    # Steam ortalaması — referans çizgi
-    ax.plot(years, steam_idx, color=C["avg"], linewidth=1.5,
-            linestyle="--", label="Steam Ortalaması", zorder=1)
-    ax.fill_between(years, steam_idx, alpha=0.06, color=C["avg"])
-
-    for tag, color, marker, lw, highlight in tag_configs:
-        mask   = filt["tags_list"].apply(lambda t: tag in t)
-        yearly = filt[mask].groupby("release_year").size().reindex(years, fill_value=0)
-        base   = max(yearly[2016], 1)
-        idx    = (yearly / base * 100).values
-
-        ax.plot(years, idx, color=color, marker=marker,
-                linewidth=lw + (0.5 if highlight else 0),
-                markersize=6 if highlight else 5,
-                label=tag, zorder=3 if highlight else 2,
-                alpha=1.0 if highlight else 0.65)
-
-        # Son değer etiketi — sadece öne çıkanlar
-        if highlight:
-            ax.annotate(f"+{idx[-1]-100:.0f}%",
-                        xy=(years[-1], idx[-1]),
-                        xytext=(6, 0), textcoords="offset points",
-                        color=color, fontsize=9, va="center", fontweight="bold")
-
-    ax.axhline(100, color=C["grid"], linewidth=0.8, linestyle=":")
-    ax.set_title("Steam'de Tür Büyüme Endeksi — 2016 Bazlı (2016 = 100)",
-                 fontweight="bold", pad=14)
-    ax.set_ylabel("Büyüme Endeksi (2016 = 100)")
-    ax.set_xlabel("Yıl")
-    ax.set_xticks(years)
-    ax.legend(framealpha=0.15, edgecolor=C["grid"], loc="upper left")
-    ax.grid(True, axis="y", alpha=0.35)
-    ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x)}"))
-
-    # Açıklama notu
-    ax.text(0.01, 0.02,
-            "Not: Endeks = her türün kendi 2016 değerine göre büyüme oranı",
-            transform=ax.transAxes, fontsize=8, color=C["muted"])
-
-    fig.tight_layout()
-    return _save(fig, "genre_trend.png")
-
-
-# ---------------------------------------------------------------------------
-# Grafik 2 — Pazar Doygunluğu: Başarı Oranı Trendi (YENİ)
-# ---------------------------------------------------------------------------
-
-def chart_market_saturation(df):
-    """
-    Her yıl kaç TDS oyunu çıktı, bunların kaçı 500+ review aldı?
-    Mesaj: 'Pazar büyüyor ama başarı oranı X — erken girmek hâlâ mantıklı'
-
-    500 review ≈ Steam'de 'görünür' olmak için minimum kabul edilen eşik
-    (500 review → tahminen ~15-20k satış)
-    """
-    REVIEW_THRESHOLD = 500
-    years = list(range(2018, 2025))  # 2025 tamamlanmadı
-
-    tds = df[df["is_tds"] & df["release_year"].between(2018, 2024)].copy()
-
     rows = []
-    for y in years:
-        cohort   = tds[tds["release_year"] == y]
-        total    = len(cohort)
-        visible  = (cohort["total_reviews"] >= REVIEW_THRESHOLD).sum()
-        rate     = visible / total * 100 if total > 0 else 0
-        rows.append({"yil": y, "toplam": total, "basarili": visible, "oran": rate})
+    for tag in target_tags:
+        mask   = indie["tags_list"].apply(lambda t: tag in t)
+        sub    = indie[mask]
+        if len(sub) < 30:
+            continue
+        total   = len(sub)
+        # 500+ review = Steam'de 'görünür' oyun (~15-25k satış)
+        success = (sub["total_reviews"] >= SUCCESS_REVIEW_THRESHOLD).sum()
+        rate    = success / total * 100
+        rows.append({"tag": tag, "total": total, "rate": rate})
 
-    sat = pd.DataFrame(rows)
+    if not rows:
+        print("  Hype vs Reality: yeterli veri yok, atlandi.")
+        return
 
-    fig, ax1 = plt.subplots(figsize=(11, 6))
-    ax2 = ax1.twinx()  # iki y ekseni
+    stats = pd.DataFrame(rows).sort_values("rate", ascending=True)
 
-    # Sol eksen: bar — yıllık yeni oyun sayısı
-    bars = ax1.bar(sat["yil"], sat["toplam"], color=C["avg"],
-                   alpha=0.55, width=0.6, label="Yeni TDS oyunu")
-    ax1.bar(sat["yil"], sat["basarili"], color=C["success"],
-            alpha=0.85, width=0.6, label=f"{REVIEW_THRESHOLD}+ review (görünür)")
+    # Eşikleri VERİ BELİRLİYOR — keyfi değil
+    mean_rate = stats["rate"].mean()
+    std_rate  = stats["rate"].std()
+    low_thresh  = mean_rate - 0.5 * std_rate   # Ortalamanın altı = Balon
+    high_thresh = mean_rate + 0.5 * std_rate   # Ortalamanın üstü = Fırsat
 
-    # Sağ eksen: çizgi — başarı oranı
-    ax2.plot(sat["yil"], sat["oran"], color=C["warning"],
-             marker="o", linewidth=2, markersize=7, label="Başarı oranı %", zorder=5)
-    for _, row in sat.iterrows():
-        ax2.annotate(f"%{row['oran']:.1f}",
-                     xy=(row["yil"], row["oran"]),
-                     xytext=(0, 10), textcoords="offset points",
-                     ha="center", color=C["warning"], fontsize=9, fontweight="bold")
+    colors = []
+    for r in stats["rate"]:
+        if r < low_thresh:
+            colors.append(C["red"])     # Hype Balonu
+        elif r > high_thresh:
+            colors.append(C["green"])   # Fırsat
+        else:
+            colors.append(C["blue"])    # Rekabetli
 
-    ax1.set_title(f"TDS Pazarı: Yıllık Yeni Oyun vs Başarıya Ulaşan ({REVIEW_THRESHOLD}+ Review)",
-                  fontweight="bold", pad=14)
-    ax1.set_xlabel("Çıkış Yılı")
-    ax1.set_ylabel("Oyun Sayısı", color=C["text"])
-    ax2.set_ylabel(f"Başarı Oranı % ({REVIEW_THRESHOLD}+ review)", color=C["warning"])
-    ax2.tick_params(axis="y", colors=C["warning"])
-    ax2.set_ylim(0, 35)
+    fig, ax = plt.subplots(figsize=(11, 8))
+    bars = ax.barh(stats["tag"], stats["rate"], color=colors, height=0.6)
 
-    lines1, labels1 = ax1.get_legend_handles_labels()
-    lines2, labels2 = ax2.get_legend_handles_labels()
-    ax1.legend(lines1 + lines2, labels1 + labels2,
-               framealpha=0.15, edgecolor=C["grid"], loc="upper left")
-    ax1.grid(True, axis="y", alpha=0.3)
+    for bar, row in zip(bars, stats.itertuples()):
+        ax.text(bar.get_width() + 0.3,
+                bar.get_y() + bar.get_height() / 2,
+                f"%{row.rate:.1f}  (n={row.total:,})",
+                va="center", fontsize=9, color=C["text"])
 
-    ax1.text(0.01, 0.02,
-             f"Not: {REVIEW_THRESHOLD}+ review ≈ tahminen 15-25k satış eşiği",
-             transform=ax1.transAxes, fontsize=8, color=C["muted"])
+    # Ortalama çizgisi — eşiğin dayanağı
+    ax.axvline(mean_rate, color=C["yellow"], linewidth=1.5, linestyle="--", alpha=0.8,
+               label=f"Tüm türler ortalaması: %{mean_rate:.1f}")
+    ax.axvline(low_thresh,  color=C["red"],   linewidth=1, linestyle=":", alpha=0.5)
+    ax.axvline(high_thresh, color=C["green"], linewidth=1, linestyle=":", alpha=0.5)
+
+    # Efsane
+    from matplotlib.patches import Patch
+    legend = [
+        Patch(color=C["red"],    label=f"Hype Balonu (<%{low_thresh:.1f} — ortalamanın altı)"),
+        Patch(color=C["blue"],   label=f"Rekabetli (%{low_thresh:.1f}–{high_thresh:.1f} — ortalama bant)"),
+        Patch(color=C["green"],  label=f"Fırsat (>%{high_thresh:.1f} — ortalamanın üstü)"),
+        Patch(color=C["yellow"], label=f"Ortalama: %{mean_rate:.1f}", alpha=0.5),
+    ]
+    ax.legend(handles=legend, framealpha=0.15, edgecolor=C["grid"], loc="lower right")
+
+    ax.set_title("Tür Başına Başarı Oranı: Hype mi, Gerçek mi?\n"
+                 f"'Başarı' = {SUCCESS_REVIEW_THRESHOLD}+ review (~15-25k satış)  |  2019-2024 indie oyunlar",
+                 fontweight="bold", pad=14)
+    ax.set_xlabel(f"Başarı Oranı % ({SUCCESS_REVIEW_THRESHOLD}+ review)  |  Eşikler veriden hesaplandı, keyfi değil")
+    ax.set_xlim(0, stats["rate"].max() * 1.4)
+    ax.grid(True, axis="x", alpha=0.3)
+    _note(ax, f"n={n_total:,} indie oyun (2019-2024)  |  "
+              f"'Başarı' = {SUCCESS_REVIEW_THRESHOLD}+ Steam review  |  "
+              f"Eşik = ortalama ± 0.5 std sapma")
 
     fig.tight_layout()
-    return _save(fig, "market_saturation.png")
+    return _save(fig, "hype_vs_reality.png")
 
 
 # ---------------------------------------------------------------------------
-# Grafik 3 — Fiyat Bandına Göre Başarı Oranı (REPLACE: price_vs_owners)
+# Grafik 2 — %80 Review Uçurumu
 # ---------------------------------------------------------------------------
 
-def chart_success_rate_by_price(df):
+def chart_80pct_cliff(df):
     """
-    Sadece indie oyunlarda: Her fiyat bandındaki oyunların kaçı 10k+ sahibe ulaştı?
-    Mesaj: 'Mutlak sahip değil, ORAN önemli — hangi fiyat daha güvenli?'
+    Review skoru bantlarına göre medyan sahip sayısı — tüm indie pazarı.
+    Mesaj: '%80 Very Positive eşiğini geçmek satışları katlar.'
     """
-    OWNER_THRESHOLD = 10_000
-    indie = df[df["is_indie"] & (df["price"] > 0)].copy()  # ücretsiz hariç
+    indie = df[df["is_indie"] & (df["total_reviews"] >= MIN_REVIEWS_FOR_QUALITY)].copy()
+    n_total = len(indie)
 
-    bins   = [0.01, 4.99, 9.99, 14.99, 19.99, float("inf")]
-    labels = ["$1–5", "$5–10", "$10–15", "$15–20", "$20+"]
-    indie["bucket"] = pd.cut(indie["price"], bins=bins, labels=labels)
+    bins   = [0, 50, 60, 70, 75, 80, 85, 90, 95, 100]
+    labels = ["<50%", "50-60%", "60-70%", "70-75%", "75-80%",
+              "80-85%", "85-90%", "90-95%", "95%+"]
 
-    stats = (indie.groupby("bucket", observed=True)
-             .apply(lambda g: pd.Series({
-                 "n": len(g),
-                 "basarili": (g["owners_mid"] >= OWNER_THRESHOLD).sum(),
-                 "oran": (g["owners_mid"] >= OWNER_THRESHOLD).mean() * 100,
-                 "medyan_owners": g["owners_mid"].median(),
-             }), include_groups=False)
-             .reset_index())
+    indie["score_band"] = pd.cut(indie["review_score"], bins=bins, labels=labels, right=False)
+    # Medyan review sayısı: review sayısı doğal dağılımlı, owners_mid değil
+    stats = indie.groupby("score_band", observed=True).agg(
+        medyan_review=("total_reviews", "median"),
+        n=("total_reviews", "count")
+    ).reset_index()
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    colors = [C["red"] if str(b) in ["<50%", "50-60%", "60-70%"]
+              else (C["yellow"] if str(b) in ["70-75%", "75-80%"]
+              else C["green"]) for b in stats["score_band"]]
 
-    colors = [C["warning"] if r < 20 else C["success"] for r in stats["oran"]]
-    bars = ax.bar(stats["bucket"].astype(str), stats["oran"],
-                  color=colors, width=0.55, edgecolor="none")
+    fig, ax = plt.subplots(figsize=(12, 6))
+    bars = ax.bar(stats["score_band"].astype(str), stats["medyan_review"],
+                  color=colors, width=0.65)
+
+    for bar, row in zip(bars, stats.itertuples()):
+        ax.text(bar.get_x() + bar.get_width() / 2,
+                bar.get_height() + 5,
+                f"{row.medyan_review:.0f}\n(n={row.n:,})",
+                ha="center", va="bottom", fontsize=9, color=C["text"])
+
+    # %80 eşiği vurgusu
+    ax.axvline(x=4.5, color=C["yellow"], linewidth=2, linestyle="--", alpha=0.8)
+    ax.text(4.6, ax.get_ylim()[1] * 0.85, "Very Positive\nEşiği (%80)",
+            color=C["yellow"], fontsize=10, fontweight="bold")
+
+    ax.set_title("Review Skoru Bandına Göre Medyan Review Sayısı\n"
+                 "Daha memnun oyuncular = daha fazla review = daha çok görünürlük",
+                 fontweight="bold", pad=14)
+    ax.set_xlabel("Review Skoru Bandı")
+    ax.set_ylabel("Medyan Review Sayısı")
+    ax.grid(True, axis="y", alpha=0.3)
+    _note(ax, f"n={n_total:,} indie oyun (min {MIN_REVIEWS_FOR_QUALITY} review)  |  "
+              f"'Kalite' = Steam oyuncu memnuniyeti skoru  |  "
+              f"Medyan review sayısı: popülerlik proxy'si")
+    fig.tight_layout()
+    return _save(fig, "the_80pct_cliff.png")
+
+
+# ---------------------------------------------------------------------------
+# Grafik 3 — Fiyat Tatlı Noktası
+# ---------------------------------------------------------------------------
+
+def chart_price_sweet_spot(df):
+    """
+    Fiyat bandına göre medyan sahip sayısı — ücretsiz AYRI gösterilir.
+    Mesaj: 'Ucuz satmak sizi kurtarmaz.'
+    """
+    paid  = df[df["is_indie"] & ~df["is_free"] & (df["price"] > 0)].copy()
+    free  = df[df["is_indie"] & df["is_free"]].copy()
+    n_paid = len(paid)
+    n_free = len(free)
+
+    bins   = [0, 5, 10, 15, 20, 30, float("inf")]
+    labels = ["$1-5", "$5-10", "$10-15", "$15-20", "$20-30", "$30+"]
+    paid["bucket"] = pd.cut(paid["price"], bins=bins, labels=labels)
+
+    stats = paid.groupby("bucket", observed=True).agg(
+        medyan=("owners_mid", "median"),
+        n=("owners_mid", "count")
+    ).reset_index()
+
+    free_median = free["owners_mid"].median()
+
+    fig, ax = plt.subplots(figsize=(11, 6))
+
+    colors = [C["gray"]] * len(stats)
+    # En yüksek medyana sahip bandı vurgula
+    best_idx = stats["medyan"].idxmax()
+    colors[best_idx] = C["green"]
+
+    bars = ax.bar(stats["bucket"].astype(str), stats["medyan"] / 1000,
+                  color=colors, width=0.6)
 
     for bar, row in zip(bars, stats.itertuples()):
         ax.text(bar.get_x() + bar.get_width() / 2,
                 bar.get_height() + 0.5,
-                f"%{row.oran:.1f}\n({row.basarili}/{row.n} oyun)",
-                ha="center", va="bottom", fontsize=9.5, fontweight="bold",
-                color=C["text"])
-
-    ax.axhline(stats["oran"].mean(), color=C["accent"], linewidth=1.5,
-               linestyle="--", label=f"Ortalama: %{stats['oran'].mean():.1f}")
-
-    ax.set_title(f"Indie Oyunlarda Fiyat Bandına Göre Başarı Oranı\n"
-                 f"({OWNER_THRESHOLD:,}+ tahmini sahip = başarı)",
-                 fontweight="bold", pad=14)
-    ax.set_xlabel("Fiyat Bandı")
-    ax.set_ylabel("Başarı Oranı %")
-    ax.set_ylim(0, max(stats["oran"]) * 1.35)
-    ax.legend(framealpha=0.15, edgecolor=C["grid"])
-    ax.grid(True, axis="y", alpha=0.3)
-
-    ax.text(0.01, 0.02,
-            "Not: Ücretsiz oyunlar hariç. 'Başarı' = 10,000+ tahmini sahip.",
-            transform=ax.transAxes, fontsize=8, color=C["muted"])
-
-    fig.tight_layout()
-    return _save(fig, "success_rate_price.png")
-
-
-# ---------------------------------------------------------------------------
-# Grafik 4 — Minimum Viable Quality (YENİ)
-# ---------------------------------------------------------------------------
-
-def chart_min_viable_quality(df):
-    """
-    10k / 100k / 500k sahibe ulaşan TDS oyunlarının review skoru dağılımı.
-    Mesaj: 'Şu review skorunun altında kalmak çok maliyetli'
-    """
-    tds = df[df["is_tds"] & (df["total_reviews"] >= 20)].copy()
-
-    tiers = [
-        ("10k+ sahip",    10_000,  C["warning"]),
-        ("100k+ sahip",   100_000, C["tds"]),
-        ("500k+ sahip",   500_000, C["success"]),
-    ]
-
-    fig, ax = plt.subplots(figsize=(11, 6))
-
-    # Tüm TDS arka plan dağılımı
-    all_scores = tds["review_score"].dropna()
-    ax.hist(all_scores, bins=30, color=C["avg"], alpha=0.4,
-            label=f"Tüm TDS (n={len(all_scores):,})", edgecolor="none")
-
-    for label, threshold, color in tiers:
-        subset = tds[tds["owners_mid"] >= threshold]["review_score"].dropna()
-        if len(subset) < 5:
-            continue
-        ax.hist(subset, bins=20, color=color, alpha=0.65,
-                label=f"{label} (n={len(subset):,}, med=%{subset.median():.0f})",
-                edgecolor="none")
-        # Medyan çizgisi
-        ax.axvline(subset.median(), color=color, linewidth=1.5,
-                   linestyle="--", alpha=0.9)
-
-    # Tehlike bölgesi — %70 altı
-    ax.axvspan(0, 70, alpha=0.07, color=C["danger"])
-    ax.text(35, ax.get_ylim()[1] * 0.85, "Tehlike\nbölgesi",
-            ha="center", color=C["danger"], fontsize=9, alpha=0.8)
-
-    ax.set_title("TDS Oyunlarında Review Skoru vs Başarı Seviyesi\n"
-                 "('Başarılı' oyunlar hangi review skoruyla çıkmış?)",
-                 fontweight="bold", pad=14)
-    ax.set_xlabel("Review Skoru (%)")
-    ax.set_ylabel("Oyun Sayısı")
-    ax.set_xlim(0, 100)
-    ax.legend(framealpha=0.15, edgecolor=C["grid"])
-    ax.grid(True, axis="y", alpha=0.3)
-
-    ax.text(0.01, 0.02,
-            "Not: Minimum 20 review olan oyunlar dahil.",
-            transform=ax.transAxes, fontsize=8, color=C["muted"])
-
-    fig.tight_layout()
-    return _save(fig, "min_viable_quality.png")
-
-
-# ---------------------------------------------------------------------------
-# Grafik 5 — Fiyat × Kalite Matrisi (YENİ)
-# ---------------------------------------------------------------------------
-
-def chart_price_quality_matrix(df):
-    """
-    Fiyat aralığı × Review skoru kesişiminde ortalama sahip sayısı ısı haritası.
-    Mesaj: 'Yüksek kalite + doğru fiyat = en iyi konum'
-    """
-    tds = df[df["is_tds"] & (df["total_reviews"] >= 10)].copy()
-    tds = tds[(tds["price"] > 0) & (tds["price"] <= 30)].copy()
-
-    price_bins  = [0, 5, 10, 15, 20, 30]
-    price_lbls  = ["$1–5", "$5–10", "$10–15", "$15–20", "$20–30"]
-    review_bins = [0, 60, 70, 80, 90, 100]
-    review_lbls = ["<60%", "60–70%", "70–80%", "80–90%", "90%+"]
-
-    tds["p_bucket"] = pd.cut(tds["price"],        bins=price_bins,  labels=price_lbls)
-    tds["r_bucket"] = pd.cut(tds["review_score"], bins=review_bins, labels=review_lbls)
-
-    pivot = tds.pivot_table(
-        index="r_bucket", columns="p_bucket",
-        values="owners_mid", aggfunc="median",
-        observed=True
-    )
-
-    # Eksik hücreleri 0 yap
-    pivot = pivot.reindex(index=review_lbls, columns=price_lbls).fillna(0)
-
-    fig, ax = plt.subplots(figsize=(10, 7))
-
-    # Manuel ısı haritası (seaborn yerine)
-    data = pivot.values.astype(float)
-    vmax = data.max()
-    im   = ax.imshow(data, cmap="Blues", aspect="auto",
-                     vmin=0, vmax=max(vmax, 1))
-
-    ax.set_xticks(range(len(price_lbls)))
-    ax.set_yticks(range(len(review_lbls)))
-    ax.set_xticklabels(price_lbls)
-    ax.set_yticklabels(review_lbls)
-
-    # Hücre değerleri
-    for i in range(len(review_lbls)):
-        for j in range(len(price_lbls)):
-            val = data[i, j]
-            txt = f"{val/1000:.0f}k" if val >= 1000 else ("—" if val == 0 else f"{int(val)}")
-            brightness = val / max(vmax, 1)
-            txt_color  = "white" if brightness > 0.5 else C["text"]
-            ax.text(j, i, txt, ha="center", va="center",
-                    fontsize=10, color=txt_color, fontweight="bold")
-
-    plt.colorbar(im, ax=ax, label="Medyan Tahmini Sahip", shrink=0.8)
-    ax.set_title("TDS Oyunları: Fiyat × Review Skoru → Medyan Sahip Sayısı\n"
-                 "(Hangi kombinasyon en çok sahibe ulaştırıyor?)",
-                 fontweight="bold", pad=14)
-    ax.set_xlabel("Fiyat Bandı")
-    ax.set_ylabel("Review Skoru")
-
-    ax.text(0.01, -0.08,
-            "Not: Minimum 10 review, ücretsiz hariç TDS oyunları.",
-            transform=ax.transAxes, fontsize=8, color=C["muted"])
-
-    fig.tight_layout()
-    return _save(fig, "price_quality_matrix.png")
-
-
-# ---------------------------------------------------------------------------
-# Grafik 6 — Review Dağılımı (revize: hedef bölge vurgusu)
-# ---------------------------------------------------------------------------
-
-def chart_review_distribution(df):
-    """TDS oyunlarının review dağılımı + 'buraya ulaşman gerekiyor' oku."""
-    tds = df[df["is_tds"] & (df["total_reviews"] >= 10)].copy()
-
-    bins   = [0, 39, 69, 79, 89, 100]
-    labels = ["Negatif\n(<40%)", "Mixed\n(40–69%)", "Mostly Pos.\n(70–79%)",
-              "Very Pos.\n(80–89%)", "Overwhelmingly\nPos. (90%+)"]
-    colors = [C["danger"], C["warning"], "#FFF176", "#A5D6A7", C["tds"]]
-
-    tds["cat"] = pd.cut(tds["review_score"], bins=bins, labels=labels)
-    counts = tds["cat"].value_counts().reindex(labels).fillna(0)
-
-    fig, ax = plt.subplots(figsize=(11, 6))
-    bars = ax.bar(labels, counts.values, color=colors, width=0.6, edgecolor="none")
-
-    total = counts.sum()
-    for bar, val in zip(bars, counts.values):
-        pct = val / total * 100
-        ax.text(bar.get_x() + bar.get_width() / 2,
-                bar.get_height() + 8,
-                f"{int(val)}\n(%{pct:.1f})",
+                f"{row.medyan/1000:.1f}k\n(n={row.n:,})",
                 ha="center", va="bottom", fontsize=9.5, color=C["text"])
 
-    # "Hedef bölge" vurgusu
-    ax.annotate("Hedef Bölge\n(başarılı TDS'lerin\n%65'i burada)",
-                xy=(3.5, counts.values[3:].sum() / 2),
-                xytext=(2.5, counts.values.max() * 0.85),
-                arrowprops=dict(arrowstyle="->", color=C["success"], lw=1.5),
-                color=C["success"], fontsize=9, ha="center",
-                bbox=dict(boxstyle="round,pad=0.3", facecolor=C["panel"],
-                          edgecolor=C["success"], alpha=0.9))
+    # Ücretsiz referans çizgisi
+    ax.axhline(free_median / 1000, color=C["purple"], linewidth=1.5,
+               linestyle="--", label=f"Ücretsiz oyun medyanı: {free_median/1000:.0f}k (n={n_free:,})")
 
-    ax.set_title("TDS Oyunları Review Skoru Dağılımı\n"
-                 "Hedeflenen oyunun hangi kategoride yer alması gerekiyor?",
+    ax.set_title("Fiyat Bandına Göre Medyan Sahip Sayısı\n"
+                 "Indie (ücretli) oyunlarda tatlı nokta nerede?",
                  fontweight="bold", pad=14)
-    ax.set_ylabel("Oyun Sayısı")
-    ax.set_xlabel("Review Kategorisi")
+    ax.set_xlabel("Fiyat Bandı (Ücretli Oyunlar)")
+    ax.set_ylabel("Medyan Sahip (bin)")
+    ax.legend(framealpha=0.15, edgecolor=C["grid"])
     ax.grid(True, axis="y", alpha=0.3)
-    ax.text(0.01, 0.02, f"Toplam: {int(total):,} TDS oyunu (min 10 review)",
-            transform=ax.transAxes, fontsize=8, color=C["muted"])
-
+    _note(ax, f"n={n_paid:,} ücretli indie oyun  |  Ücretsiz oyunlar ayrı tutuldu  |  "
+              f"Medyan kullanıldı (CS2 gibi devlerin etkisi yok)")
     fig.tight_layout()
-    return _save(fig, "review_distribution.png")
+    return _save(fig, "price_sweet_spot.png")
 
 
 # ---------------------------------------------------------------------------
-# Grafik 7 — The Co-op Gap (YENİ)
+# Grafik 4 — En İyi Tag Kombinasyonları (Tag Sinerjisi)
 # ---------------------------------------------------------------------------
 
-def chart_coop_vs_solo(df):
+def chart_tag_synergy(df):
     """
-    TDS oyunlarında Co-op vs Solo pazar payı ve başarı durumu.
-    Mesaj: 'Pazarın çoğu Solo, Co-op'ta büyük bir boşluk (gap) var.'
+    En yüksek medyan sahip getiren 2-tag kombinasyonları.
+    Mesaj: 'Bu iki tür birlikte olunca altın.'
     """
-    tds = df[df["is_tds"]].copy()
-    
-    co_tags = ["Co-op", "Online Co-Op", "Local Co-Op", "Multiplayer"]
-    tds["has_coop"] = tds["tags_list"].apply(lambda t: any(c in t for c in co_tags))
-    
-    total = len(tds)
-    coop_count = tds["has_coop"].sum()
-    solo_count = total - coop_count
-    
-    fig, ax = plt.subplots(figsize=(9, 6))
-    
-    sizes = [solo_count, coop_count]
-    labels = [f"Solo\n{solo_count:,} oyun\n(%{solo_count/total*100:.1f})", 
-              f"Co-op İçeren\n{coop_count:,} oyun\n(%{coop_count/total*100:.1f})"]
-    colors = [C["avg"], C["tds"]]
-    
-    wedges, texts = ax.pie(
-        sizes, labels=labels, colors=colors, startangle=140,
-        wedgeprops={"width": 0.5, "edgecolor": C["bg"], "linewidth": 2},
-        textprops={"color": C["text"], "fontsize": 11, "fontweight": "bold"}
-    )
-        
-    ax.annotate("Fırsat Boşluğu\n(Co-op nişi)",
-                xy=(0.6, 0.4),
-                xytext=(1.2, 0.8),
-                arrowprops=dict(arrowstyle="->", color=C["success"], lw=2),
-                color=C["success"], fontsize=11, fontweight="bold", ha="center",
-                bbox=dict(boxstyle="round,pad=0.4", facecolor=C["panel"],
-                          edgecolor=C["success"], alpha=0.9))
+    indie = df[df["is_indie"] & (df["owners_mid"] >= 1000)].copy()
+    n_total = len(indie)
 
-    ax.set_title("TDS Pazarında Co-op Açığı (The Co-op Gap)\n"
-                 "TDS oyunlarının çok küçük bir kısmı co-op desteği sunuyor",
-                 fontweight="bold", pad=20)
-                 
+    # En sık görülen tag'leri bul (analiz için)
+    from collections import Counter
+    all_tags = [t for tags in indie["tags_list"] for t in tags]
+    top_tags = [t for t, _ in Counter(all_tags).most_common(40)]
+
+    combo_stats = []
+    for t1, t2 in combinations(top_tags, 2):
+        mask = indie["tags_list"].apply(lambda tags: t1 in tags and t2 in tags)
+        sub  = indie[mask]
+        if len(sub) < 20:
+            continue
+        combo_stats.append({
+            "combo": f"{t1} + {t2}",
+            "medyan": sub["owners_mid"].median(),
+            "n": len(sub)
+        })
+
+    if not combo_stats:
+        print("  Tag Synergy: yeterli veri yok, atlandi.")
+        return
+
+    stats = (pd.DataFrame(combo_stats)
+             .sort_values("medyan", ascending=False)
+             .head(12)
+             .sort_values("medyan", ascending=True))
+
+    fig, ax = plt.subplots(figsize=(12, 8))
+    colors = [C["green"] if i >= len(stats) - 3 else C["blue"]
+              for i in range(len(stats))]
+    bars = ax.barh(stats["combo"], stats["medyan"] / 1000, color=colors, height=0.6)
+
+    for bar, row in zip(bars, stats.itertuples()):
+        ax.text(bar.get_width() + 1,
+                bar.get_y() + bar.get_height() / 2,
+                f"{row.medyan/1000:.0f}k  (n={row.n})",
+                va="center", fontsize=9, color=C["text"])
+
+    ax.set_title("En Yüksek Medyan Sahip Getiren Tag Kombinasyonları\n"
+                 "Hangi iki tür bir arada olunca başarı artıyor?",
+                 fontweight="bold", pad=14)
+    ax.set_xlabel("Medyan Sahip (bin)")
+    ax.grid(True, axis="x", alpha=0.3)
+    _note(ax, f"n={n_total:,} indie oyun (min 1k sahip)  |  Min 20 oyunlu kombinasyonlar  |  "
+              f"Medyan kullanıldı")
     fig.tight_layout()
-    return _save(fig, "coop_gap.png")
+    return _save(fig, "tag_synergy.png")
+
+
+# ---------------------------------------------------------------------------
+# Grafik 5 — Ücretli Indie Top 10
+# ---------------------------------------------------------------------------
+
+def chart_top10_paid_indie(df):
+    """
+    Ücretsiz oyunları filtrele, ücretli indie top 10.
+    Mesaj: 'Başarının anatomisi — bu oyunlar ne yaptı?'
+    """
+    paid_indie = df[
+        df["is_indie"] & ~df["is_free"] & (df["price"] > 0) &
+        (df["total_reviews"] >= 100)
+    ].copy()
+
+    top10 = paid_indie.nlargest(10, "owners_mid").sort_values("owners_mid", ascending=True)
+    n_total = len(paid_indie)
+
+    # Fiyat bandına göre renk
+    def price_color(p):
+        if p <= 5:   return C["yellow"]
+        if p <= 15:  return C["blue"]
+        return C["green"]
+
+    colors = [price_color(p) for p in top10["price"]]
+
+    fig, ax = plt.subplots(figsize=(12, 7))
+    bars = ax.barh(top10["name"], top10["owners_mid"] / 1_000_000,
+                   color=colors, height=0.65)
+
+    for bar, row in zip(bars, top10.itertuples()):
+        label = (f"{row.owners_mid/1_000_000:.1f}M sahip  |  "
+                 f"${row.price:.2f}  |  %{row.review_score:.0f} poz.")
+        ax.text(bar.get_width() + 0.03,
+                bar.get_y() + bar.get_height() / 2,
+                label, va="center", fontsize=8.5, color=C["text"])
+
+    from matplotlib.patches import Patch
+    legend = [
+        Patch(color=C["yellow"], label="$1-5"),
+        Patch(color=C["blue"],   label="$5-15"),
+        Patch(color=C["green"],  label="$15+"),
+    ]
+    ax.legend(handles=legend, framealpha=0.15, edgecolor=C["grid"],
+              title="Fiyat Bandı", loc="lower right")
+
+    ax.set_title("Ücretli Indie Oyunlar — En Fazla Sahibe Ulaşan 10 Oyun\n"
+                 "Ücretsiz ve F2P oyunlar hariç tutuldu",
+                 fontweight="bold", pad=14)
+    ax.set_xlabel("Tahmini Sahip (milyon)")
+    ax.grid(True, axis="x", alpha=0.3)
+    _note(ax, f"n={n_total:,} ücretli indie oyun (min 100 review)  |  "
+              f"Ücretsiz/F2P oyunlar hariç: adil karşılaştırma için")
+    fig.tight_layout()
+    return _save(fig, "top10_paid_indie.png")
 
 
 # ---------------------------------------------------------------------------
@@ -531,16 +468,16 @@ def run_charts(snapshot="march2025"):
     _style()
     print(f"Veri yukleniyor ({snapshot})...")
     df = _load(snapshot)
-    print(f"  {len(df):,} oyun | TDS: {df['is_tds'].sum():,} | Indie: {df['is_indie'].sum():,}\n")
+    indie = df[df["is_indie"]]
+    print(f"  {len(df):,} oyun  |  Indie: {len(indie):,}  |  "
+          f"Ucretli Indie: {len(indie[~indie['is_free']]):,}\n")
     print("Grafikler olusturuluyor...")
 
-    chart_genre_trend(df)
-    chart_market_saturation(df)
-    chart_success_rate_by_price(df)
-    chart_min_viable_quality(df)
-    chart_price_quality_matrix(df)
-    chart_review_distribution(df)
-    chart_coop_vs_solo(df)
+    chart_hype_vs_reality(df)
+    chart_80pct_cliff(df)
+    chart_price_sweet_spot(df)
+    chart_tag_synergy(df)
+    chart_top10_paid_indie(df)
 
     print(f"\nTumu hazir -> {OUTPUT_DIR}")
 

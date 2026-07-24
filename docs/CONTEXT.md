@@ -1,174 +1,161 @@
 # CONTEXT.md — Proje Bağlamı ve Devir-Teslim
 
 ## Proje Amacı
-Steam indie oyun pazar analizi — iki hedef:
-1. **Pitch deck / yatırımcı sunumu**: TDS (Top-Down Shooter) pazarında fırsat var mı?
-2. **Sosyal medya içeriği (Reels serisi)**: "Build in public" formatında veri analizi süreci
+Steam indie oyun pazar analizi. İki uzun vadeli hedef:
+1. **Sosyal medya operasyonu (ŞU AN):** Indie geliştirici topluluğuna gerçek, aksiyon alınabilir pazar zekası (market intelligence) üretmek. Yalanları çürütmek, balonları patlatmak, trendleri önceden görmek.
+2. **Pitch deck / yatırımcı sunumu (SONRA):** İleride kendi TDS oyunumuza yönelik, verilerle desteklenmiş yatırımcı sunumu.
 
 ## Kullanıcı Profili
-- Yazılım geliştirici (Java / C# geçmişi)
+- Yazılım geliştirici (Java / C# geçmişi), Python öğrenme aşamasında
 - Indie oyun yapıyor (Top-Down Shooter türünde)
-- Python'da veri işleme deneyimi az → öğrenirken yapıyor
-- Sunucusu var, n8n kullanıyor
+- Sunucusu var: **Debian**, **n8n kurulu**
 - Kaggle: `artermiloff/steam-games-dataset`
+- Bildirimler **Telegram** üzerinden (Discord TR'de yasak)
 
 ---
 
-## Tamamlanan İşler
+## Dosya Yapısı
 
-### Dosya Yapısı
 ```
 game-market-analysis/
 ├── src/
-│   ├── fetcher.py        ← SteamSpy + Steam Store API çekici
-│   ├── processor.py      ← Kaggle CSV temizleyici (her iki snapshot)
-│   ├── analyzer.py       ← 5 analiz fonksiyonu
-│   ├── visualizer.py     ← 6 indie-focused grafik
-│   └── merge_pipeline.py ← Kaggle base + canlı API birleştirici (UPSERT)
-├── main.py               ← python main.py [--fetch] [--snapshot]
+│   ├── fetcher.py          ← SteamSpy + Steam Store API çekici
+│   ├── processor.py        ← Kaggle CSV temizleyici (her iki snapshot)
+│   ├── analyzer.py         ← Analiz fonksiyonları
+│   ├── visualizer.py       ← Grafik üretici (YENİDEN YAZILACAK)
+│   ├── insight_engine.py   ← Çıkarım motoru (HENÜZ YAZILMADI)
+│   └── merge_pipeline.py   ← Kaggle base + canlı API birleştirici (UPSERT)
+├── main.py                 ← python main.py [--fetch] [--snapshot]
 ├── data/
-│   ├── raw/steamspy_app_list.json    ← canlı API çıktısı (1 sayfa = 1000 oyun)
+│   ├── raw/steamspy_app_list.json    ← canlı API çıktısı
 │   └── processed/
 │       ├── steam_games_march2025.csv ← 89,618 oyun ✅
 │       ├── steam_games_may2024.csv   ← 83,643 oyun ✅
 │       └── steam_games_live.csv      ← merge pipeline çıktısı
-├── outputs/charts/                   ← 6 grafik PNG (koyu tema)
-│   ├── genre_trend.png
-│   ├── market_saturation.png
-│   ├── success_rate_price.png
-│   ├── min_viable_quality.png
-│   ├── price_quality_matrix.png
-│   └── review_distribution.png
+├── outputs/
+│   ├── charts/             ← Üretilen grafikler (temizlendi, yeniler gelecek)
+│   └── insights/           ← Insight Engine raporları (weekly_report.md)
 └── docs/
-    ├── CONTEXT.md  ← bu dosya
-    └── TASKS.md    ← görev takibi
+    ├── CONTEXT.md          ← bu dosya
+    ├── TASKS.md            ← görev takibi
+    └── CONTENT_BRIEF.md    ← Reels serisi script taslakları
 ```
 
-### Kullanılan Komutlar
+### Çalışan Komutlar
 ```bash
-python main.py                          # process + analyze (march2025)
-python main.py --fetch --snapshot both  # API + her iki snapshot
-python -m src.visualizer               # 6 grafik üret
-python -m src.merge_pipeline --pages 1  # canlı API ile güncelle
+python main.py                           # process + analyze
+python main.py --fetch --snapshot both   # API + her iki snapshot
+python -m src.visualizer                 # grafik üret (YENİDEN YAZILACAK)
+python -m src.merge_pipeline --pages 1   # canlı API ile güncelle (test: 1 sayfa)
+python -m src.merge_pipeline --pages 50 --add-new  # tam güncelleme
 ```
 
 ---
 
-## Temel Analiz Bulguları
+## 📌 ORTAK VİZYON VE KURALLAR
 
-### TDS Pazar Özeti (Mart 2025)
-| Metrik | Değer |
-|--------|-------|
-| Toplam TDS oyun | 2,205 |
-| Medyan fiyat | $4.99 |
-| Ortalama review skoru | %80.5 |
-| Overwhelmingly Positive oran | %38.4 |
-| Co-op olan TDS | %22 (476 oyun) |
-| Solo olan TDS | %78 (1,729 oyun) |
+### Sosyal Medya Operasyonu İçin Temel Prensipler
 
-### Büyüme (CAGR 2016→2024)
-| Tür | CAGR | Steam ortalaması vs |
-|-----|------|-------------------|
-| Action Roguelike | %42.1 | +17.7pp |
-| Rogue-lite | %39.4 | +15pp |
-| Top-Down Shooter | %28.1 | +3.7pp |
-| RPG | %18.3 | -6.1pp |
-| Strategy | %16.9 | -7.5pp |
+1. **TDS Saplantısına Son:** Grafikler ve analizler sadece "Top-Down Shooter" değil, **Tüm Indie Pazarı** ölçeğinde yapılacak.
 
-### Market Saturation
-- Her yıl çıkan TDS'lerin sadece **%5-10'u** 500+ review'a ulaşıyor
-- 2024: 483 yeni TDS → ~25'i görünür eşiği geçti
+2. **Arz Değil, Başarı Gösterilecek:** Sadece "pazarın yüzde kaçı X" demek yetmez. "X yapanların medyan satışı vs Y yapanların medyan satışı" gibi *sonuç odaklı* veriler sunulacak.
 
-### Minimum Viable Quality
-- 10k+ sahip: medyan **%84** pozitif review
-- 100k+ sahip: medyan **%85** pozitif review
-- 500k+ sahip: medyan **%87** pozitif review
+3. **Örneklem (n) Her Zaman Belirtilecek:** Her grafiğin altında `n=X oyun` notu zorunlu. Veri gazeteciliği etiği.
 
-### Fiyat × Kalite Matrisi
-- En iyi kombinasyon: **$20-30 + %80-90 review** → 150k medyan sahip
-- Diğer tüm kombinasyonlar: 35k veya altı
+4. **Medyan, Ortalama Değil:** CS2 / PUBG gibi devler ortalamayı mahveder. Medyan = "sıraya diz, ortadakini al" = gerçekçi veri.
 
-### Güncel Trend Bağlamı (Temmuz 2025)
-- **PEAK** (Aggro Crab + Landfall) — Haziran 2025'te 3.1M kopya
-  - Co-op climbing/party oyunu, streamer-friendly kaos
-  - Viral formül: kaotik fizik + arkadaşlarla oynama + TikTok/Twitch
-- **Wuchang: Fallen Feathers** — $19.1M (Soulslike)
-- **Grounded 2** — $15.6M (Co-op Survival)
-- Trend türler: Co-op Party, Cozy Life Sim, Narrative Indie
+5. **"Kalite" Kelimesini Doğru Kullan:** Bizim verimizde "kalite" = oyuncu memnuniyet skoru (review %), AAA prodüksiyon değeri değil. İçerikte bunu her zaman açıkla.
 
-### Pitch Deck Argümanı
-TDS + Co-op + "content-friendly" anlar = PEAK formülünün TDS'e uygulanması.
-TDS'lerin %78'i solo → co-op eklenmiş TDS, az rekabetli bir niş.
+6. **Veri Kaynağı Her Zaman Belirtilecek:** Her içerikte (grafik, video, post) verinin nereden geldiği şeffaf biçimde gösterilecek:
+   - 📦 **Statik veri:** Kaggle — `artermiloff/steam-games-dataset` (Mart 2025 snapshot, ~90k oyun)
+   - 🔴 **Canlı veri:** SteamSpy API (`steamspy.com/api.php`) — haftalık güncelleme
+   - ⚠️ **Kısıtlar:** SteamSpy verileri tahminidir. Gerçek satış rakamları Valve tarafından açıklanmaz.
+
+7. **Yatırımcı Sunumu Ayrıdır:** Pitch deck zamanı geldiğinde TDS verileri kullanılacak. Şimdilik bu kapsama girmiyor.
 
 ---
 
-## Bekleyen Görevler (Öncelik Sırasına Göre)
+## 🔍 Insight Engine — Soru Havuzu
 
-### 1. Content Brief (EN ÖNEMLİ — hemen yapılabilir)
-`docs/CONTENT_BRIEF.md` dosyası oluşturulacak.
-Her Reels episode için:
-- Hook (ilk 3 saniye)
-- Ana mesaj
-- Kullanılacak grafik / veri
-- Call to action
+`src/insight_engine.py` bu soruları otomatik tarayacak.
+Çıktı: `outputs/insights/weekly_report.md` — video hook'larına hazır rapor.
 
-Episode planı:
-```
-Ep.1: "89,000 Steam oyununun verisini indirdim" (Kaggle + Python kurulum)
-Ep.2: "Ham veriyi Python'da nasıl temizledim" (processor.py)
-Ep.3: "TDS türü Steam ortalamasından hızlı büyüyor" (genre_trend.png)
-Ep.4: "Başarılı indie oyunların 3 ortak özelliği" (min_viable_quality + price_quality_matrix)
-Ep.5: "PEAK 3M kopya sattı — bundan ne öğrenebiliriz?" (güncel trend + co-op analiz)
-Ep.6: "Rakip analizi: TDS'te kim önde?" (tds_top10.png)
-```
+### Pazar Dinamikleri
+- Hangi türlerde **Hype Balonu** var? (oyun sayısı ↑ ama başarı oranı ↓)
+- Hangi türler **Gizli Altın Madeni**? (oyun sayısı düşük ama başarı oranı yüksek)
+- Hangi türler **Kırmızı Okyanus**? (hem arz çok, hem başarı düşük)
+- Hangi türler **yeni çıkıyor ama henüz kimse fark etmedi**? (son 1 yılda ilk kez görünen tag'ler)
 
-### 2. Co-op TDS Analizi Grafik Olarak
-scratch_coop.py'daki analizi visualizer.py'a ekle.
-"TDS'lerin %22'si co-op" → grafik olarak göster, Reels için güçlü bir veri noktası.
+### Fiyatlandırma
+- Hangi türlerde pahalı satmak daha çok sahip getiriyor?
+- Hangi türlerde ucuz satmak mantıklı, hangisinde intihar?
 
-### 3. Fetcher Tam Test
-`python main.py --fetch` çalışıyor (1 sayfa test edildi).
-Tüm katalog için `--pages 50` ile test edilmeli (rate limit riski var).
+### Kalite / Review
+- %80 uçurumu her türde aynı mı, bazı türler %70'te de iyi satıyor mu?
+- Hangi türlerde oyuncular daha affedici? (Mixed review'la bile satış var)
+- Çıkışta düşük review alıp sonradan toparlayanlar? (Slow burn oyunlar)
+- "Review bomb" anomalisi: Çok sahip ama çok düşük skor
 
-### 4. n8n Otomasyonu
-Kullanıcının sunucusunda n8n var.
-Haftalık: `python -m src.merge_pipeline --pages 5` çalıştırıp
-başarı/başarısız bildirimi Discord'a gönderecek workflow kurulacak.
+### Zamanlama
+- Hangi ay en az rakip var? (çıkış için en iyi zaman penceresi)
+- Hangi ayda çıkan oyunlar en çok başarılı?
+- Early Access → Full Launch vs direkt çıkış: hangisi daha başarılı?
 
-### 5. Content Brief → Reels Üretimi
-Grafikler hazır. Script yazılınca Reels çekimine geçilebilir.
+### Çarpan Analizleri
+- **Co-op çarpanı:** Hangi türlerde co-op eklemek başarıyı en çok artırıyor?
+- **Lokalizasyon çarpanı:** Kaç dilli olan oyunlar daha çok sahip ediniyor?
+- **Platform çarpanı:** Mac/Linux desteği satışı gerçekten artırıyor mu?
+
+### Tür Kombinasyonları (Tag Sinerjisi)
+- Hangi iki tag bir arada olduğunda başarı oranı en çok artıyor?
+- Hangi tag kombinasyonu "ölüm öpücüğü"?
+
+### İlginç Anomaliler
+- "Underrated Gems": Çok ucuz ama çok memnun bırakmış oyunlar
+- "Dead on Arrival": Sahip var ama review yok
+- "Değer Algısı": Pahalı ama çok sahip kazanmış tür anomalileri
+
+---
+
+## 🎨 Yeni Visualizer — Grafik Seti
+
+`visualizer.py` yeniden yazılacak. Üretilecek grafikler:
+
+| Grafik | Mesaj | Metodoloji |
+|--------|-------|------------|
+| `hype_vs_reality.png` | "Herkesin koştuğu türler tuzak" | Tür başına oyun sayısı ↑ vs başarı oranı ↓ |
+| `the_80pct_cliff.png` | "%80 review uçurumu" | Review skoru vs medyan sahip, tüm indie |
+| `price_sweet_spot.png` | "Ucuz satmak intihar" | Medyan sahip, fiyat bandına göre, ücretsiz ayrı |
+| `tag_synergy.png` | "Bu iki tür kombinasyonu altın" | En iyi 2-tag kombinasyonları |
+| `top10_paid_indie.png` | "Başarının anatomisi" | Ücretsiz filtreli, ücretli top 10 |
+
+---
+
+## 🚧 Yapılacaklar (Sırasıyla)
+
+- [x] Eski grafikler silindi
+- [x] CONTEXT.md güncellendi
+- [ ] `visualizer.py` yeniden yaz (5 yeni grafik)
+- [ ] `insight_engine.py` yaz (soru havuzunu koda çevir)
+- [ ] Visualizer'ı insight engine'e bağla (dinamik grafik)
+- [ ] `run_pipeline.sh` (Debian bash script)
+- [ ] n8n workflow JSON (Telegram bildirimi dahil)
 
 ---
 
 ## Teknik Notlar
 
-### Schema Farkı (Kritik)
-- May 2024 dataset: `AppID` (büyük harf)
-- March 2025 dataset: `appid` (küçük harf)
-- processor.py'da normalize edildi: `rename_map = {c: c.lower() for c in raw_header}`
-
 ### Pandas 2.x Copy-on-Write
-- `df["col"].update(other)` → artık çalışmıyor
+- `df["col"].update(other)` → çalışmıyor
 - Doğru: `df.update(pd.DataFrame({"col": other}))`
-- merge_pipeline.py'da düzeltildi
 
-### Encoding
-- Windows terminali cp1254: Türkçe karakter bazen bozuluyor
-- Çözüm: `sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')`
+### Encoding (Windows Terminal)
+- `sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')`
 
 ### SteamSpy Fiyat Formatı
-- Cent cinsinden string gelir: `"999"` = $9.99
-- `pd.to_numeric(series, errors="coerce") / 100` ile dönüştür
+- Cent cinsinden string: `"999"` = $9.99
+- `pd.to_numeric(series, errors="coerce") / 100`
 
-### Tag İsimleri (Önemli)
+### Steam Tag İsimleri (Kritik)
 - ❌ `"Roguelite"` → ✅ `"Rogue-lite"` (tire ile!)
-- ❌ `"Roguelike"` → ✅ `"Action Roguelike"` (Steam'deki tam isim)
-
----
-
-## Git Durumu
-```
-master branch
-Son commit: "chore: gitignore ekle"
-Uncommitted: scratch_coop.py, outputs/charts/ (gitignore'da)
-```
+- ❌ `"Roguelike"` → ✅ `"Action Roguelike"`

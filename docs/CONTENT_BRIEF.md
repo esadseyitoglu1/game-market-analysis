@@ -1,78 +1,78 @@
-# Reels Content Brief: Indie Game Market Analysis
+# Reels Content Brief: Indie Market Data Journalism
 
-Bu belge, "Steam Verilerini İndirip Kendi Oyunumun Pazarını Analiz Ettim" temalı 6 bölümlük Reels/TikTok serisinin script taslaklarını içerir.
+Bu belge, "Steam Verilerini İndirip Oyun Sektörünün Gerçeklerini Ortaya Çıkardım" temalı 6 bölümlük Reels/TikTok serisinin script taslaklarını içerir.
 
-**Hedef Kitle:** Indie oyun geliştiricileri, oyun sektörüne meraklı oyuncular, yatırımcılar.
-**Format:** Build-in-public, şeffaf veri paylaşımı, "beraber öğreniyoruz" tonu.
-
----
-
-## 🎬 Episode 1: The Hook & Data
-**Ana Mesaj:** "Veri olmadan pazar kararı vermek körlüktür. Steam'in röntgenini çektim."
-**Kullanılacak Görsel/Veri:** Kaggle dataset ekran görüntüsü, Python terminalinde akan yazılar.
-
-**Script Taslağı:**
-> **[0:00 - 0:03 - HOOK]** Kendi oyunumu yaparken en büyük korkum şuydu: "Ya kimsenin oynamak istemediği bir türde oyun yapıyorsam?"
-> **[0:03 - 0:15]** Çoğu indie geliştirici sadece hisleriyle hareket ediyor. Ben bunu yapmak istemedim. Gittim Steam'deki 89,000 oyunun tüm verisini indirdim.
-> **[0:15 - 0:25]** Kaggle'dan ham veriyi çektim, Python'da temizledim. Hangi türler büyüyor, hangi fiyat bandı daha çok satıyor, başarılı oyunların sırrı ne?
-> **[0:25 - 0:35 - CTA]** Kendi oyunumun pazarını (Top-Down Shooter) adım adım analiz edeceğim. Verilerle oyun geliştirmek istiyorsan seriyi takip et.
+**Konumlandırma:** Sektörü veriyle okuyan, trendleri önceden gören, balonları patlatan bağımsız geliştirici (Data-Driven Indie).
+**Format:** Çarpıcı bir iddia (hook) -> İddiayı çürüten/doğrulayan veri (grafik) -> Sektöre tavsiye.
 
 ---
 
-## 🎬 Episode 2: Is Top-Down Shooter Dead? (Genre Trend)
-**Ana Mesaj:** "TDS türü sanılanın aksine çok hızlı büyüyor."
-**Kullanılacak Görsel/Veri:** `genre_trend.png` (TDS vs Steam Ortalaması)
+## 🎬 Episode 1: The "Indiepocalypse" Myth (Pazar Balonu)
+**Ana Mesaj:** "Steam'de oyun sayısı patladı ama aslında rekabet sandığınız kadar artmadı."
+**Kullanılacak Veri:** Yıllara göre çıkan oyun sayısı vs 500+ inceleme alan oyun sayısı (Market Saturation grafiği genel pazar için).
 
 **Script Taslağı:**
-> **[0:00 - 0:03 - HOOK]** Herkes "Top-Down Shooter pazarı doydu, oyun yapılmaz" diyor. Veriler öyle demiyor.
-> **[0:03 - 0:15]** 89,000 oyunluk datasetimi analiz ettiğimde şok edici bir şey gördüm. 2016'dan beri Steam genel pazarı %300 büyürken...
-> **[0:15 - 0:25]** *(Grafik Ekrana Gelir)* Top-Down Shooter türü tam %519 büyümüş! Hatta yan türleri olan Action Roguelike'ın büyümesi inanılmaz seviyelerde.
-> **[0:25 - 0:35 - CTA]** Yani pazar ölü değil, tam tersine oyuncu iştahı artıyor. Peki bu pazarda başarılı olmak için oyununuzun ne kadar "kaliteli" olması lazım? Bir sonraki bölümde review skorlarını açıyoruz.
+> **[0:00 - 0:03 - HOOK]** "Steam çöplüğe döndü, artık indie oyun satmak imkansız!" Herkes bunu söylüyor. Gittim 89.000 oyunun verisini indirdim ve yalan olduğunu gördüm.
+> **[0:03 - 15:00]** Evet, Steam'de son 5 yılda çıkan oyun sayısı %500 artmış. İnanılmaz bir grafik var ortada. Ama bu bir balon.
+> **[0:15 - 0:25]** Neden mi? Çünkü bu oyunların %90'ı asset flip dediğimiz çöpler. Minimum bir başarı eşiği olan 500 incelemeyi geçen oyun sayısına baktığımızda grafik aslında dümdüz! 
+> **[0:25 - 0:35 - CTA]** Yani kaliteli oyun yapanlar için pazar daralmıyor, sadece çöplerin sayısı artıyor. Korkmayı bırakıp iyi oyun yapmaya odaklanın. Serinin devamında o "iyi oyunun" matematiğini anlatacağım.
 
 ---
 
-## 🎬 Episode 3: The Brutal Truth About Quality (Min Viable Quality)
-**Ana Mesaj:** "10,000 satmak istiyorsan %84 pozitif review sınırını geçmek ZORUNDASIN."
-**Kullanılacak Görsel/Veri:** `min_viable_quality.png`
+## 🎬 Episode 2: The $5 Trap (Fiyatlandırma Yalanı)
+**Ana Mesaj:** "Oyununuzu ucuza satmak size daha çok oyuncu kazandırmaz."
+**Kullanılacak Veri:** Fiyat Bandına Göre Başarı Oranı (Tüm indie pazar).
 
 **Script Taslağı:**
-> **[0:00 - 0:03 - HOOK]** Steam'de oyununuzun başarılı olması için review skorunuzun en az kaç olması lazım? Cevap sandığınızdan daha yüksek.
-> **[0:03 - 0:15]** TDS pazarındaki oyunları başarı seviyelerine göre böldüm. 10 bin sahibe ulaşan oyunların medyan review skoru kaç biliyor musunuz? Tam %84!
-> **[0:15 - 0:25]** *(Grafik Vurgulanır)* Yani oyununuz %70'lerde kalırsa, o 10 bin barajını geçmeniz neredeyse imkansız. 500 bin satmak istiyorsanız %87'yi görmek zorundasınız.
-> **[0:25 - 0:35 - CTA]** Pazar büyüyor ama kalite standartları acımasız. Peki fiyatı ne yapacağız? $5 dolar mı daha güvenli, $20 dolar mı? Yarınki videoda çok şaşıracaksınız.
+> **[0:00 - 0:03 - HOOK]** Çoğu indie geliştirici oyununu 5 dolardan satarak daha çok kişiye ulaşacağını sanıyor. Veriler bunun tam bir intihar olduğunu söylüyor.
+> **[0:03 - 0:15]** Steam'deki tüm bağımsız oyunları fiyatlarına göre grupladım. 1-5 dolar aralığında oyun çıkaranların başarılı olma (10k+ satma) ihtimali kelimenin tam anlamıyla sürünüyor.
+> **[0:15 - 0:25]** Asıl tatlı nokta neresi biliyor musunuz? 15 ile 25 Dolar arası! Oyuncular ucuz oyunu "kalitesiz" olarak kodluyor. Eğer oyununuz iyiyse, fiyatını yüksek tuttuğunuzda Steam algoritması da size daha çok değer veriyor.
+> **[0:25 - 0:35 - CTA]** Ürününüzün değerini düşürmeyin. Peki "kaliteli oyun" dediğimiz şey sayısal olarak neye karşılık geliyor? Yarın Steam review algoritmalarını açıyoruz.
 
 ---
 
-## 🎬 Episode 4: The Pricing Cheat Code (Price x Quality Matrix)
-**Ana Mesaj:** "Ucuza satmak sizi kurtarmaz. Kaliteyi verip hakkını almak en kârlısı."
-**Kullanılacak Görsel/Veri:** `price_quality_matrix.png` (Isı haritası)
+## 🎬 Episode 3: The 84% Rule (Minimum Viable Quality)
+**Ana Mesaj:** Steam'de başarılı olmak için inceleme skorunuzun %84'ün altına düşmemesi gerekiyor.
+**Kullanılacak Veri:** Başarılı oyunların review skoru dağılımı.
 
 **Script Taslağı:**
-> **[0:00 - 0:03 - HOOK]** Indie oyununuzu ucuza satarsanız daha çok kişiye ulaşırsınız değil mi? Veriler "Hayır" diyor.
-> **[0:03 - 0:15]** Fiyat ve Kalite matrisini çıkardım. Çoğu geliştirici 5-10 dolar bandına sıkışıp kalıyor. Ortalama 10-35 bin sahibe ulaşıyorlar.
-> **[0:15 - 0:25]** *(Isı Haritası Ekranda)* Ama asıl altın madeni nerede biliyor musunuz? 20-30 dolar fiyat etiketi koyup, %80-90 arası review alan oyunlarda! Medyan sahip sayıları 150 BİN!
-> **[0:25 - 0:35 - CTA]** Kaliteli oyun yapıp cesur fiyatlamak aslında en çok kazandıran strateji. Peki 2025'in en büyük fırsatı nerede? Sıradaki videoda "Co-op" boşluğunu konuşuyoruz.
+> **[0:00 - 0:03 - HOOK]** Steam'de para kazanmak istiyorsanız, oyununuzun inceleme skoru %84'ün altına asla düşmemeli. Neden mi?
+> **[0:03 - 0:15]** Steam veritabanındaki 89 bin oyunu analiz ettim. Oyunların 10.000 satış barajını geçebilmesi için gereken "medyan" review skoru tam olarak %84.
+> **[0:15 - 0:25]** Yüzde 70'ler fena değil gibi görünse de, Steam algoritması %80'in (Very Positive) altındaki oyunların görünürlüğünü bıçak gibi kesiyor. %70 bandında kalıp çok satan oyun neredeyse yok.
+> **[0:25 - 0:35 - CTA]** Geliştiriciler olarak pazarlamadan önce cilaya odaklanmalıyız. Bug'lı çıkan bir oyunun toparlanması matematiken imkansıza yakın.
 
 ---
 
-## 🎬 Episode 5: The Co-op Gap (Market Opportunity)
-**Ana Mesaj:** "TDS oyunlarının %78'i solo. Co-op, rekabetin en az olduğu altın madeni."
-**Kullanılacak Görsel/Veri:** Co-op vs Solo analiz verileri. (TDS'lerin sadece %22'si Co-op)
+## 🎬 Episode 4: The Hidden Goldmine (Co-op Pazar Boşluğu)
+**Ana Mesaj:** PEAK neden patladı? Çünkü pazar hala multiplayer oyunlara aç.
+**Kullanılacak Veri:** Co-op vs Solo pazar payı ve başarı oranları (Tüm pazar için).
 
 **Script Taslağı:**
-> **[0:00 - 0:03 - HOOK]** Bu yaz "PEAK" isimli basit bir co-op party oyunu 1 ayda 3.1 MİLYON sattı. Kendi oyunumuz için buradan ne öğrenebiliriz?
-> **[0:03 - 0:15]** Steam'de yayınlanan 2,205 TDS (Top-Down Shooter) oyununu inceledim. Ne kadarında arkadaşlarınızla oynayabileceğiniz Co-op özelliği var dersiniz?
-> **[0:15 - 0:25]** Sadece %22'sinde! Pazarın %78'i tamamen tek kişilik (solo) oyunlardan oluşuyor. 
-> **[0:25 - 0:35 - CTA]** Twitch ve TikTok çağındayız. İnsanlar arkadaşlarıyla kaos yaşayıp gülmek istiyor. Eğer oyununuza co-op eklerseniz, rekabetin çok düşük olduğu bir nişe giriyorsunuz.
+> **[0:00 - 0:03 - HOOK]** Geçen ay PEAK adında basit bir oyun 3 Milyon sattı. Şans mıydı? Veriler "Hayır, pazarın en büyük açığı buydu" diyor.
+> **[0:03 - 0:15]** Oyun oynamak artık tek kişilik bir hobi değil, bir sosyalleşme aracı. Twitch ve Discord sağ olsun. Ama Steam'e çıkan oyunların devasa bir çoğunluğu hala inatla sadece "Solo" deneyim sunuyor.
+> **[0:15 - 0:25]** Co-op tag'ine sahip oyunlar pazarda azınlıkta olmasına rağmen, en çok hasılat yapan oyunların tepesinde hep onlar var. İnsanlar arkadaşlarıyla kaos yaşamak istiyor.
+> **[0:25 - 0:35 - CTA]** Yeni bir oyuna başlıyorsanız ve teknik bilginiz yetiyorsa, ilk düşünmeniz gereken şey "Bunu arkadaşlarla oynamak nasıl olurdu?" sorusu.
 
 ---
 
-## 🎬 Episode 6: Who is Winning? (TDS Top 10)
-**Ana Mesaj:** "Rakiplerimiz kim ve neden bu kadar büyükler?"
-**Kullanılacak Görsel/Veri:** `tds_top10.png`
+## 🎬 Episode 5: Spotting the Next Trend (Erken Trend Avcılığı)
+**Ana Mesaj:** Çıkmış oyunlara değil, "az oyun ama çok oyuncu" olan tag'lere bakmalıyız.
+**Kullanılacak Veri:** Türlere göre arz/talep dengesizliği.
 
 **Script Taslağı:**
-> **[0:00 - 0:03 - HOOK]** Kendi pazarınızı analiz etmeden o pazarda oyun yapmak intihardır. İşte TDS türünün kralları.
-> **[0:03 - 0:15]** Datasetimde Top 10'a baktığımda, Brotato ve Hotline Miami gibi devlerin 3.5 Milyon barajını geçtiğini görüyoruz.
-> **[0:15 - 0:25]** *(Grafik Üzerinde)* Ortak noktaları? Basit görünen ama mekanik olarak inanılmaz derin bir gameplay loop'u ve %95 üzeri Overwhelmingly Positive skorlar.
-> **[0:25 - 0:35 - CTA]** Veriler ortada. Pazarda yer var, kalite şart, co-op büyük fırsat. Oyunumu geliştirmeye devam ediyorum, serüvene ortak olmak için takipte kalın!
+> **[0:00 - 0:03 - HOOK]** Herkes bir tür patladıktan (Vampire Survivors gibi) sonra o oyunu yapmaya başlıyor. Peki bir sonraki trendi nasıl buluruz?
+> **[0:03 - 0:15]** Python ile Steam verilerini kazırken bir şeye baktım: Hangi etiketlerde (tag) "Oyun Sayısı" çok az ama "Sahip Olan Oyuncu" sayısı çok fazla?
+> **[0:15 - 0:25]** İşte arz-talep dengesizliği burada. [Buraya veriden güncel bir örnek tag eklenecek, örn: "Extraction Shooter" veya "Cozy Factory"]. Bu etiketlerde oyuncular yeni oyun arıyor ama yapımcılar yeterince oyun üretmemiş.
+> **[0:25 - 0:35 - CTA]** Veri analizi sadece geçmişi değil, geleceği de gösterir. Siz de oyun fikrinizi bulurken mutlaka arz-talep verilerine bakın.
+
+---
+
+## 🎬 Episode 6: Why I Wrote This Code? (Build in Public)
+**Ana Mesaj:** Geliştiricinin kendi hikayesi. "Bu yüzden körü körüne oyun yapmıyorum."
+**Kullanılacak Veri:** Geliştirilen pipeline'ın arka planı.
+
+**Script Taslağı:**
+> **[0:00 - 0:03 - HOOK]** Ben niye haftalardır binlerce satır kod yazıp Steam pazarını analiz ediyorum biliyor musunuz?
+> **[0:03 - 0:15]** Çünkü yıllarımı harcayıp yapacağım oyunun, kimsenin oynamak istemediği bir türde kaybolup gitmesinden korkuyorum.
+> **[0:15 - 0:25]** Bu yüzden SteamSpy ve Kaggle'ı birbirine bağlayan, her hafta trendleri bana otomatik raporlayan kendi analiz sistemimi kurdum. Kararlarımı hislerimle değil, bu verilerle veriyorum.
+> **[0:25 - 0:35 - CTA]** Şu an kendi oyunumu geliştiriyorum ve tüm bu veri analizlerini, çıkarımlarımı burada şeffafça paylaşacağım. Oyun geliştirme yolculuğuma katılmak için takip edin.
