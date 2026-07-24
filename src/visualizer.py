@@ -477,6 +477,53 @@ def chart_review_distribution(df):
 
 
 # ---------------------------------------------------------------------------
+# Grafik 7 — The Co-op Gap (YENİ)
+# ---------------------------------------------------------------------------
+
+def chart_coop_vs_solo(df):
+    """
+    TDS oyunlarında Co-op vs Solo pazar payı ve başarı durumu.
+    Mesaj: 'Pazarın çoğu Solo, Co-op'ta büyük bir boşluk (gap) var.'
+    """
+    tds = df[df["is_tds"]].copy()
+    
+    co_tags = ["Co-op", "Online Co-Op", "Local Co-Op", "Multiplayer"]
+    tds["has_coop"] = tds["tags_list"].apply(lambda t: any(c in t for c in co_tags))
+    
+    total = len(tds)
+    coop_count = tds["has_coop"].sum()
+    solo_count = total - coop_count
+    
+    fig, ax = plt.subplots(figsize=(9, 6))
+    
+    sizes = [solo_count, coop_count]
+    labels = [f"Solo\n{solo_count:,} oyun\n(%{solo_count/total*100:.1f})", 
+              f"Co-op İçeren\n{coop_count:,} oyun\n(%{coop_count/total*100:.1f})"]
+    colors = [C["avg"], C["tds"]]
+    
+    wedges, texts = ax.pie(
+        sizes, labels=labels, colors=colors, startangle=140,
+        wedgeprops={"width": 0.5, "edgecolor": C["bg"], "linewidth": 2},
+        textprops={"color": C["text"], "fontsize": 11, "fontweight": "bold"}
+    )
+        
+    ax.annotate("Fırsat Boşluğu\n(Co-op nişi)",
+                xy=(0.6, 0.4),
+                xytext=(1.2, 0.8),
+                arrowprops=dict(arrowstyle="->", color=C["success"], lw=2),
+                color=C["success"], fontsize=11, fontweight="bold", ha="center",
+                bbox=dict(boxstyle="round,pad=0.4", facecolor=C["panel"],
+                          edgecolor=C["success"], alpha=0.9))
+
+    ax.set_title("TDS Pazarında Co-op Açığı (The Co-op Gap)\n"
+                 "TDS oyunlarının çok küçük bir kısmı co-op desteği sunuyor",
+                 fontweight="bold", pad=20)
+                 
+    fig.tight_layout()
+    return _save(fig, "coop_gap.png")
+
+
+# ---------------------------------------------------------------------------
 # Ana çalıştırıcı
 # ---------------------------------------------------------------------------
 
@@ -493,6 +540,7 @@ def run_charts(snapshot="march2025"):
     chart_min_viable_quality(df)
     chart_price_quality_matrix(df)
     chart_review_distribution(df)
+    chart_coop_vs_solo(df)
 
     print(f"\nTumu hazir -> {OUTPUT_DIR}")
 

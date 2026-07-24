@@ -10,8 +10,8 @@
 - [x] Faz 6 — `src/merge_pipeline.py` (UPSERT: güncelle + yeni ekle)
 - [x] `main.py` güncellendi (`--fetch`, `--snapshot` argümanları)
 - [x] **Faz 7 — Content Brief** (`docs/CONTENT_BRIEF.md`)
-- [ ] Faz 8 — Co-op TDS grafiği visualizer'a ekle
-- [ ] Faz 9 — n8n otomasyonu
+- [x] Faz 8 — Co-op TDS grafiği visualizer'a ekle
+- [ ] Faz 9 — n8n otomasyonu ← SIRADAKI
 
 ---
 
