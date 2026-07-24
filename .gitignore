@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Data files (too large for git, reproducible)
+data/raw/*.json
+data/raw/*.csv
+data/processed/*.csv
+
+# Scratch / learning scripts
+learn_pandas.py
+genre_trend.py
+
+# OS
+.DS_Store
+Thumbs.db
