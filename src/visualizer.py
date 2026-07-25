@@ -48,7 +48,19 @@ OUTPUT_DIR    = Path(__file__).resolve().parent.parent / "outputs" / "charts"
 MIN_REVIEWS_FOR_QUALITY = 10    # Kalite analizi için minimum review sayısı
 # NOT: Kaggle dataseti pre-filtered — owners_mid düz 10k çıkıyor.
 # Başarı proxy olarak review sayısı kullanıyoruz (doğal dağılımlı).
-SUCCESS_REVIEW_THRESHOLD = 500   # "Görünür" = 500+ review (~15-25k satış)
+# EŞİK KESİNLİKLE VERİDEN HESAPLANIR — kodda sabit sayı yok.
+# calc_success_threshold() fonksiyonu %80 percentile'ı hesaplar.
+
+def calc_success_threshold(df) -> tuple[int, float]:
+    """
+    Başarı eşiğini veriden hesapla: indie oyunların %80 percentile review sayısı.
+    Yani 'başarılı' = tüm indie oyunların üst %20'si.
+    Döndürür: (eşik_değeri, percentile)
+    """
+    indie = df[df["is_indie"] & (df["total_reviews"] > 0)]
+    threshold = int(indie["total_reviews"].quantile(0.80))
+    n_indie   = len(indie)
+    return threshold, n_indie
 
 
 # ---------------------------------------------------------------------------
@@ -146,8 +158,11 @@ def chart_hype_vs_reality(df):
     """
     Tür başına: oyun sayısı (arz) vs başarı oranı (gerçek talep).
     Mesaj: 'Herkesin koştuğu türler genellikle tuzaktır.'
-    n = tüm Steam indie oyunlar
+    Eşik: veriden hesaplanır (%80 percentile) — keyfi sayı yok.
     """
+    # Eşiği VERİDEN hesapla
+    success_threshold, n_indie_total = calc_success_threshold(df)
+
     indie = df[df["is_indie"] & df["release_year"].between(2019, 2024)].copy()
     n_total = len(indie)
 
@@ -166,8 +181,8 @@ def chart_hype_vs_reality(df):
         if len(sub) < 30:
             continue
         total   = len(sub)
-        # 500+ review = Steam'de 'görünür' oyun (~15-25k satış)
-        success = (sub["total_reviews"] >= SUCCESS_REVIEW_THRESHOLD).sum()
+        # Eşik veriden gelir: %80 percentile = {success_threshold} review
+        success = (sub["total_reviews"] >= success_threshold).sum()
         rate    = success / total * 100
         rows.append({"tag": tag, "total": total, "rate": rate})
 
@@ -218,14 +233,14 @@ def chart_hype_vs_reality(df):
     ax.legend(handles=legend, framealpha=0.15, edgecolor=C["grid"], loc="lower right")
 
     ax.set_title("Tür Başına Başarı Oranı: Hype mi, Gerçek mi?\n"
-                 f"'Başarı' = {SUCCESS_REVIEW_THRESHOLD}+ review (~15-25k satış)  |  2019-2024 indie oyunlar",
+                 f"'Başarı' = {success_threshold}+ review (indie oyunların üst %20'si)  |  2019-2024 indie oyunlar",
                  fontweight="bold", pad=14)
-    ax.set_xlabel(f"Başarı Oranı % ({SUCCESS_REVIEW_THRESHOLD}+ review)  |  Eşikler veriden hesaplandı, keyfi değil")
+    ax.set_xlabel(f"Başarı Oranı % ({success_threshold}+ review)  |  Eşikler veriden hesaplandı, keyfi değil")
     ax.set_xlim(0, stats["rate"].max() * 1.4)
     ax.grid(True, axis="x", alpha=0.3)
     _note(ax, f"n={n_total:,} indie oyun (2019-2024)  |  "
-              f"'Başarı' = {SUCCESS_REVIEW_THRESHOLD}+ Steam review  |  "
-              f"Eşik = ortalama ± 0.5 std sapma")
+              f"'Başarı' = {success_threshold}+ review = tüm {n_indie_total:,} indie oyunun üst %20'si  |  "
+              f"Eşik = %80 percentile, veriden hesaplandı")
 
     fig.tight_layout()
     return _save(fig, "hype_vs_reality.png")

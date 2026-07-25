@@ -1,0 +1,407 @@
+[
+  {
+    "baslik": "Hype Balonu Tespiti: Hangi Türlere Girme",
+    "veri": {
+      "n_indie_2019_2024": 44491,
+      "n_indie_total": 52229,
+      "basari_esigi_review": 171,
+      "ortalama_basari_orani": 18.7,
+      "balon_esigi": 15.8,
+      "firsat_esigi": 21.7,
+      "tum_turler": [
+        {
+          "tag": "City Builder",
+          "total": 745,
+          "success": 248,
+          "rate": 33.3
+        },
+        {
+          "tag": "Farming Sim",
+          "total": 471,
+          "success": 131,
+          "rate": 27.8
+        },
+        {
+          "tag": "Rogue-lite",
+          "total": 2600,
+          "success": 603,
+          "rate": 23.2
+        },
+        {
+          "tag": "RPG",
+          "total": 6848,
+          "success": 1587,
+          "rate": 23.2
+        },
+        {
+          "tag": "Metroidvania",
+          "total": 685,
+          "success": 155,
+          "rate": 22.6
+        },
+        {
+          "tag": "Simulation",
+          "total": 7427,
+          "success": 1651,
+          "rate": 22.2
+        },
+        {
+          "tag": "Visual Novel",
+          "total": 2562,
+          "success": 542,
+          "rate": 21.2
+        },
+        {
+          "tag": "Survival",
+          "total": 3392,
+          "success": 703,
+          "rate": 20.7
+        },
+        {
+          "tag": "Horror",
+          "total": 4887,
+          "success": 924,
+          "rate": 18.9
+        },
+        {
+          "tag": "Strategy",
+          "total": 7260,
+          "success": 1297,
+          "rate": 17.9
+        },
+        {
+          "tag": "Action Roguelike",
+          "total": 1997,
+          "success": 340,
+          "rate": 17.0
+        },
+        {
+          "tag": "Adventure",
+          "total": 15628,
+          "success": 2650,
+          "rate": 17.0
+        },
+        {
+          "tag": "Battle Royale",
+          "total": 280,
+          "success": 41,
+          "rate": 14.6
+        },
+        {
+          "tag": "Shooter",
+          "total": 4298,
+          "success": 600,
+          "rate": 14.0
+        },
+        {
+          "tag": "Tower Defense",
+          "total": 915,
+          "success": 127,
+          "rate": 13.9
+        },
+        {
+          "tag": "Puzzle",
+          "total": 7862,
+          "success": 1078,
+          "rate": 13.7
+        },
+        {
+          "tag": "Bullet Hell",
+          "total": 1890,
+          "success": 243,
+          "rate": 12.9
+        },
+        {
+          "tag": "Top-Down Shooter",
+          "total": 1396,
+          "success": 157,
+          "rate": 11.2
+        },
+        {
+          "tag": "Platformer",
+          "total": 4485,
+          "success": 461,
+          "rate": 10.3
+        }
+      ],
+      "balonlar": [
+        {
+          "tag": "Battle Royale",
+          "total": 280,
+          "success": 41,
+          "rate": 14.6
+        },
+        {
+          "tag": "Shooter",
+          "total": 4298,
+          "success": 600,
+          "rate": 14.0
+        },
+        {
+          "tag": "Tower Defense",
+          "total": 915,
+          "success": 127,
+          "rate": 13.9
+        },
+        {
+          "tag": "Puzzle",
+          "total": 7862,
+          "success": 1078,
+          "rate": 13.7
+        },
+        {
+          "tag": "Bullet Hell",
+          "total": 1890,
+          "success": 243,
+          "rate": 12.9
+        },
+        {
+          "tag": "Top-Down Shooter",
+          "total": 1396,
+          "success": 157,
+          "rate": 11.2
+        },
+        {
+          "tag": "Platformer",
+          "total": 4485,
+          "success": 461,
+          "rate": 10.3
+        }
+      ],
+      "firsatlar": [
+        {
+          "tag": "City Builder",
+          "total": 745,
+          "success": 248,
+          "rate": 33.3
+        },
+        {
+          "tag": "Farming Sim",
+          "total": 471,
+          "success": 131,
+          "rate": 27.8
+        },
+        {
+          "tag": "Rogue-lite",
+          "total": 2600,
+          "success": 603,
+          "rate": 23.2
+        },
+        {
+          "tag": "RPG",
+          "total": 6848,
+          "success": 1587,
+          "rate": 23.2
+        },
+        {
+          "tag": "Metroidvania",
+          "total": 685,
+          "success": 155,
+          "rate": 22.6
+        },
+        {
+          "tag": "Simulation",
+          "total": 7427,
+          "success": 1651,
+          "rate": 22.2
+        }
+      ]
+    },
+    "yorum": "2019-2024 arasında çıkan 44,491 indie oyun analiz edildi. Başarı eşiği olarak 171+ review kullanıldı (bu, tüm 52,229 indie oyunun üst %20'sine girmek demek). Tüm türlerin ortalama başarı oranı %18.7. En kötü performans gösteren tür: 'Platformer' — 4,485 oyun çıkmış ama yalnızca %10.3 başarıya ulaşmış. Buna karşın 'City Builder' türü %33.3 başarı oranıyla öne çıkıyor.",
+    "hook": "'Platformer' türünde 4,485 oyun var, sadece %10.3'i görünür olmuş. Ama 'City Builder' türünde bu oran %33.3. Aradaki fark ne?",
+    "script": "[HOOK - 0:00-0:05]\n'Platformer' yapıyorum diyenler, dur bir dakika.\n\n[VERİ - 0:05-0:20]\nSteam'deki 52 bin indie oyunu analiz ettim. Başarıyı 'oyunların üst %20'sine girmek' olarak tanımladım — yani 171+ review almak. 'Platformer' türünde 4,485 oyun çıkmış, sadece %10.3'i bu eşiği geçebilmiş.\n\n[KIRILMA - 0:20-0:35]\nNeden? Çünkü herkes bu türe koşuyor. Arz arttıkça, Steam algoritmasının pastadan her oyuna ayırdığı pay küçülüyor.\n\n[FIRSAT - 0:35-0:50]\nPeki akıllı geliştiriciler nereye bakıyor? 'City Builder' türüne. Aynı dönemde %33.3 başarı oranı. Rakam az oyunla çok daha yüksek görünürlük.\n\n[CTA - 0:50-1:00]\nVeri kaynağı: Kaggle Steam dataset + SteamSpy API (~90k oyun). Hangi türde çalışıyorsunuz? Aşağıya yazın.",
+    "grafik": "hype_vs_reality.png"
+  },
+  {
+    "baslik": "Co-op Çarpanı: Hangi Türlerde Co-op Altın?",
+    "veri": [
+      {
+        "tag": "Simulation",
+        "n_solo": 8052,
+        "n_coop": 1316,
+        "med_solo": 42.0,
+        "med_coop": 315.0,
+        "carpan": 7.5
+      },
+      {
+        "tag": "Survival",
+        "n_solo": 2751,
+        "n_coop": 914,
+        "med_solo": 37.0,
+        "med_coop": 272.0,
+        "carpan": 7.4
+      },
+      {
+        "tag": "RPG",
+        "n_solo": 7481,
+        "n_coop": 964,
+        "med_solo": 50.0,
+        "med_coop": 363.0,
+        "carpan": 7.3
+      },
+      {
+        "tag": "Adventure",
+        "n_solo": 17131,
+        "n_coop": 2071,
+        "med_solo": 38.0,
+        "med_coop": 201.0,
+        "carpan": 5.3
+      },
+      {
+        "tag": "Horror",
+        "n_solo": 4952,
+        "n_coop": 811,
+        "med_solo": 42.0,
+        "med_coop": 219.0,
+        "carpan": 5.2
+      },
+      {
+        "tag": "Shooter",
+        "n_solo": 3274,
+        "n_coop": 1154,
+        "med_solo": 26.0,
+        "med_coop": 135.0,
+        "carpan": 5.2
+      },
+      {
+        "tag": "Strategy",
+        "n_solo": 7467,
+        "n_coop": 1429,
+        "med_solo": 38.0,
+        "med_coop": 186.0,
+        "carpan": 4.9
+      },
+      {
+        "tag": "Rogue-lite",
+        "n_solo": 2327,
+        "n_coop": 393,
+        "med_solo": 45.0,
+        "med_coop": 177.0,
+        "carpan": 3.9
+      },
+      {
+        "tag": "Action Roguelike",
+        "n_solo": 1564,
+        "n_coop": 329,
+        "med_solo": 34.0,
+        "med_coop": 130.0,
+        "carpan": 3.8
+      },
+      {
+        "tag": "Platformer",
+        "n_solo": 4414,
+        "n_coop": 714,
+        "med_solo": 31.0,
+        "med_coop": 80.0,
+        "carpan": 2.6
+      },
+      {
+        "tag": "Top-Down Shooter",
+        "n_solo": 1046,
+        "n_coop": 314,
+        "med_solo": 22.0,
+        "med_coop": 58.0,
+        "carpan": 2.6
+      }
+    ],
+    "yorum": "'Co-op' veya 'Multiplayer' etiketi olan indie oyunlar ile olmayanlar karşılaştırıldı. Başarı ölçütü: medyan review sayısı. En yüksek Co-op çarpanı: 'Simulation' türünde — solo oyunların medyanı 42 review iken, co-op eklenmiş olanlar 315 review alıyor. Bu 7.5x fark demek.",
+    "hook": "'Simulation' türü yapıyorsanız ve co-op yok, potansiyelinizin 7.5x'ini bırakıyorsunuz masada.",
+    "script": "[HOOK - 0:00-0:05]\nOyununuza tek bir özellik ekleyerek review sayınızı 7.5x artırabilirsiniz.\n\n[VERİ - 0:05-0:25]\n'Simulation' türünde 9,368 oyun analiz ettim. Co-op olmayan oyunların medyan review sayısı: 42. Co-op olan oyunların: 315. Aradaki çarpan: 7.5x. Bu tesadüf değil — co-op oyunlar streamer ve arkadaş grupları için çok daha cazip.\n\n[BAĞLAM - 0:25-0:45]\nBu sadece bir tür için değil. Analiz ettiğim 11 türün tamamında co-op pozitif bir çarpan etkisi yaratıyor.\n\n[CTA - 0:45-1:00]\nCo-op eklemek tabii ki kolay değil — ama veriler bunu hak ettiğini söylüyor. Oyununuzda co-op var mı? Neden var, neden yok? Yorumlara yazın.",
+    "grafik": "coop_multiplier.png"
+  },
+  {
+    "baslik": "Fiyat Tatlı Noktası: Ucuz Satmak Sizi Kurtarmıyor",
+    "veri": {
+      "n_ucretli": 47669,
+      "n_ucretsiz": 4560,
+      "ucretsiz_medyan_review": 51.0,
+      "bantlar": [
+        {
+          "bucket": "$1-5",
+          "medyan_review": 14.0,
+          "n": 26425,
+          "medyan_fiyat": 2.99
+        },
+        {
+          "bucket": "$5-10",
+          "medyan_review": 24.0,
+          "n": 11895,
+          "medyan_fiyat": 8.39
+        },
+        {
+          "bucket": "$10-15",
+          "medyan_review": 62.0,
+          "n": 4903,
+          "medyan_fiyat": 14.99
+        },
+        {
+          "bucket": "$15-20",
+          "medyan_review": 162.0,
+          "n": 2963,
+          "medyan_fiyat": 19.99
+        },
+        {
+          "bucket": "$20-30",
+          "medyan_review": 364.0,
+          "n": 1204,
+          "medyan_fiyat": 24.99
+        },
+        {
+          "bucket": "$30+",
+          "medyan_review": 57.0,
+          "n": 279,
+          "medyan_fiyat": 39.99
+        }
+      ],
+      "en_iyi_bant": "$20-30",
+      "en_kotu_bant": "$1-5"
+    },
+    "yorum": "47,669 ücretli indie oyun analiz edildi (ücretsizler ayrı). En yüksek medyan review: $20-30 bandı (364 review, n=1,204). En düşük: $1-5 bandı (14 review). Ücretsiz oyunların medyanı ise 51 review.",
+    "hook": "Oyununuzu $1-5'a satarsanız medyan 14 review. $20-30'a satarsanız 364. Fiyat, kalite sinyali gönderiyor.",
+    "script": "[HOOK - 0:00-0:05]\nOyununuzu ucuza satmak daha çok insana ulaştırır mı? Veri hayır diyor.\n\n[VERİ - 0:05-0:25]\n47,669 ücretli indie oyunun fiyat ve review verilerini analiz ettim. Ücretsiz oyunları dışarıda bıraktım — adil karşılaştırma için. $20-30 bandındaki oyunların medyan review sayısı 364. $1-5 bandındakiler sadece 14.\n\n[AÇIKLAMA - 0:25-0:45]\nBu neden oluyor? İki teori var:\n1. Fiyat, kalite sinyali — oyuncular ucuz oyunu 'kötü' sanıyor.\n2. Daha pahalı oyunlar genellikle daha iyi pazarlanmış, daha büyük ekipler.\nHer ikisi de muhtemelen doğru.\n\n[CTA - 0:45-1:00]\nOyununuzu fiyatlandırırken hangi kriteri kullanıyorsunuz? Yorumlara yazın.",
+    "grafik": "price_sweet_spot.png"
+  },
+  {
+    "baslik": "Görünmez Kayıplar: Steam'de Her 100 Oyundan Kaçı Yok Oluyor?",
+    "veri": {
+      "n_ucretli_indie": 54122,
+      "n_dead": 22296,
+      "dead_rate_pct": 41.2,
+      "dead_threshold": 10,
+      "yillik_trend": [
+        {
+          "release_year": 2018,
+          "dead_rate": 31.1
+        },
+        {
+          "release_year": 2019,
+          "dead_rate": 38.4
+        },
+        {
+          "release_year": 2020,
+          "dead_rate": 40.9
+        },
+        {
+          "release_year": 2021,
+          "dead_rate": 40.3
+        },
+        {
+          "release_year": 2022,
+          "dead_rate": 45.9
+        },
+        {
+          "release_year": 2023,
+          "dead_rate": 51.6
+        },
+        {
+          "release_year": 2024,
+          "dead_rate": 57.6
+        }
+      ]
+    },
+    "yorum": "54,122 ücretli indie oyunun 22,296 tanesi (%41.2) hiç görünür olmadı — 10'den az review aldı. Bu oyunların çoğu çıktıktan sonra sessizce yok oldu.",
+    "hook": "Her 100 ücretli indie oyundan 41 tanesi hiç görünür olmadan yok oluyor. Sebebi ne?",
+    "script": "[HOOK - 0:00-0:05]\nSteam'deki ücretli indie oyunların %41.2'i hiç kimseye ulaşamadan yok oldu.\n\n[VERİ - 0:05-0:25]\n54,122 ücretli indie oyunu inceledim. 'Görünür' olmayı 10+ review almak olarak tanımladım. 22,296 oyun bu eşiği geçemedi. Pratik olarak kimse görmedi.\n\n[SORU - 0:25-0:45]\nPeki bu oyunlar neden başarısız oldu? Kalite mi? Pazarlama mı? Zamanlama mı? Büyük ihtimalle üçü birden. Ama veri bize şunu söylüyor: Her yıl bu oran artıyor — pazar doyuyor.\n\n[CTA - 0:45-1:00]\nOyununuzu çıkarmadan önce bu veriyi görmenizi istedim. Wishliste eklemek için bağlantı biyografide.",
+    "grafik": null
+  }
+]
