@@ -489,13 +489,21 @@ def chart_critics_vs_players(df):
     # Yazıların üst üste binmesini engellemek için listeye alıp adjustText kullanacağız
     texts = []
     
+    # Yazıların noktaların (dot) tam üstüne binmemesi için X ve Y koordinatlarını toplayacağız
+    x_coords = []
+    y_coords = []
+    
     for _, row in player_champs.iterrows():
+        x_coords.append(row["metacritic_score"])
+        y_coords.append(row["review_score"])
         texts.append(ax.text(row["metacritic_score"], row["review_score"], row["name"],
-                             fontsize=9, color=C["green"], fontweight="bold", ha="center", va="center"))
+                             fontsize=9, color=C["green"], fontweight="bold"))
                     
     for _, row in critic_darlings.iterrows():
+        x_coords.append(row["metacritic_score"])
+        y_coords.append(row["review_score"])
         texts.append(ax.text(row["metacritic_score"], row["review_score"], row["name"],
-                             fontsize=9, color=C["red"], fontweight="bold", ha="center", va="center"))
+                             fontsize=9, color=C["red"], fontweight="bold"))
 
     # Başlık yazılarını en köşelere al ve değişkenlere ata (Eksenler 10'a genişletildi)
     t1 = ax.text(98, 12, "Eleştirmenin Gözdeleri\n(Yüksek Metacritic, Düşük Steam)", 
@@ -505,9 +513,10 @@ def chart_critics_vs_players(df):
 
     try:
         from adjustText import adjust_text
-        # İtme kuvvetlerini (expand ve force) makul seviyelere çektik (çizgiler kopmasın diye)
-        adjust_text(texts, objects=[t1, t2], arrowprops=dict(arrowstyle="-", color=C["grid"], lw=0.5), 
-                    expand=(1.1, 1.2), force_text=(0.2, 0.3), force_static=(0.1, 0.1))
+        # Noktaların kendisinden (x_coords, y_coords) ve köşedeki başlıklardan (t1, t2) kaç!
+        adjust_text(texts, x=x_coords, y=y_coords, objects=[t1, t2], 
+                    arrowprops=dict(arrowstyle="-", color=C["grid"], lw=0.5), 
+                    expand=(1.2, 1.3), force_text=(0.4, 0.4), force_static=(0.2, 0.2))
     except ImportError:
         print("  Uyarı: adjustText yüklü değil, yazılar üst üste binebilir.")
             
