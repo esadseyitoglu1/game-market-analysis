@@ -51,16 +51,18 @@ MIN_REVIEWS_FOR_QUALITY = 10    # Kalite analizi için minimum review sayısı
 # EŞİK KESİNLİKLE VERİDEN HESAPLANIR — kodda sabit sayı yok.
 # calc_success_threshold() fonksiyonu %80 percentile'ı hesaplar.
 
-def calc_success_threshold(df) -> tuple[int, float]:
+def calc_success_threshold(df) -> tuple[int, int, int]:
     """
-    Başarı eşiğini veriden hesapla: indie oyunların %80 percentile review sayısı.
-    Yani 'başarılı' = tüm indie oyunların üst %20'si.
-    Döndürür: (eşik_değeri, percentile)
+    Başarı eşiğini veriden hesapla: 
+      1. Görünürlük: indie oyunların %80 percentile review sayısı (üst %20).
+      2. Kalite: %80+ pozitif review oranı (Steam 'Very Positive').
+    Döndürür: (review_thresh, quality_thresh, n_indie)
     """
     indie = df[df["is_indie"] & (df["total_reviews"] > 0)]
-    threshold = int(indie["total_reviews"].quantile(0.80))
+    review_thresh = int(indie["total_reviews"].quantile(0.80))
+    quality_thresh = 80
     n_indie   = len(indie)
-    return threshold, n_indie
+    return review_thresh, quality_thresh, n_indie
 
 
 # ---------------------------------------------------------------------------
@@ -161,7 +163,7 @@ def chart_hype_vs_reality(df):
     Eşik: veriden hesaplanır (%80 percentile) — keyfi sayı yok.
     """
     # Eşiği VERİDEN hesapla
-    success_threshold, n_indie_total = calc_success_threshold(df)
+    success_threshold, quality_threshold, n_indie_total = calc_success_threshold(df)
 
     indie = df[df["is_indie"] & df["release_year"].between(2019, 2024)].copy()
     n_total = len(indie)
@@ -183,8 +185,11 @@ def chart_hype_vs_reality(df):
         if len(sub) < 30:
             continue
         total   = len(sub)
-        # Eşik veriden gelir: %80 percentile = {success_threshold} review
-        success = (sub["total_reviews"] >= success_threshold).sum()
+        # Eşik veriden gelir: %80 percentile = {success_threshold} review VE %80+ pozitif
+        success = (
+            (sub["total_reviews"] >= success_threshold) & 
+            (sub["review_score"] >= quality_threshold)
+        ).sum()
         rate    = success / total * 100
         rows.append({"tag": tag, "total": total, "rate": rate})
 
@@ -235,13 +240,13 @@ def chart_hype_vs_reality(df):
     ax.legend(handles=legend, framealpha=0.15, edgecolor=C["grid"], loc="lower right")
 
     ax.set_title("Tür Başına Başarı Oranı: Hype mi, Gerçek mi?\n"
-                 f"'Başarı' = {success_threshold}+ review (indie oyunların üst %20'si)  |  2019-2024 indie oyunlar",
+                 f"'Başarı' = {success_threshold}+ review VE %{quality_threshold}+ Pozitif  |  2019-2024 indie oyunlar",
                  fontweight="bold", pad=14)
-    ax.set_xlabel(f"Başarı Oranı % ({success_threshold}+ review)  |  Eşikler veriden hesaplandı, keyfi değil")
+    ax.set_xlabel(f"Başarı Oranı % ({success_threshold}+ rev & %{quality_threshold}+ pozitif)  |  Eşikler veriden hesaplandı, keyfi değil")
     ax.set_xlim(0, stats["rate"].max() * 1.4)
     ax.grid(True, axis="x", alpha=0.3)
     _note(ax, f"n={n_total:,} indie oyun (2019-2024)  |  "
-              f"'Başarı' = {success_threshold}+ review = tüm {n_indie_total:,} indie oyunun üst %20'si  |  "
+              f"'Başarı' = {success_threshold}+ review (üst %20) + %{quality_threshold} Pozitif Skor  |  "
               f"Eşik = %80 percentile, veriden hesaplandı")
 
     fig.tight_layout()

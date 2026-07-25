@@ -77,10 +77,18 @@ def _load(snapshot="march2025") -> pd.DataFrame:
     return df
 
 
-def _success_threshold(df: pd.DataFrame) -> tuple[int, int]:
-    """Başarı eşiği = indie oyunların %80 percentile review sayısı (üst %20)."""
+def _success_threshold(df: pd.DataFrame) -> tuple[int, int, int]:
+    """
+    Basari esigi — iki kriter birden:
+      1. Gorunurluk: %80 percentile review sayisi (ust %20)
+      2. Kalite   : %80+ pozitif review orani (Steam 'Very Positive')
+    Ikisini birden saglayanlar 'basarili' sayilir.
+    """
     indie = df[df["is_indie"] & (df["total_reviews"] > 0)]
-    return int(indie["total_reviews"].quantile(0.80)), len(indie)
+    review_thresh = int(indie["total_reviews"].quantile(0.80))
+    quality_thresh = 80.0  # Steam'in 'Very Positive' esigi
+    n_indie = len(indie)
+    return review_thresh, int(quality_thresh), n_indie
 
 
 # ---------------------------------------------------------------------------
@@ -92,7 +100,7 @@ def insight_hype_balloon(df: pd.DataFrame) -> dict:
     Soru: Hangi türlerde oyun sayısı (arz) çok ama başarı oranı düşük?
     Cevap: Tür başına başarı oranı, veri-tabanlı eşikle sınıflandırılır.
     """
-    thresh, n_indie_total = _success_threshold(df)
+    thresh, quality_thresh, n_indie_total = _success_threshold(df)
     indie = df[df["is_indie"] & df["release_year"].between(2019, 2024)].copy()
 
     target_tags = [
@@ -110,9 +118,13 @@ def insight_hype_balloon(df: pd.DataFrame) -> dict:
         mask = indie["tags_list"].apply(lambda t: tag in t)
         sub  = indie[mask]
         if len(sub) < 30: continue
-        total   = len(sub)
-        success = (sub["total_reviews"] >= thresh).sum()
-        rate    = round(success / total * 100, 1)
+        total = len(sub)
+        # BASARI = gorunurluk (171+ review) VE kalite (%80+ pozitif) — ikisi birden
+        success = (
+            (sub["total_reviews"] >= thresh) &
+            (sub["review_score"]  >= quality_thresh)
+        ).sum()
+        rate = round(success / total * 100, 1)
         rows.append({"tag": tag, "total": total, "success": success, "rate": rate})
 
     if not rows:
@@ -130,10 +142,11 @@ def insight_hype_balloon(df: pd.DataFrame) -> dict:
     en_firsat  = fırsatlar[0] if fırsatlar else None  # en yüksek oran
 
     yorum = (
-        f"2019-2024 arasında çıkan {len(indie):,} indie oyun analiz edildi. "
-        f"Başarı eşiği olarak {thresh}+ review kullanıldı "
-        f"(bu, tüm {n_indie_total:,} indie oyunun üst %20'sine girmek demek). "
-        f"Tüm türlerin ortalama başarı oranı %{mean_rate:.1f}. "
+        f"2019-2024 arasinda cikan {len(indie):,} indie oyun analiz edildi. "
+        f"Basari tanimi: {thresh}+ review (gorunurluk, ust %20) "
+        f"VE %{quality_thresh:.0f}+ pozitif review (Steam 'Very Positive' esigi). "
+        f"Her iki kriteri birden saglayan oyunlar 'basarili' sayildi. "
+        f"Tum turlerin ortalama basari orani %{mean_rate:.1f}. "
     )
     if en_balon:
         yorum += (
