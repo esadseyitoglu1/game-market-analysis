@@ -497,17 +497,19 @@ def chart_critics_vs_players(df):
         texts.append(ax.text(row["metacritic_score"], row["review_score"], row["name"],
                              fontsize=9, color=C["red"], fontweight="bold"))
 
+    # Başlık yazılarını en köşelere al ve değişkenlere ata
+    t1 = ax.text(95, 25, "Eleştirmenin Gözdeleri\n(Yüksek Metacritic, Düşük Steam)", 
+                 color=C["red"], fontsize=10, ha="right", va="bottom", alpha=0.8, fontweight="bold")
+    t2 = ax.text(25, 95, "Oyuncunun Şampiyonları\n(Düşük Metacritic, Yüksek Steam)", 
+                 color=C["green"], fontsize=10, ha="left", va="top", alpha=0.8, fontweight="bold")
+
     try:
         from adjustText import adjust_text
-        adjust_text(texts, arrowprops=dict(arrowstyle="-", color=C["grid"], lw=0.5))
+        # t1 ve t2'yi 'objects' olarak veriyoruz ki adjustText bu yazılardan da kaçsın
+        adjust_text(texts, objects=[t1, t2], arrowprops=dict(arrowstyle="-", color=C["grid"], lw=0.5), 
+                    expand=(1.2, 1.2), force_text=(0.3, 0.3))
     except ImportError:
         print("  Uyarı: adjustText yüklü değil, yazılar üst üste binebilir.")
-
-    # Başlık yazılarını en köşelere al (iç içe girmesinler diye)
-    ax.text(95, 25, "Eleştirmenin Gözdeleri\n(Yüksek Metacritic, Düşük Steam)", 
-            color=C["red"], fontsize=10, ha="right", va="bottom", alpha=0.8, fontweight="bold")
-    ax.text(25, 95, "Oyuncunun Şampiyonları\n(Düşük Metacritic, Yüksek Steam)", 
-            color=C["green"], fontsize=10, ha="left", va="top", alpha=0.8, fontweight="bold")
             
     ax.set_xlim(20, 100)
     ax.set_ylim(20, 100)
