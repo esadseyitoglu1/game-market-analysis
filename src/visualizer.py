@@ -278,7 +278,7 @@ def chart_80pct_cliff(df):
 
     colors = [C["red"] if str(b) in ["<50%", "50-60%", "60-70%"]
               else (C["yellow"] if str(b) in ["70-75%", "75-80%"]
-              else C["green"]) for b in stats["score_band"]]
+              else (C["blue"] if str(b) == "90-95%" else C["green"])) for b in stats["score_band"]]
 
     fig, ax = plt.subplots(figsize=(12, 6))
     bars = ax.bar(stats["score_band"].astype(str), stats["medyan_review"],
@@ -287,19 +287,26 @@ def chart_80pct_cliff(df):
     for bar, row in zip(bars, stats.itertuples()):
         ax.text(bar.get_x() + bar.get_width() / 2,
                 bar.get_height() + 5,
-                f"{row.medyan_review:.0f}\n(n={row.n:,})",
+                f"{row.medyan_review:.0f}\n({row.n:,} oyun)",
                 ha="center", va="bottom", fontsize=9, color=C["text"])
 
     # %80 eşiği vurgusu
     ax.axvline(x=4.5, color=C["yellow"], linewidth=2, linestyle="--", alpha=0.8)
     ax.text(4.6, ax.get_ylim()[1] * 0.85, "Very Positive\nEşiği (%80)",
             color=C["yellow"], fontsize=10, fontweight="bold")
+            
+    # Kalite Tuzağı vurgusu (90-95% bandı)
+    trap_y = stats.loc[stats["score_band"] == "90-95%", "medyan_review"].values[0]
+    ax.annotate("KALİTE TUZAĞI\nAşırı niş oyunlar\nskoru şişirir,\ngörünürlüğü düşürür.",
+                xy=(7, trap_y + 15), xytext=(7, trap_y + 40),
+                ha="center", color=C["blue"], fontweight="bold", fontsize=9,
+                arrowprops=dict(facecolor=C["blue"], edgecolor=C["blue"], arrowstyle="->", lw=1.5))
 
-    ax.set_title("Review Skoru Bandına Göre Medyan Review Sayısı\n"
-                 "Daha memnun oyuncular = daha fazla review = daha çok görünürlük",
+    ax.set_title("Kalite Uçurumu: %80 Barajı ve Steam'in 'Kalite Tuzağı'\n"
+                 "%80'i geçmek görünürlüğü patlatır. Ancak %90+ skor her zaman başarı demek değildir.",
                  fontweight="bold", pad=14)
-    ax.set_xlabel("Review Skoru Bandı")
-    ax.set_ylabel("Medyan Review Sayısı")
+    ax.set_xlabel("Steam Oyuncu Memnuniyeti Skoru (%)")
+    ax.set_ylabel("Ortalama Yorum Sayısı (Görünürlük)")
     ax.grid(True, axis="y", alpha=0.3)
     _note(ax, f"n={n_total:,} indie oyun (min {MIN_REVIEWS_FOR_QUALITY} review)  |  "
               f"'Kalite' = Steam oyuncu memnuniyeti skoru  |  "
