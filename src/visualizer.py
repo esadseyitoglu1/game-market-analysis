@@ -497,22 +497,23 @@ def chart_critics_vs_players(df):
         texts.append(ax.text(row["metacritic_score"], row["review_score"], row["name"],
                              fontsize=9, color=C["red"], fontweight="bold"))
 
-    # Başlık yazılarını en köşelere al ve değişkenlere ata
-    t1 = ax.text(95, 25, "Eleştirmenin Gözdeleri\n(Yüksek Metacritic, Düşük Steam)", 
+    # Başlık yazılarını en köşelere al ve değişkenlere ata (Eksenler 10'a genişletildi)
+    t1 = ax.text(98, 12, "Eleştirmenin Gözdeleri\n(Yüksek Metacritic, Düşük Steam)", 
                  color=C["red"], fontsize=10, ha="right", va="bottom", alpha=0.8, fontweight="bold")
-    t2 = ax.text(25, 95, "Oyuncunun Şampiyonları\n(Düşük Metacritic, Yüksek Steam)", 
+    t2 = ax.text(12, 98, "Oyuncunun Şampiyonları\n(Düşük Metacritic, Yüksek Steam)", 
                  color=C["green"], fontsize=10, ha="left", va="top", alpha=0.8, fontweight="bold")
 
     try:
         from adjustText import adjust_text
-        # t1 ve t2'yi 'objects' olarak veriyoruz ki adjustText bu yazılardan da kaçsın
+        # İtme kuvvetlerini (expand ve force_text) çok daha agresif yaptık ki 
+        # sağdaki kalabalık yazılar (Gone Home, Superhot vs) kesinlikle birbirinden ayrılsın.
         adjust_text(texts, objects=[t1, t2], arrowprops=dict(arrowstyle="-", color=C["grid"], lw=0.5), 
-                    expand=(1.2, 1.2), force_text=(0.3, 0.3))
+                    expand=(1.5, 1.5), force_text=(0.7, 0.7), force_static=(0.5, 0.5))
     except ImportError:
         print("  Uyarı: adjustText yüklü değil, yazılar üst üste binebilir.")
             
-    ax.set_xlim(20, 100)
-    ax.set_ylim(20, 100)
+    ax.set_xlim(10, 100)
+    ax.set_ylim(10, 100)
     ax.set_title("Eleştirmenler vs Oyuncular: Kime Oyun Yapıyorsunuz?\n"
                  "Metacritic Puanı ile Steam Oyuncu Puanı Arasındaki Kopuş",
                  fontweight="bold", pad=14)
