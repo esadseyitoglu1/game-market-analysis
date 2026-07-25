@@ -98,10 +98,12 @@ def insight_hype_balloon(df: pd.DataFrame) -> dict:
     target_tags = [
         "Action Roguelike", "Rogue-lite", "Survival", "Battle Royale",
         "Tower Defense", "Metroidvania", "Platformer", "Puzzle",
-        "Visual Novel", "Top-Down Shooter", "City Builder", "Farming Sim",
-        "Horror", "Bullet Hell", "Deck Building", "Simulation",
-        "Strategy", "RPG", "Shooter", "Adventure",
+        "Visual Novel", "Top-Down Shooter", "City Builder", "Simulation",
+        "Horror", "Bullet Hell", "Deck Building", "Strategy",
+        "RPG", "Shooter", "Adventure",
     ]
+    # NOT: 'Farming Sim' cikartildi — cok spesifik bir nis (Stardew Valley tipi).
+    # Genel simulasyon pazarini temsil etmez. Yerine 'Simulation' kullaniliyor.
 
     rows = []
     for tag in target_tags:
@@ -270,11 +272,16 @@ def insight_coop_multiplier(df: pd.DataFrame) -> dict:
         f"Co-op olmayan oyunların medyan review sayısı: {en_yuksek['med_solo']:.0f}. "
         f"Co-op olan oyunların: {en_yuksek['med_coop']:.0f}. "
         f"Aradaki çarpan: {en_yuksek['carpan']}x. "
-        f"Bu tesadüf değil — co-op oyunlar streamer ve arkadaş grupları için çok daha cazip.\n\n"
-        f"[BAĞLAM - 0:25-0:45]\n"
-        f"Bu sadece bir tür için değil. Analiz ettiğim {len(stats)} türün "
-        f"tamamında co-op pozitif bir çarpan etkisi yaratıyor.\n\n"
-        f"[CTA - 0:45-1:00]\n"
+        f"Co-op oyunlar streamer ve arkadaş grupları için çok daha cazip — bu muhtemelen büyük bir etken.\n\n"
+        f"[ÖNEMLİ UYARI - 0:25-0:40]\n"
+        f"Ama bu bir korelasyon, nedensellik değil. "
+        f"Co-op eklemek mi başarı getiriyor? "
+        f"Yoksa zaten büyük ekipler co-op yapabiliyor ve onların pazarlama bütçesi de büyük mü? "
+        f"Her iki senaryo da mümkün. Veri ikisini ayıramıyor.\n\n"
+        f"[BAĞLAM - 0:40-0:50]\n"
+        f"Analiz ettiğim tüm türlerin tamamında "
+        f"co-op pozitif bir çarpan etkisi yaratıyor. Pattern tutarlı.\n\n"
+        f"[CTA - 0:50-1:00]\n"
         f"Co-op eklemek tabii ki kolay değil — ama veriler bunu hak ettiğini söylüyor. "
         f"Oyununuzda co-op var mı? Neden var, neden yok? Yorumlara yazın."
     )

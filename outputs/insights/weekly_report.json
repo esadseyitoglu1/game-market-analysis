@@ -5,21 +5,15 @@
       "n_indie_2019_2024": 44491,
       "n_indie_total": 52229,
       "basari_esigi_review": 171,
-      "ortalama_basari_orani": 18.7,
-      "balon_esigi": 15.8,
-      "firsat_esigi": 21.7,
+      "ortalama_basari_orani": 18.2,
+      "balon_esigi": 15.4,
+      "firsat_esigi": 21.0,
       "tum_turler": [
         {
           "tag": "City Builder",
           "total": 745,
           "success": 248,
           "rate": 33.3
-        },
-        {
-          "tag": "Farming Sim",
-          "total": 471,
-          "success": 131,
-          "rate": 27.8
         },
         {
           "tag": "Rogue-lite",
@@ -176,12 +170,6 @@
           "rate": 33.3
         },
         {
-          "tag": "Farming Sim",
-          "total": 471,
-          "success": 131,
-          "rate": 27.8
-        },
-        {
           "tag": "Rogue-lite",
           "total": 2600,
           "success": 603,
@@ -204,10 +192,16 @@
           "total": 7427,
           "success": 1651,
           "rate": 22.2
+        },
+        {
+          "tag": "Visual Novel",
+          "total": 2562,
+          "success": 542,
+          "rate": 21.2
         }
       ]
     },
-    "yorum": "2019-2024 arasında çıkan 44,491 indie oyun analiz edildi. Başarı eşiği olarak 171+ review kullanıldı (bu, tüm 52,229 indie oyunun üst %20'sine girmek demek). Tüm türlerin ortalama başarı oranı %18.7. En kötü performans gösteren tür: 'Platformer' — 4,485 oyun çıkmış ama yalnızca %10.3 başarıya ulaşmış. Buna karşın 'City Builder' türü %33.3 başarı oranıyla öne çıkıyor.",
+    "yorum": "2019-2024 arasında çıkan 44,491 indie oyun analiz edildi. Başarı eşiği olarak 171+ review kullanıldı (bu, tüm 52,229 indie oyunun üst %20'sine girmek demek). Tüm türlerin ortalama başarı oranı %18.2. En kötü performans gösteren tür: 'Platformer' — 4,485 oyun çıkmış ama yalnızca %10.3 başarıya ulaşmış. Buna karşın 'City Builder' türü %33.3 başarı oranıyla öne çıkıyor.",
     "hook": "'Platformer' türünde 4,485 oyun var, sadece %10.3'i görünür olmuş. Ama 'City Builder' türünde bu oran %33.3. Aradaki fark ne?",
     "script": "[HOOK - 0:00-0:05]\n'Platformer' yapıyorum diyenler, dur bir dakika.\n\n[VERİ - 0:05-0:20]\nSteam'deki 52 bin indie oyunu analiz ettim. Başarıyı 'oyunların üst %20'sine girmek' olarak tanımladım — yani 171+ review almak. 'Platformer' türünde 4,485 oyun çıkmış, sadece %10.3'i bu eşiği geçebilmiş.\n\n[KIRILMA - 0:20-0:35]\nNeden? Çünkü herkes bu türe koşuyor. Arz arttıkça, Steam algoritmasının pastadan her oyuna ayırdığı pay küçülüyor.\n\n[FIRSAT - 0:35-0:50]\nPeki akıllı geliştiriciler nereye bakıyor? 'City Builder' türüne. Aynı dönemde %33.3 başarı oranı. Rakam az oyunla çok daha yüksek görünürlük.\n\n[CTA - 0:50-1:00]\nVeri kaynağı: Kaggle Steam dataset + SteamSpy API (~90k oyun). Hangi türde çalışıyorsunuz? Aşağıya yazın.",
     "grafik": "hype_vs_reality.png"
@@ -306,7 +300,7 @@
     ],
     "yorum": "'Co-op' veya 'Multiplayer' etiketi olan indie oyunlar ile olmayanlar karşılaştırıldı. Başarı ölçütü: medyan review sayısı. En yüksek Co-op çarpanı: 'Simulation' türünde — solo oyunların medyanı 42 review iken, co-op eklenmiş olanlar 315 review alıyor. Bu 7.5x fark demek.",
     "hook": "'Simulation' türü yapıyorsanız ve co-op yok, potansiyelinizin 7.5x'ini bırakıyorsunuz masada.",
-    "script": "[HOOK - 0:00-0:05]\nOyununuza tek bir özellik ekleyerek review sayınızı 7.5x artırabilirsiniz.\n\n[VERİ - 0:05-0:25]\n'Simulation' türünde 9,368 oyun analiz ettim. Co-op olmayan oyunların medyan review sayısı: 42. Co-op olan oyunların: 315. Aradaki çarpan: 7.5x. Bu tesadüf değil — co-op oyunlar streamer ve arkadaş grupları için çok daha cazip.\n\n[BAĞLAM - 0:25-0:45]\nBu sadece bir tür için değil. Analiz ettiğim 11 türün tamamında co-op pozitif bir çarpan etkisi yaratıyor.\n\n[CTA - 0:45-1:00]\nCo-op eklemek tabii ki kolay değil — ama veriler bunu hak ettiğini söylüyor. Oyununuzda co-op var mı? Neden var, neden yok? Yorumlara yazın.",
+    "script": "[HOOK - 0:00-0:05]\nOyununuza tek bir özellik ekleyerek review sayınızı 7.5x artırabilirsiniz.\n\n[VERİ - 0:05-0:25]\n'Simulation' türünde 9,368 oyun analiz ettim. Co-op olmayan oyunların medyan review sayısı: 42. Co-op olan oyunların: 315. Aradaki çarpan: 7.5x. Co-op oyunlar streamer ve arkadaş grupları için çok daha cazip — bu muhtemelen büyük bir etken.\n\n[ÖNEMLİ UYARI - 0:25-0:40]\nAma bu bir korelasyon, nedensellik değil. Co-op eklemek mi başarı getiriyor? Yoksa zaten büyük ekipler co-op yapabiliyor ve onların pazarlama bütçesi de büyük mü? Her iki senaryo da mümkün. Veri ikisini ayıramıyor.\n\n[BAĞLAM - 0:40-0:50]\nAnaliz ettiğim tüm türlerin tamamında co-op pozitif bir çarpan etkisi yaratıyor. Pattern tutarlı.\n\n[CTA - 0:50-1:00]\nCo-op eklemek tabii ki kolay değil — ama veriler bunu hak ettiğini söylüyor. Oyununuzda co-op var mı? Neden var, neden yok? Yorumlara yazın.",
     "grafik": "coop_multiplier.png"
   },
   {

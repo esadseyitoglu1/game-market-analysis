@@ -170,9 +170,11 @@ def chart_hype_vs_reality(df):
     target_tags = [
         "Action Roguelike", "Rogue-lite", "Survival", "Battle Royale",
         "Tower Defense", "Metroidvania", "Platformer", "Puzzle",
-        "Visual Novel", "Top-Down Shooter", "City Builder", "Farming Sim",
+        "Visual Novel", "Top-Down Shooter", "City Builder", "Simulation",
         "Horror", "Bullet Hell", "Deck Building"
     ]
+    # NOT: 'Farming Sim' cikarildi — cok spesifik bir nis (Stardew Valley tipi).
+    # Genel simulasyon pazarini temsil etmez. Yerine 'Simulation' kullanildi.
 
     rows = []
     for tag in target_tags:

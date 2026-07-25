@@ -1,12 +1,12 @@
 # Steam Indie Pazar Zekası Raporu
-**Üretildi:** 25 July 2026, 11:49  |  **Veri:** Kaggle steam-games-dataset (march2025)  |  **Uyarı:** SteamSpy verileri tahminidir, Valve resmi rakam paylaşmaz.
+**Üretildi:** 25 July 2026, 11:56  |  **Veri:** Kaggle steam-games-dataset (march2025)  |  **Uyarı:** SteamSpy verileri tahminidir, Valve resmi rakam paylaşmaz.
 
 ---
 
 ## 1. Hype Balonu Tespiti: Hangi Türlere Girme
 
 **📊 Analitik Yorum**
-2019-2024 arasında çıkan 44,491 indie oyun analiz edildi. Başarı eşiği olarak 171+ review kullanıldı (bu, tüm 52,229 indie oyunun üst %20'sine girmek demek). Tüm türlerin ortalama başarı oranı %18.7. En kötü performans gösteren tür: 'Platformer' — 4,485 oyun çıkmış ama yalnızca %10.3 başarıya ulaşmış. Buna karşın 'City Builder' türü %33.3 başarı oranıyla öne çıkıyor.
+2019-2024 arasında çıkan 44,491 indie oyun analiz edildi. Başarı eşiği olarak 171+ review kullanıldı (bu, tüm 52,229 indie oyunun üst %20'sine girmek demek). Tüm türlerin ortalama başarı oranı %18.2. En kötü performans gösteren tür: 'Platformer' — 4,485 oyun çıkmış ama yalnızca %10.3 başarıya ulaşmış. Buna karşın 'City Builder' türü %33.3 başarı oranıyla öne çıkıyor.
 
 **🎣 Video Hook (İlk 3 Saniye)**
 > 'Platformer' türünde 4,485 oyun var, sadece %10.3'i görünür olmuş. Ama 'City Builder' türünde bu oran %33.3. Aradaki fark ne?
@@ -47,12 +47,15 @@ Veri kaynağı: Kaggle Steam dataset + SteamSpy API (~90k oyun). Hangi türde ç
 Oyununuza tek bir özellik ekleyerek review sayınızı 7.5x artırabilirsiniz.
 
 [VERİ - 0:05-0:25]
-'Simulation' türünde 9,368 oyun analiz ettim. Co-op olmayan oyunların medyan review sayısı: 42. Co-op olan oyunların: 315. Aradaki çarpan: 7.5x. Bu tesadüf değil — co-op oyunlar streamer ve arkadaş grupları için çok daha cazip.
+'Simulation' türünde 9,368 oyun analiz ettim. Co-op olmayan oyunların medyan review sayısı: 42. Co-op olan oyunların: 315. Aradaki çarpan: 7.5x. Co-op oyunlar streamer ve arkadaş grupları için çok daha cazip — bu muhtemelen büyük bir etken.
 
-[BAĞLAM - 0:25-0:45]
-Bu sadece bir tür için değil. Analiz ettiğim 11 türün tamamında co-op pozitif bir çarpan etkisi yaratıyor.
+[ÖNEMLİ UYARI - 0:25-0:40]
+Ama bu bir korelasyon, nedensellik değil. Co-op eklemek mi başarı getiriyor? Yoksa zaten büyük ekipler co-op yapabiliyor ve onların pazarlama bütçesi de büyük mü? Her iki senaryo da mümkün. Veri ikisini ayıramıyor.
 
-[CTA - 0:45-1:00]
+[BAĞLAM - 0:40-0:50]
+Analiz ettiğim tüm türlerin tamamında co-op pozitif bir çarpan etkisi yaratıyor. Pattern tutarlı.
+
+[CTA - 0:50-1:00]
 Co-op eklemek tabii ki kolay değil — ama veriler bunu hak ettiğini söylüyor. Oyununuzda co-op var mı? Neden var, neden yok? Yorumlara yazın.
 ```
 
