@@ -327,11 +327,11 @@ def chart_price_sweet_spot(df):
     paid["bucket"] = pd.cut(paid["price"], bins=bins, labels=labels)
 
     stats = paid.groupby("bucket", observed=True).agg(
-        medyan=("owners_mid", "median"),
-        n=("owners_mid", "count")
+        medyan=("total_reviews", "median"),
+        n=("total_reviews", "count")
     ).reset_index()
 
-    free_median = free["owners_mid"].median()
+    free_median = free["total_reviews"].median()
 
     fig, ax = plt.subplots(figsize=(11, 6))
 
@@ -340,24 +340,24 @@ def chart_price_sweet_spot(df):
     best_idx = stats["medyan"].idxmax()
     colors[best_idx] = C["green"]
 
-    bars = ax.bar(stats["bucket"].astype(str), stats["medyan"] / 1000,
+    bars = ax.bar(stats["bucket"].astype(str), stats["medyan"],
                   color=colors, width=0.6)
 
     for bar, row in zip(bars, stats.itertuples()):
         ax.text(bar.get_x() + bar.get_width() / 2,
-                bar.get_height() + 0.5,
-                f"{row.medyan/1000:.1f}k\n(n={row.n:,})",
+                bar.get_height() + 5,
+                f"{row.medyan:.0f}\n(n={row.n:,})",
                 ha="center", va="bottom", fontsize=9.5, color=C["text"])
 
     # Ücretsiz referans çizgisi
-    ax.axhline(free_median / 1000, color=C["purple"], linewidth=1.5,
-               linestyle="--", label=f"Ücretsiz oyun medyanı: {free_median/1000:.0f}k (n={n_free:,})")
+    ax.axhline(free_median, color=C["purple"], linewidth=1.5,
+               linestyle="--", label=f"Ücretsiz oyun medyanı: {free_median:.0f} (n={n_free:,})")
 
-    ax.set_title("Fiyat Bandına Göre Medyan Sahip Sayısı\n"
+    ax.set_title("Fiyat Bandına Göre Medyan Review Sayısı\n"
                  "Indie (ücretli) oyunlarda tatlı nokta nerede?",
                  fontweight="bold", pad=14)
     ax.set_xlabel("Fiyat Bandı (Ücretli Oyunlar)")
-    ax.set_ylabel("Medyan Sahip (bin)")
+    ax.set_ylabel("Medyan Review Sayısı")
     ax.legend(framealpha=0.15, edgecolor=C["grid"])
     ax.grid(True, axis="y", alpha=0.3)
     _note(ax, f"n={n_paid:,} ücretli indie oyun  |  Ücretsiz oyunlar ayrı tutuldu  |  "
