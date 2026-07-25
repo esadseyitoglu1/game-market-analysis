@@ -307,6 +307,10 @@ def chart_80pct_cliff(df):
                  fontweight="bold", pad=14)
     ax.set_xlabel("Steam Oyuncu Memnuniyeti Skoru (%)")
     ax.set_ylabel("Ortalama Yorum Sayısı (Görünürlük)")
+    
+    # Y ekseni limitini yükseltelim ki yazılar (Kalite Tuzağı notu vs.) başlığa çarpmasın
+    ax.set_ylim(0, stats["medyan_review"].max() * 1.4)
+    
     ax.grid(True, axis="y", alpha=0.3)
     _note(ax, f"n={n_total:,} indie oyun (min {MIN_REVIEWS_FOR_QUALITY} review)  |  "
               f"'Kalite' = Steam oyuncu memnuniyeti skoru  |  "
