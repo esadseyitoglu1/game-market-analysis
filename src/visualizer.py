@@ -491,11 +491,11 @@ def chart_critics_vs_players(df):
     
     for _, row in player_champs.iterrows():
         texts.append(ax.text(row["metacritic_score"], row["review_score"], row["name"],
-                             fontsize=9, color=C["green"], fontweight="bold"))
+                             fontsize=9, color=C["green"], fontweight="bold", ha="center", va="center"))
                     
     for _, row in critic_darlings.iterrows():
         texts.append(ax.text(row["metacritic_score"], row["review_score"], row["name"],
-                             fontsize=9, color=C["red"], fontweight="bold"))
+                             fontsize=9, color=C["red"], fontweight="bold", ha="center", va="center"))
 
     # Başlık yazılarını en köşelere al ve değişkenlere ata (Eksenler 10'a genişletildi)
     t1 = ax.text(98, 12, "Eleştirmenin Gözdeleri\n(Yüksek Metacritic, Düşük Steam)", 
@@ -505,10 +505,9 @@ def chart_critics_vs_players(df):
 
     try:
         from adjustText import adjust_text
-        # İtme kuvvetlerini (expand ve force_text) çok daha agresif yaptık ki 
-        # sağdaki kalabalık yazılar (Gone Home, Superhot vs) kesinlikle birbirinden ayrılsın.
+        # İtme kuvvetlerini (expand ve force) makul seviyelere çektik (çizgiler kopmasın diye)
         adjust_text(texts, objects=[t1, t2], arrowprops=dict(arrowstyle="-", color=C["grid"], lw=0.5), 
-                    expand=(1.5, 1.5), force_text=(0.7, 0.7), force_static=(0.5, 0.5))
+                    expand=(1.1, 1.2), force_text=(0.2, 0.3), force_static=(0.1, 0.1))
     except ImportError:
         print("  Uyarı: adjustText yüklü değil, yazılar üst üste binebilir.")
             
