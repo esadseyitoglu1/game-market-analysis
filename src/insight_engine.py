@@ -571,8 +571,13 @@ def insight_critics_vs_players(df: pd.DataFrame) -> dict:
         
     sub["disconnect"] = sub["review_score"] - sub["metacritic_score"]
     
-    player_champ = sub.loc[sub["disconnect"].idxmax()]
-    critic_darling = sub.loc[sub["disconnect"].idxmin()]
+    # Senaryo için bilindik (popüler) oyunları seçelim
+    popular_sub = sub[sub["total_reviews"] >= 5000]
+    if popular_sub.empty:
+        popular_sub = sub
+        
+    player_champ = popular_sub.loc[popular_sub["disconnect"].idxmax()]
+    critic_darling = popular_sub.loc[popular_sub["disconnect"].idxmin()]
     
     yorum = (
         f"{len(sub)} adet Metacritic notu olan indie oyun incelendi. "

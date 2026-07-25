@@ -466,21 +466,32 @@ def chart_critics_vs_players(df):
     # y = x çizgisi
     ax.plot([0, 100], [0, 100], color=C["gray"], linestyle="--", linewidth=1.5, alpha=0.7)
     
-    # En uç örnekleri isimlendir (Oyuncu dostu ve Eleştirmen dostu)
-    player_champs = sub.nlargest(5, "disconnect")
-    critic_darlings = sub.nsmallest(5, "disconnect")
+    # En uç (ve popüler) örnekleri bul (min 5000 review olsun ki bilindik oyunlar çıksın)
+    popular_sub = sub[sub["total_reviews"] >= 5000]
+    if popular_sub.empty:
+        popular_sub = sub # fallback
+        
+    player_champs = popular_sub.nlargest(5, "disconnect")
+    critic_darlings = popular_sub.nsmallest(5, "disconnect")
+    
+    # Noktaları farklı renk ve boyutta belirginleştir
+    ax.scatter(player_champs["metacritic_score"], player_champs["review_score"], 
+               color=C["green"], edgecolor="white", s=80, zorder=5)
+               
+    ax.scatter(critic_darlings["metacritic_score"], critic_darlings["review_score"], 
+               color=C["red"], edgecolor="white", s=80, zorder=5)
     
     for _, row in player_champs.iterrows():
         ax.annotate(row["name"], 
                     (row["metacritic_score"], row["review_score"]),
-                    xytext=(5, 5), textcoords="offset points",
-                    fontsize=8, color=C["green"], fontweight="bold")
+                    xytext=(6, 6), textcoords="offset points",
+                    fontsize=9, color=C["green"], fontweight="bold")
                     
     for _, row in critic_darlings.iterrows():
         ax.annotate(row["name"], 
                     (row["metacritic_score"], row["review_score"]),
-                    xytext=(5, -10), textcoords="offset points",
-                    fontsize=8, color=C["red"], fontweight="bold")
+                    xytext=(6, -12), textcoords="offset points",
+                    fontsize=9, color=C["red"], fontweight="bold")
 
     ax.text(80, 20, "Eleştirmenin Gözdeleri\n(Yüksek Metacritic, Düşük Steam)", 
             color=C["red"], fontsize=10, ha="center", alpha=0.8, fontweight="bold")
