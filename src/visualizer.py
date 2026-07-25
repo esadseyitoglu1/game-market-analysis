@@ -319,6 +319,9 @@ def chart_tag_synergy(df):
     """
     indie = df[df["is_indie"] & (df["total_reviews"] > 0)].copy()
     n_total = len(indie)
+    
+    # Başarı eşiğini al (ör: 171+ review)
+    success_threshold, _, _ = calc_success_threshold(df)
 
     # En sık görülen tag'leri bul (analiz için)
     from collections import Counter
@@ -357,8 +360,11 @@ def chart_tag_synergy(df):
              .sort_values("medyan", ascending=True))
 
     fig, ax = plt.subplots(figsize=(12, 8))
-    colors = [C["green"] if i >= len(stats) - 3 else C["blue"]
-              for i in range(len(stats))]
+    
+    # Renk mantığı: Medyan review eşiği (171) geçiyorsa YEŞİL (Başarılı)
+    colors = [C["green"] if row["medyan"] >= success_threshold else C["blue"] 
+              for _, row in stats.iterrows()]
+              
     bars = ax.barh(stats["combo"], stats["medyan"], color=colors, height=0.6)
 
     for bar, row in zip(bars, stats.itertuples()):
@@ -367,13 +373,13 @@ def chart_tag_synergy(df):
                 f"{row.medyan:.0f}  (n={row.n})",
                 va="center", fontsize=9, color=C["text"])
 
-    ax.set_title("En Yüksek Medyan Review Getiren Tür Kombinasyonları\n"
-                 "Hangi iki tür bir arada olunca görünürlük artıyor?",
+    ax.set_title("Hangi İki Tür Bir Arada Olunca Görünürlük Artıyor?\n"
+                 f"Yeşil barlar: Ortanca oyun, Steam başarı eşiğini ({success_threshold}+ review) aşıyor.",
                  fontweight="bold", pad=14)
-    ax.set_xlabel("Medyan Review Sayısı")
+    ax.set_xlabel("Ortanca (Medyan) Oyunun Aldığı Review Sayısı")
     ax.grid(True, axis="x", alpha=0.3)
     _note(ax, f"n={n_total:,} indie oyun  |  Min 30 oyunlu kombinasyonlar  |  "
-              f"Meta-tagler hariç tutuldu (gerçek türler için)")
+              f"Meta-tagler (Indie, 2D vb.) hariç tutuldu  |  Eşik veriden hesaplandı")
     fig.tight_layout()
     return _save(fig, "tag_synergy.png")
 
