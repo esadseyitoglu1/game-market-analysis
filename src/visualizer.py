@@ -481,17 +481,22 @@ def chart_critics_vs_players(df):
     ax.scatter(critic_darlings["metacritic_score"], critic_darlings["review_score"], 
                color=C["red"], edgecolor="white", s=80, zorder=5)
     
+    # Yazıların üst üste binmesini engellemek için listeye alıp adjustText kullanacağız
+    texts = []
+    
     for _, row in player_champs.iterrows():
-        ax.annotate(row["name"], 
-                    (row["metacritic_score"], row["review_score"]),
-                    xytext=(6, 6), textcoords="offset points",
-                    fontsize=9, color=C["green"], fontweight="bold")
+        texts.append(ax.text(row["metacritic_score"], row["review_score"], row["name"],
+                             fontsize=9, color=C["green"], fontweight="bold"))
                     
     for _, row in critic_darlings.iterrows():
-        ax.annotate(row["name"], 
-                    (row["metacritic_score"], row["review_score"]),
-                    xytext=(6, -12), textcoords="offset points",
-                    fontsize=9, color=C["red"], fontweight="bold")
+        texts.append(ax.text(row["metacritic_score"], row["review_score"], row["name"],
+                             fontsize=9, color=C["red"], fontweight="bold"))
+
+    try:
+        from adjustText import adjust_text
+        adjust_text(texts, arrowprops=dict(arrowstyle="-", color=C["grid"], lw=0.5))
+    except ImportError:
+        print("  Uyarı: adjustText yüklü değil, yazılar üst üste binebilir.")
 
     ax.text(80, 20, "Eleştirmenin Gözdeleri\n(Yüksek Metacritic, Düşük Steam)", 
             color=C["red"], fontsize=10, ha="center", alpha=0.8, fontweight="bold")
