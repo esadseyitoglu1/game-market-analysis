@@ -676,6 +676,51 @@ def generate_report(insights: list[dict], snapshot: str) -> Path:
 
 
 # ---------------------------------------------------------------------------
+# INSIGHT 7 — Kalite Uçurumu ve %80 Barajı
+# ---------------------------------------------------------------------------
+
+def insight_80pct_cliff(df: pd.DataFrame) -> dict:
+    yorum = (
+        "Steam'in %80 (Very Positive) barajı tam bir uçurumdur. "
+        "%79'dan %80'e geçiş, görünürlüğü (dolayısıyla satışları) katlar. "
+        "Ancak grafikteki asıl anomali 90-95% bandındadır. Bu banttaki oyunların ortalama görünürlüğü, "
+        "85-90% bandındakilerden daha düşüktür. Bu 'Kalite Tuzağı'dır; çok dar bir kitleye (niş) hitap eden oyunlar "
+        "skoru şişirir ama ana akıma ulaşamadıkları için görünürlükleri düşer. "
+        "Sadece 95%+ olan evrensel şaheserler (Stardew Valley vb.) bu tuzağı aşıp tepeye yerleşir."
+    )
+
+    hook = (
+        "Oyununuz Steam'de %93 olumlu not alsa bile neden kimse tarafından oynanmıyor olabilir? "
+        "İşte Steam'in acımasız 'Kalite Tuzağı' ve %80 Uçurumu."
+    )
+
+    script = (
+        f"[BİLGİ NOTU - Ekranda Belirir]\n"
+        f"*Steam verilerinde her 1 inceleme (review) ortalama 30-50 satışa eşittir. İnceleme sayısı görünürlüğün ve satışın kanıtıdır.*\n\n"
+        f"[HOOK - 0:00-0:05]\n"
+        f"Steam'de oyununuz %93 not alırsa zengin olacağınızı mı sanıyorsunuz? Veriler tam tersini söylüyor.\n\n"
+        f"[UÇURUM - 0:05-0:20]\n"
+        f"Steam algoritmasının altın kuralı şudur: %80 (Very Positive) barajını geçemeyen oyunlar görünmezdir. "
+        f"%80'i aştığınız an, algoritma sizi ana sayfaya fırlatır ve satışlarınız katlanır. Buraya kadar her şey mantıklı.\n\n"
+        f"[KALİTE TUZAĞI - 0:20-0:40]\n"
+        f"Peki neden %90-95 arası puan alan oyunların görünürlüğü ve satışları, %85 alanlardan DAHA DÜŞÜK? "
+        f"Buna 'Kalite Tuzağı' diyoruz. Bu oyunlar o kadar 'niş' ve dar bir kitleye hitap eder ki, sadece fanatikleri alıp 100 üzerinden 93 verir. "
+        f"Ama ana akım oyuncu bu oyunu asla almaz. Yani notunuz şişer, ama cüzdanınız boş kalır.\n\n"
+        f"[ŞAHESERLER - 0:40-0:55]\n"
+        f"Sadece %95 üzerine çıkabilen evrensel şaheserler (Stardew Valley, Hades gibi) bu tuzağı aşar. "
+        f"Hedefiniz %95 almak değil, %85 bandında kalıp kitlelere hitap eden bir oyun yapmak olmalı."
+    )
+
+    return {
+        "baslik": "Kalite Uçurumu: %80 Barajı ve Kalite Tuzağı",
+        "veri": {},
+        "yorum": yorum,
+        "hook": hook,
+        "script": script,
+        "grafik": "the_80pct_cliff.png"
+    }
+
+# ---------------------------------------------------------------------------
 # Ana çalıştırıcı
 # ---------------------------------------------------------------------------
 
@@ -688,23 +733,26 @@ def run(snapshot="march2025"):
     print("Cikarimlari hesaplaniyor...")
     insights = []
 
-    print("  [1/6] Hype Balonu Tespiti...")
+    print("  [1/7] Hype Balonu Tespiti...")
     insights.append(insight_hype_balloon(df))
 
-    print("  [2/6] Co-op Carpani...")
+    print("  [2/7] Co-op Carpani...")
     insights.append(insight_coop_multiplier(df))
 
-    print("  [3/6] Gorünmez Kayiplar (Dead on Arrival)...")
+    print("  [3/7] Gorünmez Kayiplar (Dead on Arrival)...")
     insights.append(insight_dead_on_arrival(df))
 
-    print("  [4/6] Kalite Tuzagi...")
+    print("  [4/7] Kalite Tuzagi (Pazarlama)...")
     insights.append(insight_quality_trap(df))
 
-    print("  [5/6] Tag Sinerjisi...")
+    print("  [5/7] Tag Sinerjisi...")
     insights.append(insight_tag_synergy(df))
     
-    print("  [6/6] Eleştirmenler vs Oyuncular...")
+    print("  [6/7] Eleştirmenler vs Oyuncular...")
     insights.append(insight_critics_vs_players(df))
+
+    print("  [7/7] %80 Kalite Uçurumu...")
+    insights.append(insight_80pct_cliff(df))
 
     print("\nRapor yaziliyor...")
     report_path = generate_report(insights, snapshot)

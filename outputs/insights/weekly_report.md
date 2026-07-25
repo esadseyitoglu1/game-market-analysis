@@ -1,5 +1,5 @@
 # Steam Indie Pazar Zekası Raporu
-**Üretildi:** 25 July 2026, 15:33  |  **Veri:** Kaggle steam-games-dataset (march2025)  |  **Uyarı:** SteamSpy verileri tahminidir, Valve resmi rakam paylaşmaz.
+**Üretildi:** 25 July 2026, 21:08  |  **Veri:** Kaggle steam-games-dataset (march2025)  |  **Uyarı:** SteamSpy verileri tahminidir, Valve resmi rakam paylaşmaz.
 
 ---
 
@@ -171,5 +171,35 @@ Eğer indie geliştiriciyseniz sormanız gereken tek soru var: Oyununuzu kime ya
 ```
 
 **📈 Grafik:** `critics_vs_players.png`
+
+---
+
+## 7. Kalite Uçurumu: %80 Barajı ve Kalite Tuzağı
+
+**📊 Analitik Yorum**
+Steam'in %80 (Very Positive) barajı tam bir uçurumdur. %79'dan %80'e geçiş, görünürlüğü (dolayısıyla satışları) katlar. Ancak grafikteki asıl anomali 90-95% bandındadır. Bu banttaki oyunların ortalama görünürlüğü, 85-90% bandındakilerden daha düşüktür. Bu 'Kalite Tuzağı'dır; çok dar bir kitleye (niş) hitap eden oyunlar skoru şişirir ama ana akıma ulaşamadıkları için görünürlükleri düşer. Sadece 95%+ olan evrensel şaheserler (Stardew Valley vb.) bu tuzağı aşıp tepeye yerleşir.
+
+**🎣 Video Hook (İlk 3 Saniye)**
+> Oyununuz Steam'de %93 olumlu not alsa bile neden kimse tarafından oynanmıyor olabilir? İşte Steam'in acımasız 'Kalite Tuzağı' ve %80 Uçurumu.
+
+**📝 Script Taslağı**
+```
+[BİLGİ NOTU - Ekranda Belirir]
+*Steam verilerinde her 1 inceleme (review) ortalama 30-50 satışa eşittir. İnceleme sayısı görünürlüğün ve satışın kanıtıdır.*
+
+[HOOK - 0:00-0:05]
+Steam'de oyununuz %93 not alırsa zengin olacağınızı mı sanıyorsunuz? Veriler tam tersini söylüyor.
+
+[UÇURUM - 0:05-0:20]
+Steam algoritmasının altın kuralı şudur: %80 (Very Positive) barajını geçemeyen oyunlar görünmezdir. %80'i aştığınız an, algoritma sizi ana sayfaya fırlatır ve satışlarınız katlanır. Buraya kadar her şey mantıklı.
+
+[KALİTE TUZAĞI - 0:20-0:40]
+Peki neden %90-95 arası puan alan oyunların görünürlüğü ve satışları, %85 alanlardan DAHA DÜŞÜK? Buna 'Kalite Tuzağı' diyoruz. Bu oyunlar o kadar 'niş' ve dar bir kitleye hitap eder ki, sadece fanatikleri alıp 100 üzerinden 93 verir. Ama ana akım oyuncu bu oyunu asla almaz. Yani notunuz şişer, ama cüzdanınız boş kalır.
+
+[ŞAHESERLER - 0:40-0:55]
+Sadece %95 üzerine çıkabilen evrensel şaheserler (Stardew Valley, Hades gibi) bu tuzağı aşar. Hedefiniz %95 almak değil, %85 bandında kalıp kitlelere hitap eden bir oyun yapmak olmalı.
+```
+
+**📈 Grafik:** `the_80pct_cliff.png`
 
 ---
