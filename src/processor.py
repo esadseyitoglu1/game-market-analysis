@@ -13,7 +13,10 @@ Key columns we care about:
 from pathlib import Path
 
 import ast
+import logging
 import pandas as pd
+
+log = logging.getLogger(__name__)
 
 RAW_DIR = Path(__file__).resolve().parent.parent / "data" / "raw"
 PROCESSED_DIR = Path(__file__).resolve().parent.parent / "data" / "processed"
@@ -118,7 +121,7 @@ def clean_app_list(raw_path: str | Path) -> pd.DataFrame:
     Returns a cleaned DataFrame ready for analyzer.py.
     """
     raw_path = Path(raw_path)
-    print(f"Loading {raw_path.name} ...")
+    log.info(f"Loading {raw_path.name} ...")
 
     # Read only the columns that exist in the file (guard against schema changes).
     # Normalize to lowercase first — may2024 uses 'AppID', march2025 uses 'appid'.
@@ -129,7 +132,7 @@ def clean_app_list(raw_path: str | Path) -> pd.DataFrame:
 
     df = pd.read_csv(raw_path, usecols=cols_to_load_orig, low_memory=False)
     df.rename(columns=rename_map, inplace=True)              # unify to lowercase
-    print(f"  Loaded {len(df):,} rows x {len(df.columns)} columns")
+    log.info(f"  Loaded {len(df):,} rows x {len(df.columns)} columns")
 
     # --- 1. Drop rows missing critical identifiers ---
     df = df.dropna(subset=["appid", "name"])
@@ -157,7 +160,7 @@ def clean_app_list(raw_path: str | Path) -> pd.DataFrame:
     if "price" in df.columns:
         df["price"] = pd.to_numeric(df["price"], errors="coerce").fillna(0.0)
 
-    print(f"  After cleaning: {len(df):,} rows")
+    log.info(f"After cleaning: {len(df):,} rows")
     return df
 
 
@@ -190,7 +193,7 @@ def save_processed(df: pd.DataFrame, filename: str) -> Path:
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
     output_path = PROCESSED_DIR / filename
     df.to_csv(output_path, index=False)
-    print(f"  Saved -> {output_path}  ({len(df):,} rows)")
+    log.info(f"Saved -> {output_path}  ({len(df):,} rows)")
     return output_path
 
 
@@ -214,7 +217,7 @@ def run_pipeline(snapshot: str = "march2025") -> dict[str, Path]:
     for name, filename in targets.items():
         raw_path = RAW_DIR / filename
         if not raw_path.exists():
-            print(f"  [SKIP] {filename} not found in data/raw/")
+            log.warning(f"[SKIP] {filename} not found in data/raw/")
             continue
 
         df = clean_app_list(raw_path)

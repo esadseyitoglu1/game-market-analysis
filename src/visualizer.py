@@ -8,6 +8,8 @@ Vizyon:
   - Sade, sosyal medyada paylaşılabilir tasarım
 
 5 grafik:
+import logging
+log = logging.getLogger(__name__)
   1. hype_vs_reality.png  — Hype Balonu vs Gerçek Başarı (tür bazlı)
   2. the_80pct_cliff.png  — %80 Review Uçurumu
   3. price_sweet_spot.png — Fiyat Tatlı Noktası (medyan sahip)
@@ -87,7 +89,7 @@ def _save(fig, name):
     p = OUTPUT_DIR / name
     fig.savefig(p, bbox_inches="tight", facecolor=C["bg"])
     plt.close(fig)
-    print(f"  Kaydedildi -> {p.name}")
+    log.info(f"  Kaydedildi -> {p.name}")
     return p
 
 
@@ -194,7 +196,7 @@ def chart_hype_vs_reality(df):
         rows.append({"tag": tag, "total": total, "rate": rate})
 
     if not rows:
-        print("  Hype vs Reality: yeterli veri yok, atlandi.")
+        log.warning("  Hype vs Reality: yeterli veri yok, atlandi.")
         return
 
     stats = pd.DataFrame(rows).sort_values("rate", ascending=True)
@@ -363,7 +365,7 @@ def chart_tag_synergy(df):
         })
 
     if not combo_stats:
-        print("  Tag Synergy: yeterli veri yok, atlandi.")
+        log.warning("  Tag Synergy: yeterli veri yok, atlandi.")
         return
 
     stats = (pd.DataFrame(combo_stats)
@@ -529,7 +531,7 @@ def chart_critics_vs_players(df):
                     arrowprops=dict(arrowstyle="-", color=C["grid"], lw=0.5), 
                     expand=(1.2, 1.3), force_text=(0.4, 0.4), force_static=(0.2, 0.2))
     except ImportError:
-        print("  Uyarı: adjustText yüklü değil, yazılar üst üste binebilir.")
+        log.warning("  Uyarı: adjustText yüklü değil, yazılar üst üste binebilir.")
             
     ax.set_xlim(10, 100)
     ax.set_ylim(10, 100)
@@ -550,12 +552,12 @@ def chart_critics_vs_players(df):
 
 def run_charts(snapshot="march2025"):
     _style()
-    print(f"Veri yukleniyor ({snapshot})...")
+    log.info(f"Veri yukleniyor ({snapshot})...")
     df = _load(snapshot)
     indie = df[df["is_indie"]]
-    print(f"  {len(df):,} oyun  |  Indie: {len(indie):,}  |  "
+    log.info(f"  {len(df):,} oyun  |  Indie: {len(indie):,}  |  "
           f"Ucretli Indie: {len(indie[~indie['is_free']]):,}\n")
-    print("Grafikler olusturuluyor...")
+    log.info("Grafikler olusturuluyor...")
 
     chart_hype_vs_reality(df)
     chart_80pct_cliff(df)
@@ -563,7 +565,7 @@ def run_charts(snapshot="march2025"):
     chart_top10_paid_indie(df)
     chart_critics_vs_players(df)
 
-    print(f"\nTumu hazir -> {OUTPUT_DIR}")
+    log.info(f"\nTumu hazir -> {OUTPUT_DIR}")
 
 
 if __name__ == "__main__":

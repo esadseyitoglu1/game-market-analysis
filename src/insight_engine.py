@@ -8,6 +8,8 @@ Vizyon:
 Çalıştırma:
   python -m src.insight_engine
   python -m src.insight_engine --snapshot may2024
+import logging
+log = logging.getLogger(__name__)
 
 Her çıkarım (Insight) bir dict döndürür:
   {
@@ -725,51 +727,63 @@ def insight_80pct_cliff(df: pd.DataFrame) -> dict:
 # ---------------------------------------------------------------------------
 
 def run(snapshot="march2025"):
-    print(f"Veri yukleniyor ({snapshot})...")
+    log.info(f"Veri yukleniyor ({snapshot})...")
     df = _load(snapshot)
     indie = df[df["is_indie"]]
-    print(f"  {len(df):,} oyun  |  Indie: {len(indie):,}\n")
+    log.info(f"  {len(df):,} oyun  |  Indie: {len(indie):,}\n")
 
-    print("Cikarimlari hesaplaniyor...")
+    log.info("Cikarimlari hesaplaniyor...")
     insights = []
 
-    print("  [1/7] Hype Balonu Tespiti...")
+    log.info("  [1/7] Hype Balonu Tespiti...")
     insights.append(insight_hype_balloon(df))
 
-    print("  [2/7] Co-op Carpani...")
+    log.info("  [2/7] Co-op Carpani...")
     insights.append(insight_coop_multiplier(df))
 
-    print("  [3/7] Gorünmez Kayiplar (Dead on Arrival)...")
+    log.info("  [3/7] Gorünmez Kayiplar (Dead on Arrival)...")
     insights.append(insight_dead_on_arrival(df))
 
-    print("  [4/7] Kalite Tuzagi (Pazarlama)...")
+    log.info("  [4/7] Kalite Tuzagi (Pazarlama)...")
     insights.append(insight_quality_trap(df))
 
-    print("  [5/7] Tag Sinerjisi...")
+    log.info("  [5/7] Tag Sinerjisi...")
     insights.append(insight_tag_synergy(df))
     
-    print("  [6/7] Eleştirmenler vs Oyuncular...")
+    log.info("  [6/7] Eleştirmenler vs Oyuncular...")
     insights.append(insight_critics_vs_players(df))
 
-    print("  [7/7] %80 Kalite Uçurumu...")
+    log.info("  [7/7] %80 Kalite Uçurumu...")
     insights.append(insight_80pct_cliff(df))
 
-    print("\nRapor yaziliyor...")
+    log.info("\nRapor yaziliyor...")
     report_path = generate_report(insights, snapshot)
-    print(f"  -> {report_path}")
+    log.info(f"  -> {report_path}")
 
-    # JSON da çıkar (ileride n8n veya başka sistemlerin okuyabilmesi için)
+    # JSON da çıkar (n8n'in okuyacağı Kati Kontrat formatinda)
+    import uuid
+    run_id = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+    
+    n8n_contract = {
+        "run_id": run_id,
+        "status": "success",
+        "content_ready": True,
+        "total_insights": len(insights),
+        "insights": insights
+    }
+    
     json_path = OUTPUT_DIR / "weekly_report.json"
     json_path.write_text(
-        json.dumps(insights, ensure_ascii=False, indent=2, default=str),
+        json.dumps(n8n_contract, ensure_ascii=False, indent=2, default=str),
         encoding="utf-8"
     )
-    print(f"  -> {json_path}")
-    print("\nTamamlandi.")
+    log.info(f"  -> {json_path}")
+    log.info("\nTamamlandi.")
     return insights
 
 
 if __name__ == "__main__":
+    import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--snapshot", default="march2025",
                         choices=["march2025", "may2024", "live"])
