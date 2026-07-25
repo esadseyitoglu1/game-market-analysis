@@ -442,6 +442,65 @@ def chart_top10_paid_indie(df):
 
 
 # ---------------------------------------------------------------------------
+# Grafik 6 — Eleştirmenler vs Oyuncular
+# ---------------------------------------------------------------------------
+
+def chart_critics_vs_players(df):
+    """
+    Metacritic vs Steam Review Score.
+    Mesaj: 'Eleştirmene mi yapıyorsun, oyuncuya mı?'
+    """
+    sub = df[df["is_indie"] & (df["metacritic_score"] > 0) & (df["total_reviews"] >= 100)].copy()
+    
+    # Sadece anlamlı uçurumları bulmak için sapma (disconnect) hesapla
+    sub["disconnect"] = sub["review_score"] - sub["metacritic_score"]
+    
+    n_total = len(sub)
+    
+    fig, ax = plt.subplots(figsize=(10, 10))
+    
+    # Scatter plot
+    ax.scatter(sub["metacritic_score"], sub["review_score"], 
+               alpha=0.4, color=C["blue"], edgecolor="none", s=30)
+               
+    # y = x çizgisi
+    ax.plot([0, 100], [0, 100], color=C["gray"], linestyle="--", linewidth=1.5, alpha=0.7)
+    
+    # En uç örnekleri isimlendir (Oyuncu dostu ve Eleştirmen dostu)
+    player_champs = sub.nlargest(5, "disconnect")
+    critic_darlings = sub.nsmallest(5, "disconnect")
+    
+    for _, row in player_champs.iterrows():
+        ax.annotate(row["name"], 
+                    (row["metacritic_score"], row["review_score"]),
+                    xytext=(5, 5), textcoords="offset points",
+                    fontsize=8, color=C["green"], fontweight="bold")
+                    
+    for _, row in critic_darlings.iterrows():
+        ax.annotate(row["name"], 
+                    (row["metacritic_score"], row["review_score"]),
+                    xytext=(5, -10), textcoords="offset points",
+                    fontsize=8, color=C["red"], fontweight="bold")
+
+    ax.text(80, 20, "Eleştirmenin Gözdeleri\n(Yüksek Metacritic, Düşük Steam)", 
+            color=C["red"], fontsize=10, ha="center", alpha=0.8, fontweight="bold")
+    ax.text(40, 90, "Oyuncunun Şampiyonları\n(Düşük Metacritic, Yüksek Steam)", 
+            color=C["green"], fontsize=10, ha="center", alpha=0.8, fontweight="bold")
+            
+    ax.set_xlim(20, 100)
+    ax.set_ylim(20, 100)
+    ax.set_title("Eleştirmenler vs Oyuncular: Kime Oyun Yapıyorsunuz?\n"
+                 "Metacritic Puanı ile Steam Oyuncu Puanı Arasındaki Kopuş",
+                 fontweight="bold", pad=14)
+    ax.set_xlabel("Metacritic Skoru (Profesyonel Eleştirmenler)")
+    ax.set_ylabel("Steam Pozitif Review Oranı (Gerçek Oyuncular)")
+    ax.grid(True, alpha=0.2)
+    _note(ax, f"n={n_total:,} indie oyun (min 100 review ve Metacritic notu olanlar)")
+    fig.tight_layout()
+    return _save(fig, "critics_vs_players.png")
+
+
+# ---------------------------------------------------------------------------
 # Ana çalıştırıcı
 # ---------------------------------------------------------------------------
 
@@ -458,6 +517,7 @@ def run_charts(snapshot="march2025"):
     chart_80pct_cliff(df)
     chart_tag_synergy(df)
     chart_top10_paid_indie(df)
+    chart_critics_vs_players(df)
 
     print(f"\nTumu hazir -> {OUTPUT_DIR}")
 

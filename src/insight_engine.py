@@ -561,6 +561,70 @@ def insight_tag_synergy(df: pd.DataFrame) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# INSIGHT 6 — Eleştirmenler vs Oyuncular
+# ---------------------------------------------------------------------------
+
+def insight_critics_vs_players(df: pd.DataFrame) -> dict:
+    sub = df[df["is_indie"] & (df["metacritic_score"] > 0) & (df["total_reviews"] >= 100)].copy()
+    if sub.empty:
+        return {}
+        
+    sub["disconnect"] = sub["review_score"] - sub["metacritic_score"]
+    
+    player_champ = sub.loc[sub["disconnect"].idxmax()]
+    critic_darling = sub.loc[sub["disconnect"].idxmin()]
+    
+    yorum = (
+        f"{len(sub)} adet Metacritic notu olan indie oyun incelendi. "
+        f"Oyuncuların en çok sevip eleştirmenlerin gömdüğü oyun: {player_champ['name']} "
+        f"(Metacritic: {player_champ['metacritic_score']}, Steam: %{player_champ['review_score']}). "
+        f"Eleştirmenlerin bayılıp oyuncuların nefret ettiği oyun: {critic_darling['name']} "
+        f"(Metacritic: {critic_darling['metacritic_score']}, Steam: %{critic_darling['review_score']})."
+    )
+    
+    hook = (
+        f"Oyununuzu kime beğendirmeye çalışıyorsunuz? Eleştirmenlere mi, yoksa cüzdanıyla oy veren oyunculara mı? "
+        f"Steam verilerine göre ikisini birden mutlu etmek neredeyse imkansız."
+    )
+    
+    script = (
+        f"[HOOK - 0:00-0:05]\n"
+        f"Eğer Metacritic'ten 90 puan aldıysanız, Steam'de kesin başarılı olur musunuz? Veriler tam tersini söylüyor!\n\n"
+        f"[VERİ - 0:05-0:25]\n"
+        f"Steam'de hem Metacritic notu hem de yeterince oyuncu yorumu olan {len(sub)} indie oyunu inceledim. "
+        f"Sonuç inanılmaz bir 'Kopuş' (Disconnect). Örneğin '{critic_darling['name']}'... "
+        f"Eleştirmenler oyuna aşık olmuş ve {critic_darling['metacritic_score']} basmış. Ama oyuncular? Steam'de %{critic_darling['review_score']} ile oyunu gömmüşler.\n\n"
+        f"[ANALİZ - 0:25-0:45]\n"
+        f"Tam tersine de bakalım: '{player_champ['name']}'. Eleştirmenler {player_champ['metacritic_score']} vermiş, "
+        f"yani 'eh işte' demişler. Ama oyuncular %{player_champ['review_score']} olumlu yorumla oyunu şampiyon yapmış. "
+        f"Neden? Çünkü eleştirmenler 'teknik kusursuzluk ve inovasyon' ararken, oyuncular sadece 'eğlence ve parasının karşılığını' arıyor.\n\n"
+        f"[CTA - 0:45-1:00]\n"
+        f"Eğer indie geliştiriciyseniz sormanız gereken tek soru var: Oyununuzu kime yapıyorsunuz? IGN'e mi, oyunculara mı?"
+    )
+    
+    return {
+        "baslik": "Eleştirmenler vs Oyuncular: Kime Oyun Yapıyorsunuz?",
+        "veri": {
+            "n_oyun": len(sub),
+            "oyuncu_sampiyonu": {
+                "name": player_champ["name"],
+                "metacritic": player_champ["metacritic_score"],
+                "steam": player_champ["review_score"]
+            },
+            "elestirmen_gozdesi": {
+                "name": critic_darling["name"],
+                "metacritic": critic_darling["metacritic_score"],
+                "steam": critic_darling["review_score"]
+            }
+        },
+        "yorum": yorum,
+        "hook": hook,
+        "script": script,
+        "grafik": "critics_vs_players.png"
+    }
+
+
+# ---------------------------------------------------------------------------
 # Rapor Üretici
 # ---------------------------------------------------------------------------
 
@@ -619,20 +683,23 @@ def run(snapshot="march2025"):
     print("Cikarimlari hesaplaniyor...")
     insights = []
 
-    print("  [1/5] Hype Balonu Tespiti...")
+    print("  [1/6] Hype Balonu Tespiti...")
     insights.append(insight_hype_balloon(df))
 
-    print("  [2/5] Co-op Carpani...")
+    print("  [2/6] Co-op Carpani...")
     insights.append(insight_coop_multiplier(df))
 
-    print("  [3/5] Gorünmez Kayiplar (Dead on Arrival)...")
+    print("  [3/6] Gorünmez Kayiplar (Dead on Arrival)...")
     insights.append(insight_dead_on_arrival(df))
 
-    print("  [4/5] Kalite Tuzagi...")
+    print("  [4/6] Kalite Tuzagi...")
     insights.append(insight_quality_trap(df))
 
-    print("  [5/5] Tag Sinerjisi...")
+    print("  [5/6] Tag Sinerjisi...")
     insights.append(insight_tag_synergy(df))
+    
+    print("  [6/6] Eleştirmenler vs Oyuncular...")
+    insights.append(insight_critics_vs_players(df))
 
     print("\nRapor yaziliyor...")
     report_path = generate_report(insights, snapshot)

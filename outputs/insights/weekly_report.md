@@ -1,5 +1,5 @@
 # Steam Indie Pazar Zekası Raporu
-**Üretildi:** 25 July 2026, 14:57  |  **Veri:** Kaggle steam-games-dataset (march2025)  |  **Uyarı:** SteamSpy verileri tahminidir, Valve resmi rakam paylaşmaz.
+**Üretildi:** 25 July 2026, 15:29  |  **Veri:** Kaggle steam-games-dataset (march2025)  |  **Uyarı:** SteamSpy verileri tahminidir, Valve resmi rakam paylaşmaz.
 
 ---
 
@@ -144,5 +144,32 @@ Sizce neden 'Visual Novel + FPS' bu kadar iyi çalışıyor? Yorumlarda tartış
 ```
 
 **📈 Grafik:** `tag_synergy.png`
+
+---
+
+## 6. Eleştirmenler vs Oyuncular: Kime Oyun Yapıyorsunuz?
+
+**📊 Analitik Yorum**
+1970 adet Metacritic notu olan indie oyun incelendi. Oyuncuların en çok sevip eleştirmenlerin gömdüğü oyun: Shaq Fu: A Legend Reborn (Metacritic: 30, Steam: %78.9). Eleştirmenlerin bayılıp oyuncuların nefret ettiği oyun: Turba (Metacritic: 76, Steam: %35.1).
+
+**🎣 Video Hook (İlk 3 Saniye)**
+> Oyununuzu kime beğendirmeye çalışıyorsunuz? Eleştirmenlere mi, yoksa cüzdanıyla oy veren oyunculara mı? Steam verilerine göre ikisini birden mutlu etmek neredeyse imkansız.
+
+**📝 Script Taslağı**
+```
+[HOOK - 0:00-0:05]
+Eğer Metacritic'ten 90 puan aldıysanız, Steam'de kesin başarılı olur musunuz? Veriler tam tersini söylüyor!
+
+[VERİ - 0:05-0:25]
+Steam'de hem Metacritic notu hem de yeterince oyuncu yorumu olan 1970 indie oyunu inceledim. Sonuç inanılmaz bir 'Kopuş' (Disconnect). Örneğin 'Turba'... Eleştirmenler oyuna aşık olmuş ve 76 basmış. Ama oyuncular? Steam'de %35.1 ile oyunu gömmüşler.
+
+[ANALİZ - 0:25-0:45]
+Tam tersine de bakalım: 'Shaq Fu: A Legend Reborn'. Eleştirmenler 30 vermiş, yani 'eh işte' demişler. Ama oyuncular %78.9 olumlu yorumla oyunu şampiyon yapmış. Neden? Çünkü eleştirmenler 'teknik kusursuzluk ve inovasyon' ararken, oyuncular sadece 'eğlence ve parasının karşılığını' arıyor.
+
+[CTA - 0:45-1:00]
+Eğer indie geliştiriciyseniz sormanız gereken tek soru var: Oyununuzu kime yapıyorsunuz? IGN'e mi, oyunculara mı?
+```
+
+**📈 Grafik:** `critics_vs_players.png`
 
 ---
