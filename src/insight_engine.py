@@ -452,6 +452,105 @@ def insight_dead_on_arrival(df: pd.DataFrame) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# INSIGHT 5 — Kalite Tuzağı (Çok Satan ama Üzen Oyunlar)
+# ---------------------------------------------------------------------------
+
+def insight_quality_trap(df: pd.DataFrame) -> dict:
+    """
+    Soru: Hangi türlerde oyunlar görünürlük kazanıyor ama kalite beklentisini karşılamıyor?
+    Cevap: Sadece görünürlük (171+ rev) ile Görünürlük+Kalite (%80+ pozitif) oranları arasındaki fark.
+    """
+    review_thresh, quality_thresh, n_indie_total = _success_threshold(df)
+    indie = df[df["is_indie"] & df["release_year"].between(2019, 2024)].copy()
+
+    target_tags = [
+        "Action Roguelike", "Rogue-lite", "Survival", "Battle Royale",
+        "Tower Defense", "Metroidvania", "Platformer", "Puzzle",
+        "Visual Novel", "Top-Down Shooter", "City Builder", "Simulation",
+        "Horror", "Bullet Hell", "Deck Building", "Strategy",
+        "RPG", "Shooter", "Adventure",
+    ]
+
+    rows = []
+    for tag in target_tags:
+        mask = indie["tags_list"].apply(lambda t: tag in t)
+        sub  = indie[mask]
+        if len(sub) < 30: continue
+        total = len(sub)
+        
+        # Sadece görünürlük (eski metrik)
+        visible_only = (sub["total_reviews"] >= review_thresh).sum()
+        
+        # Görünürlük + Kalite (yeni metrik)
+        true_success = (
+            (sub["total_reviews"] >= review_thresh) &
+            (sub["review_score"]  >= quality_thresh)
+        ).sum()
+        
+        rate_visible = visible_only / total * 100
+        rate_true    = true_success / total * 100
+        drop_pct     = rate_visible - rate_true
+        
+        rows.append({
+            "tag": tag, 
+            "total": total, 
+            "rate_visible": round(rate_visible, 1),
+            "rate_true": round(rate_true, 1),
+            "drop_pct": round(drop_pct, 1)
+        })
+
+    if not rows: return {}
+
+    stats = pd.DataFrame(rows).sort_values("drop_pct", ascending=False)
+    en_buyuk_tuzak = stats.iloc[0]
+    ikinci_tuzak   = stats.iloc[1]
+
+    yorum = (
+        f"Görünürlük ({review_thresh}+ review) kazandığı halde, oyuncuları memnun etmediği için "
+        f"(<%{quality_thresh} skor) 'gerçek başarı' sayılamayan oyunların oranı analiz edildi. "
+        f"En büyük kalite tuzağı '{en_buyuk_tuzak['tag']}' türünde. Görünürlük oranı %{en_buyuk_tuzak['rate_visible']}, "
+        f"ama kalite filtresi eklenince başarı oranı %{en_buyuk_tuzak['rate_true']}'ye düşüyor "
+        f"(%{en_buyuk_tuzak['drop_pct']} kayıp). Pazarlama satıyor ama oyun üzüyor."
+    )
+
+    hook = (
+        f"'{en_buyuk_tuzak['tag']}' türünde oyun yapmak çok kârlı görünebilir, "
+        f"ama oyuncuların en çok iade ettiği/kızdığı tür de bu."
+    )
+
+    script = (
+        f"[HOOK - 0:00-0:05]\n"
+        f"Geliştiricilerin en çok kandığı 'Kalite Tuzağı'ndan bahsedelim.\n\n"
+        f"[VERİ - 0:05-0:20]\n"
+        f"Dışarıdan bakınca '{en_buyuk_tuzak['tag']}' türü harika duruyor. "
+        f"Çıkan oyunların %{en_buyuk_tuzak['rate_visible']}'si Steam'de görünürlük kazanıyor. "
+        f"Peki sorun ne? Bu oyunların çok büyük bir kısmı 'Very Positive' alamıyor.\n\n"
+        f"[KIRILMA - 0:20-0:35]\n"
+        f"Kalite filtresini eklediğimizde, gerçek başarı oranı aniden %{en_buyuk_tuzak['rate_true']}'ye çakılıyor. "
+        f"Aynı şey '{ikinci_tuzak['tag']}' türü için de geçerli. Orada da %{ikinci_tuzak['drop_pct']} kayıp var.\n\n"
+        f"[ANALİZ - 0:35-0:50]\n"
+        f"Bu bize şunu söylüyor: Oyuncular bu türlere AÇ. Buldukları an alıyorlar. "
+        f"Ama çoğu oyun vaadini yerine getiremiyor ve oyuncuyu kızdırıyor. "
+        f"Eğer kaliteli bir '{en_buyuk_tuzak['tag']}' yaparsanız, sadece satmakla kalmaz, pazarı domine edersiniz.\n\n"
+        f"[CTA - 0:50-1:00]\n"
+        f"Sizce neden '{en_buyuk_tuzak['tag']}' oyunları genellikle beklentinin altında kalıyor? Fikirlerinizi yazın."
+    )
+
+    return {
+        "baslik": "Kalite Tuzağı: Pazarlaması İyi Ama Oyuncuyu Üzen Türler",
+        "veri": {
+            "en_tuzak_tag": en_buyuk_tuzak["tag"],
+            "drop": en_buyuk_tuzak["drop_pct"],
+            "tum_liste": stats.head(5).to_dict("records"),
+        },
+        "yorum":  yorum,
+        "hook":   hook,
+        "script": script,
+        "grafik": "hype_vs_reality.png",
+    }
+
+
+# ---------------------------------------------------------------------------
 # Rapor Üretici
 # ---------------------------------------------------------------------------
 
@@ -519,8 +618,11 @@ def run(snapshot="march2025"):
     print("  [3/4] Fiyat Tatli Noktasi...")
     insights.append(insight_price_sweet_spot(df))
 
-    print("  [4/4] Gorünmez Kayiplar (Dead on Arrival)...")
+    print("  [4/5] Gorünmez Kayiplar (Dead on Arrival)...")
     insights.append(insight_dead_on_arrival(df))
+
+    print("  [5/5] Kalite Tuzagi...")
+    insights.append(insight_quality_trap(df))
 
     print("\nRapor yaziliyor...")
     report_path = generate_report(insights, snapshot)

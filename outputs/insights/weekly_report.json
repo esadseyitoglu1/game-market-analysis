@@ -5,205 +5,199 @@
       "n_indie_2019_2024": 44491,
       "n_indie_total": 52229,
       "basari_esigi_review": 171,
-      "ortalama_basari_orani": 18.2,
-      "balon_esigi": 15.4,
-      "firsat_esigi": 21.0,
+      "ortalama_basari_orani": 11.9,
+      "balon_esigi": 10.2,
+      "firsat_esigi": 13.6,
       "tum_turler": [
         {
           "tag": "City Builder",
           "total": 745,
-          "success": 248,
-          "rate": 33.3
-        },
-        {
-          "tag": "Rogue-lite",
-          "total": 2600,
-          "success": 603,
-          "rate": 23.2
-        },
-        {
-          "tag": "RPG",
-          "total": 6848,
-          "success": 1587,
-          "rate": 23.2
-        },
-        {
-          "tag": "Metroidvania",
-          "total": 685,
-          "success": 155,
-          "rate": 22.6
-        },
-        {
-          "tag": "Simulation",
-          "total": 7427,
-          "success": 1651,
-          "rate": 22.2
+          "success": 140,
+          "rate": 18.8
         },
         {
           "tag": "Visual Novel",
           "total": 2562,
-          "success": 542,
-          "rate": 21.2
+          "success": 442,
+          "rate": 17.3
         },
         {
-          "tag": "Survival",
-          "total": 3392,
-          "success": 703,
-          "rate": 20.7
+          "tag": "Metroidvania",
+          "total": 685,
+          "success": 111,
+          "rate": 16.2
+        },
+        {
+          "tag": "Rogue-lite",
+          "total": 2600,
+          "success": 392,
+          "rate": 15.1
+        },
+        {
+          "tag": "RPG",
+          "total": 6848,
+          "success": 1005,
+          "rate": 14.7
+        },
+        {
+          "tag": "Simulation",
+          "total": 7427,
+          "success": 1040,
+          "rate": 14.0
         },
         {
           "tag": "Horror",
           "total": 4887,
-          "success": 924,
-          "rate": 18.9
-        },
-        {
-          "tag": "Strategy",
-          "total": 7260,
-          "success": 1297,
-          "rate": 17.9
-        },
-        {
-          "tag": "Action Roguelike",
-          "total": 1997,
-          "success": 340,
-          "rate": 17.0
+          "success": 644,
+          "rate": 13.2
         },
         {
           "tag": "Adventure",
           "total": 15628,
-          "success": 2650,
-          "rate": 17.0
+          "success": 1846,
+          "rate": 11.8
         },
         {
-          "tag": "Battle Royale",
-          "total": 280,
-          "success": 41,
-          "rate": 14.6
-        },
-        {
-          "tag": "Shooter",
-          "total": 4298,
-          "success": 600,
-          "rate": 14.0
-        },
-        {
-          "tag": "Tower Defense",
-          "total": 915,
-          "success": 127,
-          "rate": 13.9
+          "tag": "Action Roguelike",
+          "total": 1997,
+          "success": 220,
+          "rate": 11.0
         },
         {
           "tag": "Puzzle",
           "total": 7862,
-          "success": 1078,
-          "rate": 13.7
+          "success": 838,
+          "rate": 10.7
+        },
+        {
+          "tag": "Strategy",
+          "total": 7260,
+          "success": 772,
+          "rate": 10.6
+        },
+        {
+          "tag": "Survival",
+          "total": 3392,
+          "success": 350,
+          "rate": 10.3
         },
         {
           "tag": "Bullet Hell",
           "total": 1890,
-          "success": 243,
-          "rate": 12.9
+          "success": 182,
+          "rate": 9.6
         },
         {
-          "tag": "Top-Down Shooter",
-          "total": 1396,
-          "success": 157,
-          "rate": 11.2
+          "tag": "Shooter",
+          "total": 4298,
+          "success": 396,
+          "rate": 9.2
+        },
+        {
+          "tag": "Battle Royale",
+          "total": 280,
+          "success": 23,
+          "rate": 8.2
         },
         {
           "tag": "Platformer",
           "total": 4485,
-          "success": 461,
-          "rate": 10.3
+          "success": 359,
+          "rate": 8.0
+        },
+        {
+          "tag": "Tower Defense",
+          "total": 915,
+          "success": 71,
+          "rate": 7.8
+        },
+        {
+          "tag": "Top-Down Shooter",
+          "total": 1396,
+          "success": 105,
+          "rate": 7.5
         }
       ],
       "balonlar": [
         {
-          "tag": "Battle Royale",
-          "total": 280,
-          "success": 41,
-          "rate": 14.6
+          "tag": "Bullet Hell",
+          "total": 1890,
+          "success": 182,
+          "rate": 9.6
         },
         {
           "tag": "Shooter",
           "total": 4298,
-          "success": 600,
-          "rate": 14.0
+          "success": 396,
+          "rate": 9.2
         },
         {
-          "tag": "Tower Defense",
-          "total": 915,
-          "success": 127,
-          "rate": 13.9
-        },
-        {
-          "tag": "Puzzle",
-          "total": 7862,
-          "success": 1078,
-          "rate": 13.7
-        },
-        {
-          "tag": "Bullet Hell",
-          "total": 1890,
-          "success": 243,
-          "rate": 12.9
-        },
-        {
-          "tag": "Top-Down Shooter",
-          "total": 1396,
-          "success": 157,
-          "rate": 11.2
+          "tag": "Battle Royale",
+          "total": 280,
+          "success": 23,
+          "rate": 8.2
         },
         {
           "tag": "Platformer",
           "total": 4485,
-          "success": 461,
-          "rate": 10.3
+          "success": 359,
+          "rate": 8.0
+        },
+        {
+          "tag": "Tower Defense",
+          "total": 915,
+          "success": 71,
+          "rate": 7.8
+        },
+        {
+          "tag": "Top-Down Shooter",
+          "total": 1396,
+          "success": 105,
+          "rate": 7.5
         }
       ],
       "firsatlar": [
         {
           "tag": "City Builder",
           "total": 745,
-          "success": 248,
-          "rate": 33.3
-        },
-        {
-          "tag": "Rogue-lite",
-          "total": 2600,
-          "success": 603,
-          "rate": 23.2
-        },
-        {
-          "tag": "RPG",
-          "total": 6848,
-          "success": 1587,
-          "rate": 23.2
-        },
-        {
-          "tag": "Metroidvania",
-          "total": 685,
-          "success": 155,
-          "rate": 22.6
-        },
-        {
-          "tag": "Simulation",
-          "total": 7427,
-          "success": 1651,
-          "rate": 22.2
+          "success": 140,
+          "rate": 18.8
         },
         {
           "tag": "Visual Novel",
           "total": 2562,
-          "success": 542,
-          "rate": 21.2
+          "success": 442,
+          "rate": 17.3
+        },
+        {
+          "tag": "Metroidvania",
+          "total": 685,
+          "success": 111,
+          "rate": 16.2
+        },
+        {
+          "tag": "Rogue-lite",
+          "total": 2600,
+          "success": 392,
+          "rate": 15.1
+        },
+        {
+          "tag": "RPG",
+          "total": 6848,
+          "success": 1005,
+          "rate": 14.7
+        },
+        {
+          "tag": "Simulation",
+          "total": 7427,
+          "success": 1040,
+          "rate": 14.0
         }
       ]
     },
-    "yorum": "2019-2024 arasında çıkan 44,491 indie oyun analiz edildi. Başarı eşiği olarak 171+ review kullanıldı (bu, tüm 52,229 indie oyunun üst %20'sine girmek demek). Tüm türlerin ortalama başarı oranı %18.2. En kötü performans gösteren tür: 'Platformer' — 4,485 oyun çıkmış ama yalnızca %10.3 başarıya ulaşmış. Buna karşın 'City Builder' türü %33.3 başarı oranıyla öne çıkıyor.",
-    "hook": "'Platformer' türünde 4,485 oyun var, sadece %10.3'i görünür olmuş. Ama 'City Builder' türünde bu oran %33.3. Aradaki fark ne?",
-    "script": "[HOOK - 0:00-0:05]\n'Platformer' yapıyorum diyenler, dur bir dakika.\n\n[VERİ - 0:05-0:20]\nSteam'deki 52 bin indie oyunu analiz ettim. Başarıyı 'oyunların üst %20'sine girmek' olarak tanımladım — yani 171+ review almak. 'Platformer' türünde 4,485 oyun çıkmış, sadece %10.3'i bu eşiği geçebilmiş.\n\n[KIRILMA - 0:20-0:35]\nNeden? Çünkü herkes bu türe koşuyor. Arz arttıkça, Steam algoritmasının pastadan her oyuna ayırdığı pay küçülüyor.\n\n[FIRSAT - 0:35-0:50]\nPeki akıllı geliştiriciler nereye bakıyor? 'City Builder' türüne. Aynı dönemde %33.3 başarı oranı. Rakam az oyunla çok daha yüksek görünürlük.\n\n[CTA - 0:50-1:00]\nVeri kaynağı: Kaggle Steam dataset + SteamSpy API (~90k oyun). Hangi türde çalışıyorsunuz? Aşağıya yazın.",
+    "yorum": "2019-2024 arasinda cikan 44,491 indie oyun analiz edildi. Basari tanimi: 171+ review (gorunurluk, ust %20) VE %80+ pozitif review (Steam 'Very Positive' esigi). Her iki kriteri birden saglayan oyunlar 'basarili' sayildi. Tum turlerin ortalama basari orani %11.9. En kötü performans gösteren tür: 'Top-Down Shooter' — 1,396 oyun çıkmış ama yalnızca %7.5 başarıya ulaşmış. Buna karşın 'City Builder' türü %18.8 başarı oranıyla öne çıkıyor.",
+    "hook": "'Top-Down Shooter' türünde 1,396 oyun var, sadece %7.5'i görünür olmuş. Ama 'City Builder' türünde bu oran %18.8. Aradaki fark ne?",
+    "script": "[HOOK - 0:00-0:05]\n'Top-Down Shooter' yapıyorum diyenler, dur bir dakika.\n\n[VERİ - 0:05-0:20]\nSteam'deki 52 bin indie oyunu analiz ettim. Başarıyı 'oyunların üst %20'sine girmek' olarak tanımladım — yani 171+ review almak. 'Top-Down Shooter' türünde 1,396 oyun çıkmış, sadece %7.5'i bu eşiği geçebilmiş.\n\n[KIRILMA - 0:20-0:35]\nNeden? Çünkü herkes bu türe koşuyor. Arz arttıkça, Steam algoritmasının pastadan her oyuna ayırdığı pay küçülüyor.\n\n[FIRSAT - 0:35-0:50]\nPeki akıllı geliştiriciler nereye bakıyor? 'City Builder' türüne. Aynı dönemde %18.8 başarı oranı. Rakam az oyunla çok daha yüksek görünürlük.\n\n[CTA - 0:50-1:00]\nVeri kaynağı: Kaggle Steam dataset + SteamSpy API (~90k oyun). Hangi türde çalışıyorsunuz? Aşağıya yazın.",
     "grafik": "hype_vs_reality.png"
   },
   {
@@ -397,5 +391,53 @@
     "hook": "Her 100 ücretli indie oyundan 41 tanesi hiç görünür olmadan yok oluyor. Sebebi ne?",
     "script": "[HOOK - 0:00-0:05]\nSteam'deki ücretli indie oyunların %41.2'i hiç kimseye ulaşamadan yok oldu.\n\n[VERİ - 0:05-0:25]\n54,122 ücretli indie oyunu inceledim. 'Görünür' olmayı 10+ review almak olarak tanımladım. 22,296 oyun bu eşiği geçemedi. Pratik olarak kimse görmedi.\n\n[SORU - 0:25-0:45]\nPeki bu oyunlar neden başarısız oldu? Kalite mi? Pazarlama mı? Zamanlama mı? Büyük ihtimalle üçü birden. Ama veri bize şunu söylüyor: Her yıl bu oran artıyor — pazar doyuyor.\n\n[CTA - 0:45-1:00]\nOyununuzu çıkarmadan önce bu veriyi görmenizi istedim. Wishliste eklemek için bağlantı biyografide.",
     "grafik": null
+  },
+  {
+    "baslik": "Kalite Tuzağı: Pazarlaması İyi Ama Oyuncuyu Üzen Türler",
+    "veri": {
+      "en_tuzak_tag": "City Builder",
+      "drop": 14.5,
+      "tum_liste": [
+        {
+          "tag": "City Builder",
+          "total": 745,
+          "rate_visible": 33.3,
+          "rate_true": 18.8,
+          "drop_pct": 14.5
+        },
+        {
+          "tag": "Survival",
+          "total": 3392,
+          "rate_visible": 20.7,
+          "rate_true": 10.3,
+          "drop_pct": 10.4
+        },
+        {
+          "tag": "RPG",
+          "total": 6848,
+          "rate_visible": 23.2,
+          "rate_true": 14.7,
+          "drop_pct": 8.5
+        },
+        {
+          "tag": "Simulation",
+          "total": 7427,
+          "rate_visible": 22.2,
+          "rate_true": 14.0,
+          "drop_pct": 8.2
+        },
+        {
+          "tag": "Rogue-lite",
+          "total": 2600,
+          "rate_visible": 23.2,
+          "rate_true": 15.1,
+          "drop_pct": 8.1
+        }
+      ]
+    },
+    "yorum": "Görünürlük (171+ review) kazandığı halde, oyuncuları memnun etmediği için (<%80 skor) 'gerçek başarı' sayılamayan oyunların oranı analiz edildi. En büyük kalite tuzağı 'City Builder' türünde. Görünürlük oranı %33.3, ama kalite filtresi eklenince başarı oranı %18.8'ye düşüyor (%14.5 kayıp). Pazarlama satıyor ama oyun üzüyor.",
+    "hook": "'City Builder' türünde oyun yapmak çok kârlı görünebilir, ama oyuncuların en çok iade ettiği/kızdığı tür de bu.",
+    "script": "[HOOK - 0:00-0:05]\nGeliştiricilerin en çok kandığı 'Kalite Tuzağı'ndan bahsedelim.\n\n[VERİ - 0:05-0:20]\nDışarıdan bakınca 'City Builder' türü harika duruyor. Çıkan oyunların %33.3'si Steam'de görünürlük kazanıyor. Peki sorun ne? Bu oyunların çok büyük bir kısmı 'Very Positive' alamıyor.\n\n[KIRILMA - 0:20-0:35]\nKalite filtresini eklediğimizde, gerçek başarı oranı aniden %18.8'ye çakılıyor. Aynı şey 'Survival' türü için de geçerli. Orada da %10.4 kayıp var.\n\n[ANALİZ - 0:35-0:50]\nBu bize şunu söylüyor: Oyuncular bu türlere AÇ. Buldukları an alıyorlar. Ama çoğu oyun vaadini yerine getiremiyor ve oyuncuyu kızdırıyor. Eğer kaliteli bir 'City Builder' yaparsanız, sadece satmakla kalmaz, pazarı domine edersiniz.\n\n[CTA - 0:50-1:00]\nSizce neden 'City Builder' oyunları genellikle beklentinin altında kalıyor? Fikirlerinizi yazın.",
+    "grafik": "hype_vs_reality.png"
   }
 ]

@@ -1,29 +1,29 @@
 # Steam Indie Pazar Zekası Raporu
-**Üretildi:** 25 July 2026, 11:56  |  **Veri:** Kaggle steam-games-dataset (march2025)  |  **Uyarı:** SteamSpy verileri tahminidir, Valve resmi rakam paylaşmaz.
+**Üretildi:** 25 July 2026, 13:06  |  **Veri:** Kaggle steam-games-dataset (march2025)  |  **Uyarı:** SteamSpy verileri tahminidir, Valve resmi rakam paylaşmaz.
 
 ---
 
 ## 1. Hype Balonu Tespiti: Hangi Türlere Girme
 
 **📊 Analitik Yorum**
-2019-2024 arasında çıkan 44,491 indie oyun analiz edildi. Başarı eşiği olarak 171+ review kullanıldı (bu, tüm 52,229 indie oyunun üst %20'sine girmek demek). Tüm türlerin ortalama başarı oranı %18.2. En kötü performans gösteren tür: 'Platformer' — 4,485 oyun çıkmış ama yalnızca %10.3 başarıya ulaşmış. Buna karşın 'City Builder' türü %33.3 başarı oranıyla öne çıkıyor.
+2019-2024 arasinda cikan 44,491 indie oyun analiz edildi. Basari tanimi: 171+ review (gorunurluk, ust %20) VE %80+ pozitif review (Steam 'Very Positive' esigi). Her iki kriteri birden saglayan oyunlar 'basarili' sayildi. Tum turlerin ortalama basari orani %11.9. En kötü performans gösteren tür: 'Top-Down Shooter' — 1,396 oyun çıkmış ama yalnızca %7.5 başarıya ulaşmış. Buna karşın 'City Builder' türü %18.8 başarı oranıyla öne çıkıyor.
 
 **🎣 Video Hook (İlk 3 Saniye)**
-> 'Platformer' türünde 4,485 oyun var, sadece %10.3'i görünür olmuş. Ama 'City Builder' türünde bu oran %33.3. Aradaki fark ne?
+> 'Top-Down Shooter' türünde 1,396 oyun var, sadece %7.5'i görünür olmuş. Ama 'City Builder' türünde bu oran %18.8. Aradaki fark ne?
 
 **📝 Script Taslağı**
 ```
 [HOOK - 0:00-0:05]
-'Platformer' yapıyorum diyenler, dur bir dakika.
+'Top-Down Shooter' yapıyorum diyenler, dur bir dakika.
 
 [VERİ - 0:05-0:20]
-Steam'deki 52 bin indie oyunu analiz ettim. Başarıyı 'oyunların üst %20'sine girmek' olarak tanımladım — yani 171+ review almak. 'Platformer' türünde 4,485 oyun çıkmış, sadece %10.3'i bu eşiği geçebilmiş.
+Steam'deki 52 bin indie oyunu analiz ettim. Başarıyı 'oyunların üst %20'sine girmek' olarak tanımladım — yani 171+ review almak. 'Top-Down Shooter' türünde 1,396 oyun çıkmış, sadece %7.5'i bu eşiği geçebilmiş.
 
 [KIRILMA - 0:20-0:35]
 Neden? Çünkü herkes bu türe koşuyor. Arz arttıkça, Steam algoritmasının pastadan her oyuna ayırdığı pay küçülüyor.
 
 [FIRSAT - 0:35-0:50]
-Peki akıllı geliştiriciler nereye bakıyor? 'City Builder' türüne. Aynı dönemde %33.3 başarı oranı. Rakam az oyunla çok daha yüksek görünürlük.
+Peki akıllı geliştiriciler nereye bakıyor? 'City Builder' türüne. Aynı dönemde %18.8 başarı oranı. Rakam az oyunla çok daha yüksek görünürlük.
 
 [CTA - 0:50-1:00]
 Veri kaynağı: Kaggle Steam dataset + SteamSpy API (~90k oyun). Hangi türde çalışıyorsunuz? Aşağıya yazın.
@@ -117,5 +117,35 @@ Oyununuzu çıkarmadan önce bu veriyi görmenizi istedim. Wishliste eklemek iç
 ```
 
 **📈 Grafik:** `Henüz yok`
+
+---
+
+## 5. Kalite Tuzağı: Pazarlaması İyi Ama Oyuncuyu Üzen Türler
+
+**📊 Analitik Yorum**
+Görünürlük (171+ review) kazandığı halde, oyuncuları memnun etmediği için (<%80 skor) 'gerçek başarı' sayılamayan oyunların oranı analiz edildi. En büyük kalite tuzağı 'City Builder' türünde. Görünürlük oranı %33.3, ama kalite filtresi eklenince başarı oranı %18.8'ye düşüyor (%14.5 kayıp). Pazarlama satıyor ama oyun üzüyor.
+
+**🎣 Video Hook (İlk 3 Saniye)**
+> 'City Builder' türünde oyun yapmak çok kârlı görünebilir, ama oyuncuların en çok iade ettiği/kızdığı tür de bu.
+
+**📝 Script Taslağı**
+```
+[HOOK - 0:00-0:05]
+Geliştiricilerin en çok kandığı 'Kalite Tuzağı'ndan bahsedelim.
+
+[VERİ - 0:05-0:20]
+Dışarıdan bakınca 'City Builder' türü harika duruyor. Çıkan oyunların %33.3'si Steam'de görünürlük kazanıyor. Peki sorun ne? Bu oyunların çok büyük bir kısmı 'Very Positive' alamıyor.
+
+[KIRILMA - 0:20-0:35]
+Kalite filtresini eklediğimizde, gerçek başarı oranı aniden %18.8'ye çakılıyor. Aynı şey 'Survival' türü için de geçerli. Orada da %10.4 kayıp var.
+
+[ANALİZ - 0:35-0:50]
+Bu bize şunu söylüyor: Oyuncular bu türlere AÇ. Buldukları an alıyorlar. Ama çoğu oyun vaadini yerine getiremiyor ve oyuncuyu kızdırıyor. Eğer kaliteli bir 'City Builder' yaparsanız, sadece satmakla kalmaz, pazarı domine edersiniz.
+
+[CTA - 0:50-1:00]
+Sizce neden 'City Builder' oyunları genellikle beklentinin altında kalıyor? Fikirlerinizi yazın.
+```
+
+**📈 Grafik:** `hype_vs_reality.png`
 
 ---
