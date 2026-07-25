@@ -361,7 +361,7 @@ def chart_price_sweet_spot(df):
     ax.legend(framealpha=0.15, edgecolor=C["grid"])
     ax.grid(True, axis="y", alpha=0.3)
     _note(ax, f"n={n_paid:,} ücretli indie oyun  |  Ücretsiz oyunlar ayrı tutuldu  |  "
-              f"Medyan kullanıldı (CS2 gibi devlerin etkisi yok)")
+              f"Medyan kullanıldı (uç değerlerin etkisi yok)")
     fig.tight_layout()
     return _save(fig, "price_sweet_spot.png")
 
