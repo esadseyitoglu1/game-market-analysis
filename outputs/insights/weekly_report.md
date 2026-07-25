@@ -1,5 +1,5 @@
 # Steam Indie Pazar Zekası Raporu
-**Üretildi:** 25 July 2026, 14:38  |  **Veri:** Kaggle steam-games-dataset (march2025)  |  **Uyarı:** SteamSpy verileri tahminidir, Valve resmi rakam paylaşmaz.
+**Üretildi:** 25 July 2026, 14:57  |  **Veri:** Kaggle steam-games-dataset (march2025)  |  **Uyarı:** SteamSpy verileri tahminidir, Valve resmi rakam paylaşmaz.
 
 ---
 
@@ -117,5 +117,32 @@ Sizce neden 'City Builder' oyunları genellikle beklentinin altında kalıyor? F
 ```
 
 **📈 Grafik:** `hype_vs_reality.png`
+
+---
+
+## 5. Tag Sinerjisi: Visual Novel + FPS Altın Madeni
+
+**📊 Analitik Yorum**
+En iyi sinerji: Visual Novel + FPS. Bu tür kombinasyonuna sahip 72 oyunun ortalama (medyan) görünürlüğü 437 review. Aynı zamanda kalite ortalaması %81.
+
+**🎣 Video Hook (İlk 3 Saniye)**
+> Oyununuzu yaparken 'Visual Novel' ile 'FPS' türünü birleştirirseniz ne olur? Veriye göre: Başarı şansınız tavan yapar.
+
+**📝 Script Taslağı**
+```
+[HOOK - 0:00-0:05]
+Bazı oyun türlerini birleştirmek resmen hile yapmak gibidir. Veriyle kanıtlayayım.
+
+[VERİ - 0:05-0:25]
+Steam'deki indie oyunları inceledim ve 'en başarılı tür kombinasyonlarını' çıkardım. Listenin zirvesinde harika bir ikili var: Visual Novel + FPS. Steam genelinde bir oyunun 'çok başarılı' sayılması için bizim eşiğimiz 171+ review ve %80+ olumlu yorumdu.
+
+[ANALİZ - 0:25-0:45]
+İşin mucizevi kısmı şu: Bu pazar o kadar aç ki, 'Visual Novel + FPS' türünde yapacağınız şaheser bir oyunu geçtim, en SIRADAN, en ORTALAMA oyun bile 437 review alıyor ve pazarın başarı barajını paramparça ediyor! Yani bu kitle, bu iki türün birleşimine doyamıyor.
+
+[CTA - 0:45-1:00]
+Sizce neden 'Visual Novel + FPS' bu kadar iyi çalışıyor? Yorumlarda tartışalım.
+```
+
+**📈 Grafik:** `tag_synergy.png`
 
 ---

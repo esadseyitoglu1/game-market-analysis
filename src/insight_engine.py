@@ -477,6 +477,90 @@ def insight_quality_trap(df: pd.DataFrame) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# INSIGHT 5 — Tag Sinerjisi
+# ---------------------------------------------------------------------------
+
+def insight_tag_synergy(df: pd.DataFrame) -> dict:
+    from collections import Counter
+    from itertools import combinations
+    
+    indie = df[df["is_indie"] & (df["total_reviews"] > 0)].copy()
+    success_threshold, quality_threshold, _ = _success_threshold(df)
+    
+    all_tags = [t for tags in indie["tags_list"] for t in tags]
+    ignore_tags = {
+        "Indie", "Singleplayer", "Multiplayer", "Co-op", "2D", "3D", 
+        "Early Access", "Free to Play", "Casual", "Action", "Adventure",
+        "Strategy", "Simulation", "RPG", "Great Soundtrack", "Atmospheric",
+        "Pixel Graphics", "Story Rich", "Sci-fi", "Fantasy", "Anime",
+        "VR", "Gore", "Violent", "Nudity", "Sexual Content"
+    }
+    top_tags = [t for t, _ in Counter(all_tags).most_common(60) if t not in ignore_tags]
+
+    combo_stats = []
+    for t1, t2 in combinations(top_tags, 2):
+        mask = indie["tags_list"].apply(lambda tags: t1 in tags and t2 in tags)
+        sub  = indie[mask]
+        if len(sub) < 30:
+            continue
+        combo_stats.append({
+            "combo": f"{t1} + {t2}",
+            "medyan_review": sub["total_reviews"].median(),
+            "medyan_score": sub["review_score"].median(),
+            "n": len(sub)
+        })
+
+    if not combo_stats:
+        return {}
+
+    stats = (pd.DataFrame(combo_stats)
+             .sort_values("medyan_review", ascending=False))
+             
+    top = stats.iloc[0]
+    
+    yorum = (
+        f"En iyi sinerji: {top['combo']}. "
+        f"Bu tür kombinasyonuna sahip {top['n']} oyunun ortalama (medyan) görünürlüğü {top['medyan_review']:.0f} review. "
+        f"Aynı zamanda kalite ortalaması %{top['medyan_score']:.0f}."
+    )
+    
+    hook = (
+        f"Oyununuzu yaparken '{top['combo'].split(' + ')[0]}' ile '{top['combo'].split(' + ')[1]}' türünü birleştirirseniz ne olur? "
+        f"Veriye göre: Başarı şansınız tavan yapar."
+    )
+    
+    script = (
+        f"[HOOK - 0:00-0:05]\n"
+        f"Bazı oyun türlerini birleştirmek resmen hile yapmak gibidir. Veriyle kanıtlayayım.\n\n"
+        f"[VERİ - 0:05-0:25]\n"
+        f"Steam'deki indie oyunları inceledim ve 'en başarılı tür kombinasyonlarını' çıkardım. "
+        f"Listenin zirvesinde harika bir ikili var: {top['combo']}. "
+        f"Steam genelinde bir oyunun 'çok başarılı' sayılması için bizim eşiğimiz {success_threshold}+ review ve %{quality_threshold}+ olumlu yorumdu.\n\n"
+        f"[ANALİZ - 0:25-0:45]\n"
+        f"İşin mucizevi kısmı şu: Bu pazar o kadar aç ki, "
+        f"'{top['combo']}' türünde yapacağınız şaheser bir oyunu geçtim, "
+        f"en SIRADAN, en ORTALAMA oyun bile {top['medyan_review']:.0f} review alıyor ve pazarın başarı barajını paramparça ediyor! "
+        f"Yani bu kitle, bu iki türün birleşimine doyamıyor.\n\n"
+        f"[CTA - 0:45-1:00]\n"
+        f"Sizce neden '{top['combo']}' bu kadar iyi çalışıyor? Yorumlarda tartışalım."
+    )
+    
+    return {
+        "baslik": f"Tag Sinerjisi: {top['combo']} Altın Madeni",
+        "veri": {
+            "top_combo": top["combo"],
+            "medyan_review": top["medyan_review"],
+            "medyan_score": top["medyan_score"],
+            "n": top["n"],
+        },
+        "yorum": yorum,
+        "hook": hook,
+        "script": script,
+        "grafik": "tag_synergy.png"
+    }
+
+
+# ---------------------------------------------------------------------------
 # Rapor Üretici
 # ---------------------------------------------------------------------------
 
@@ -535,17 +619,20 @@ def run(snapshot="march2025"):
     print("Cikarimlari hesaplaniyor...")
     insights = []
 
-    print("  [1/4] Hype Balonu Tespiti...")
+    print("  [1/5] Hype Balonu Tespiti...")
     insights.append(insight_hype_balloon(df))
 
-    print("  [2/4] Co-op Carpani...")
+    print("  [2/5] Co-op Carpani...")
     insights.append(insight_coop_multiplier(df))
 
-    print("  [3/4] Gorünmez Kayiplar (Dead on Arrival)...")
+    print("  [3/5] Gorünmez Kayiplar (Dead on Arrival)...")
     insights.append(insight_dead_on_arrival(df))
 
-    print("  [4/4] Kalite Tuzagi...")
+    print("  [4/5] Kalite Tuzagi...")
     insights.append(insight_quality_trap(df))
+
+    print("  [5/5] Tag Sinerjisi...")
+    insights.append(insight_tag_synergy(df))
 
     print("\nRapor yaziliyor...")
     report_path = generate_report(insights, snapshot)

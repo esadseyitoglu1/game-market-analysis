@@ -387,5 +387,18 @@
     "hook": "'City Builder' türünde oyun yapmak çok kârlı görünebilir, ama oyuncuların en çok iade ettiği/kızdığı tür de bu.",
     "script": "[HOOK - 0:00-0:05]\nGeliştiricilerin en çok kandığı 'Kalite Tuzağı'ndan bahsedelim.\n\n[VERİ - 0:05-0:20]\nDışarıdan bakınca 'City Builder' türü harika duruyor. Çıkan oyunların %33.3'si Steam'de görünürlük kazanıyor. Peki sorun ne? Bu oyunların çok büyük bir kısmı 'Very Positive' alamıyor.\n\n[KIRILMA - 0:20-0:35]\nKalite filtresini eklediğimizde, gerçek başarı oranı aniden %18.8'ye çakılıyor. Aynı şey 'Survival' türü için de geçerli. Orada da %10.4 kayıp var.\n\n[ANALİZ - 0:35-0:50]\nBu bize şunu söylüyor: Oyuncular bu türlere AÇ. Buldukları an alıyorlar. Ama çoğu oyun vaadini yerine getiremiyor ve oyuncuyu kızdırıyor. Eğer kaliteli bir 'City Builder' yaparsanız, sadece satmakla kalmaz, pazarı domine edersiniz.\n\n[CTA - 0:50-1:00]\nSizce neden 'City Builder' oyunları genellikle beklentinin altında kalıyor? Fikirlerinizi yazın.",
     "grafik": "hype_vs_reality.png"
+  },
+  {
+    "baslik": "Tag Sinerjisi: Visual Novel + FPS Altın Madeni",
+    "veri": {
+      "top_combo": "Visual Novel + FPS",
+      "medyan_review": 437.0,
+      "medyan_score": 80.7,
+      "n": "72"
+    },
+    "yorum": "En iyi sinerji: Visual Novel + FPS. Bu tür kombinasyonuna sahip 72 oyunun ortalama (medyan) görünürlüğü 437 review. Aynı zamanda kalite ortalaması %81.",
+    "hook": "Oyununuzu yaparken 'Visual Novel' ile 'FPS' türünü birleştirirseniz ne olur? Veriye göre: Başarı şansınız tavan yapar.",
+    "script": "[HOOK - 0:00-0:05]\nBazı oyun türlerini birleştirmek resmen hile yapmak gibidir. Veriyle kanıtlayayım.\n\n[VERİ - 0:05-0:25]\nSteam'deki indie oyunları inceledim ve 'en başarılı tür kombinasyonlarını' çıkardım. Listenin zirvesinde harika bir ikili var: Visual Novel + FPS. Steam genelinde bir oyunun 'çok başarılı' sayılması için bizim eşiğimiz 171+ review ve %80+ olumlu yorumdu.\n\n[ANALİZ - 0:25-0:45]\nİşin mucizevi kısmı şu: Bu pazar o kadar aç ki, 'Visual Novel + FPS' türünde yapacağınız şaheser bir oyunu geçtim, en SIRADAN, en ORTALAMA oyun bile 437 review alıyor ve pazarın başarı barajını paramparça ediyor! Yani bu kitle, bu iki türün birleşimine doyamıyor.\n\n[CTA - 0:45-1:00]\nSizce neden 'Visual Novel + FPS' bu kadar iyi çalışıyor? Yorumlarda tartışalım.",
+    "grafik": "tag_synergy.png"
   }
 ]
