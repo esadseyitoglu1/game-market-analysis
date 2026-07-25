@@ -466,13 +466,18 @@ def chart_critics_vs_players(df):
     # y = x çizgisi
     ax.plot([0, 100], [0, 100], color=C["gray"], linestyle="--", linewidth=1.5, alpha=0.7)
     
-    # En uç (ve popüler) örnekleri bul (min 5000 review olsun ki bilindik oyunlar çıksın)
+    # 1. Mutlak Uç Noktalar (Herhangi bir kitle boyutu, maksimum kopuş)
+    true_player_champs = sub.nlargest(4, "disconnect")
+    true_critic_darlings = sub.nsmallest(4, "disconnect")
+    
+    # 2. Popüler Uç Noktalar (Min 5000 review - ünlü oyunlar)
     popular_sub = sub[sub["total_reviews"] >= 5000]
-    if popular_sub.empty:
-        popular_sub = sub # fallback
-        
-    player_champs = popular_sub.nlargest(5, "disconnect")
-    critic_darlings = popular_sub.nsmallest(5, "disconnect")
+    pop_player_champs = popular_sub.nlargest(4, "disconnect") if not popular_sub.empty else pd.DataFrame()
+    pop_critic_darlings = popular_sub.nsmallest(4, "disconnect") if not popular_sub.empty else pd.DataFrame()
+    
+    # İkisini birleştir ve aynı oyunlar varsa (drop_duplicates ile) teke düşür
+    player_champs = pd.concat([true_player_champs, pop_player_champs]).drop_duplicates(subset=["appid"])
+    critic_darlings = pd.concat([true_critic_darlings, pop_critic_darlings]).drop_duplicates(subset=["appid"])
     
     # Noktaları farklı renk ve boyutta belirginleştir
     ax.scatter(player_champs["metacritic_score"], player_champs["review_score"], 
@@ -498,10 +503,11 @@ def chart_critics_vs_players(df):
     except ImportError:
         print("  Uyarı: adjustText yüklü değil, yazılar üst üste binebilir.")
 
-    ax.text(80, 20, "Eleştirmenin Gözdeleri\n(Yüksek Metacritic, Düşük Steam)", 
-            color=C["red"], fontsize=10, ha="center", alpha=0.8, fontweight="bold")
-    ax.text(40, 90, "Oyuncunun Şampiyonları\n(Düşük Metacritic, Yüksek Steam)", 
-            color=C["green"], fontsize=10, ha="center", alpha=0.8, fontweight="bold")
+    # Başlık yazılarını en köşelere al (iç içe girmesinler diye)
+    ax.text(95, 25, "Eleştirmenin Gözdeleri\n(Yüksek Metacritic, Düşük Steam)", 
+            color=C["red"], fontsize=10, ha="right", va="bottom", alpha=0.8, fontweight="bold")
+    ax.text(25, 95, "Oyuncunun Şampiyonları\n(Düşük Metacritic, Yüksek Steam)", 
+            color=C["green"], fontsize=10, ha="left", va="top", alpha=0.8, fontweight="bold")
             
     ax.set_xlim(20, 100)
     ax.set_ylim(20, 100)
