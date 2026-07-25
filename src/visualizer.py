@@ -314,26 +314,36 @@ def chart_80pct_cliff(df):
 
 def chart_tag_synergy(df):
     """
-    En yüksek medyan sahip getiren 2-tag kombinasyonları.
+    En yüksek medyan review getiren 2-tag (tür) kombinasyonları.
     Mesaj: 'Bu iki tür birlikte olunca altın.'
     """
-    indie = df[df["is_indie"] & (df["owners_mid"] >= 1000)].copy()
+    indie = df[df["is_indie"] & (df["total_reviews"] > 0)].copy()
     n_total = len(indie)
 
     # En sık görülen tag'leri bul (analiz için)
     from collections import Counter
     all_tags = [t for tags in indie["tags_list"] for t in tags]
-    top_tags = [t for t, _ in Counter(all_tags).most_common(40)]
+    
+    # Meta-tag'leri çıkar (gerçek tür sinerjisi bulmak için)
+    ignore_tags = {
+        "Indie", "Singleplayer", "Multiplayer", "Co-op", "2D", "3D", 
+        "Early Access", "Free to Play", "Casual", "Action", "Adventure",
+        "Strategy", "Simulation", "RPG", "Great Soundtrack", "Atmospheric",
+        "Pixel Graphics", "Story Rich", "Sci-fi", "Fantasy", "Anime",
+        "VR", "Gore", "Violent", "Nudity", "Sexual Content"
+    }
+    
+    top_tags = [t for t, _ in Counter(all_tags).most_common(60) if t not in ignore_tags]
 
     combo_stats = []
     for t1, t2 in combinations(top_tags, 2):
         mask = indie["tags_list"].apply(lambda tags: t1 in tags and t2 in tags)
         sub  = indie[mask]
-        if len(sub) < 20:
+        if len(sub) < 30: # Min 30 oyun
             continue
         combo_stats.append({
             "combo": f"{t1} + {t2}",
-            "medyan": sub["owners_mid"].median(),
+            "medyan": sub["total_reviews"].median(),
             "n": len(sub)
         })
 
@@ -349,21 +359,21 @@ def chart_tag_synergy(df):
     fig, ax = plt.subplots(figsize=(12, 8))
     colors = [C["green"] if i >= len(stats) - 3 else C["blue"]
               for i in range(len(stats))]
-    bars = ax.barh(stats["combo"], stats["medyan"] / 1000, color=colors, height=0.6)
+    bars = ax.barh(stats["combo"], stats["medyan"], color=colors, height=0.6)
 
     for bar, row in zip(bars, stats.itertuples()):
-        ax.text(bar.get_width() + 1,
+        ax.text(bar.get_width() + (ax.get_xlim()[1] * 0.02),
                 bar.get_y() + bar.get_height() / 2,
-                f"{row.medyan/1000:.0f}k  (n={row.n})",
+                f"{row.medyan:.0f}  (n={row.n})",
                 va="center", fontsize=9, color=C["text"])
 
-    ax.set_title("En Yüksek Medyan Sahip Getiren Tag Kombinasyonları\n"
-                 "Hangi iki tür bir arada olunca başarı artıyor?",
+    ax.set_title("En Yüksek Medyan Review Getiren Tür Kombinasyonları\n"
+                 "Hangi iki tür bir arada olunca görünürlük artıyor?",
                  fontweight="bold", pad=14)
-    ax.set_xlabel("Medyan Sahip (bin)")
+    ax.set_xlabel("Medyan Review Sayısı")
     ax.grid(True, axis="x", alpha=0.3)
-    _note(ax, f"n={n_total:,} indie oyun (min 1k sahip)  |  Min 20 oyunlu kombinasyonlar  |  "
-              f"Medyan kullanıldı")
+    _note(ax, f"n={n_total:,} indie oyun  |  Min 30 oyunlu kombinasyonlar  |  "
+              f"Meta-tagler hariç tutuldu (gerçek türler için)")
     fig.tight_layout()
     return _save(fig, "tag_synergy.png")
 
