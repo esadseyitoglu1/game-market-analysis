@@ -309,81 +309,7 @@ def insight_coop_multiplier(df: pd.DataFrame) -> dict:
     }
 
 
-# ---------------------------------------------------------------------------
-# INSIGHT 3 — Fiyat Tatlı Noktası
-# ---------------------------------------------------------------------------
 
-def insight_price_sweet_spot(df: pd.DataFrame) -> dict:
-    """
-    Soru: Hangi fiyat bandında çıkan indie oyunlar en yüksek medyan review alıyor?
-    Cevap: Ücretsiz oyunlar ayrı, ücretliler fiyat bandına göre gruplandırılır.
-    """
-    paid  = df[df["is_indie"] & ~df["is_free"] & (df["price"] > 0) &
-               (df["total_reviews"] > 0)].copy()
-    free  = df[df["is_indie"] & df["is_free"] & (df["total_reviews"] > 0)].copy()
-
-    bins   = [0, 5, 10, 15, 20, 30, float("inf")]
-    labels = ["$1-5", "$5-10", "$10-15", "$15-20", "$20-30", "$30+"]
-    paid["bucket"] = pd.cut(paid["price"], bins=bins, labels=labels)
-
-    stats = paid.groupby("bucket", observed=True).agg(
-        medyan_review=("total_reviews", "median"),
-        n=("total_reviews", "count"),
-        medyan_fiyat=("price", "median"),
-    ).reset_index()
-
-    free_median = free["total_reviews"].median()
-    best   = stats.loc[stats["medyan_review"].idxmax()]
-    worst  = stats.loc[stats["medyan_review"].idxmin()]
-
-    yorum = (
-        f"{len(paid):,} ücretli indie oyun analiz edildi (ücretsizler ayrı). "
-        f"En yüksek medyan review: {best['bucket']} bandı ({best['medyan_review']:.0f} review, n={best['n']:,}). "
-        f"En düşük: {worst['bucket']} bandı ({worst['medyan_review']:.0f} review). "
-        f"Ücretsiz oyunların medyanı ise {free_median:.0f} review."
-    )
-
-    hook = (
-        f"Oyununuzu {worst['bucket']}'a satarsanız medyan {worst['medyan_review']:.0f} review. "
-        f"{best['bucket']}'a satarsanız {best['medyan_review']:.0f}. "
-        f"Fiyat, kalite sinyali gönderiyor."
-    )
-
-    script = (
-        f"[HOOK - 0:00-0:05]\n"
-        f"Oyununuzu ucuza satmak daha çok insana ulaştırır mı? Veri hayır diyor.\n\n"
-        f"[VERİ - 0:05-0:25]\n"
-        f"{len(paid):,} ücretli indie oyunun fiyat ve review verilerini analiz ettim. "
-        f"Ücretsiz oyunları dışarıda bıraktım — adil karşılaştırma için. "
-        f"{best['bucket']} bandındaki oyunların medyan review sayısı {best['medyan_review']:.0f}. "
-        f"{worst['bucket']} bandındakiler sadece {worst['medyan_review']:.0f}.\n\n"
-        f"[AÇIKLAMA - 0:25-0:45]\n"
-        f"Bu neden oluyor? İki teori var:\n"
-        f"1. Fiyat, kalite sinyali — oyuncular ucuz oyunu 'kötü' sanıyor.\n"
-        f"2. Daha pahalı oyunlar genellikle daha iyi pazarlanmış, daha büyük ekipler.\n"
-        f"Her ikisi de muhtemelen doğru.\n\n"
-        f"[CTA - 0:45-1:00]\n"
-        f"Oyununuzu fiyatlandırırken hangi kriteri kullanıyorsunuz? Yorumlara yazın."
-    )
-
-    return {
-        "baslik": "Fiyat Tatlı Noktası: Ucuz Satmak Sizi Kurtarmıyor",
-        "veri": {
-            "n_ucretli": len(paid),
-            "n_ucretsiz": len(free),
-            "ucretsiz_medyan_review": free_median,
-            "bantlar": stats.to_dict("records"),
-            "en_iyi_bant": best["bucket"],
-            "en_kotu_bant": worst["bucket"],
-        },
-        "yorum":  yorum,
-        "hook":   hook,
-        "script": script,
-        "grafik": "price_sweet_spot.png",
-    }
-
-
-# ---------------------------------------------------------------------------
 # INSIGHT 4 — Görünmez Kayıplar (Dead on Arrival)
 # ---------------------------------------------------------------------------
 
@@ -615,13 +541,10 @@ def run(snapshot="march2025"):
     print("  [2/4] Co-op Carpani...")
     insights.append(insight_coop_multiplier(df))
 
-    print("  [3/4] Fiyat Tatli Noktasi...")
-    insights.append(insight_price_sweet_spot(df))
-
-    print("  [4/5] Gorünmez Kayiplar (Dead on Arrival)...")
+    print("  [3/4] Gorünmez Kayiplar (Dead on Arrival)...")
     insights.append(insight_dead_on_arrival(df))
 
-    print("  [5/5] Kalite Tuzagi...")
+    print("  [4/4] Kalite Tuzagi...")
     insights.append(insight_quality_trap(df))
 
     print("\nRapor yaziliyor...")

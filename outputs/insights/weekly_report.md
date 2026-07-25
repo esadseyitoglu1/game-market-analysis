@@ -1,5 +1,5 @@
 # Steam Indie Pazar Zekası Raporu
-**Üretildi:** 25 July 2026, 13:06  |  **Veri:** Kaggle steam-games-dataset (march2025)  |  **Uyarı:** SteamSpy verileri tahminidir, Valve resmi rakam paylaşmaz.
+**Üretildi:** 25 July 2026, 14:38  |  **Veri:** Kaggle steam-games-dataset (march2025)  |  **Uyarı:** SteamSpy verileri tahminidir, Valve resmi rakam paylaşmaz.
 
 ---
 
@@ -63,37 +63,7 @@ Co-op eklemek tabii ki kolay değil — ama veriler bunu hak ettiğini söylüyo
 
 ---
 
-## 3. Fiyat Tatlı Noktası: Ucuz Satmak Sizi Kurtarmıyor
-
-**📊 Analitik Yorum**
-47,669 ücretli indie oyun analiz edildi (ücretsizler ayrı). En yüksek medyan review: $20-30 bandı (364 review, n=1,204). En düşük: $1-5 bandı (14 review). Ücretsiz oyunların medyanı ise 51 review.
-
-**🎣 Video Hook (İlk 3 Saniye)**
-> Oyununuzu $1-5'a satarsanız medyan 14 review. $20-30'a satarsanız 364. Fiyat, kalite sinyali gönderiyor.
-
-**📝 Script Taslağı**
-```
-[HOOK - 0:00-0:05]
-Oyununuzu ucuza satmak daha çok insana ulaştırır mı? Veri hayır diyor.
-
-[VERİ - 0:05-0:25]
-47,669 ücretli indie oyunun fiyat ve review verilerini analiz ettim. Ücretsiz oyunları dışarıda bıraktım — adil karşılaştırma için. $20-30 bandındaki oyunların medyan review sayısı 364. $1-5 bandındakiler sadece 14.
-
-[AÇIKLAMA - 0:25-0:45]
-Bu neden oluyor? İki teori var:
-1. Fiyat, kalite sinyali — oyuncular ucuz oyunu 'kötü' sanıyor.
-2. Daha pahalı oyunlar genellikle daha iyi pazarlanmış, daha büyük ekipler.
-Her ikisi de muhtemelen doğru.
-
-[CTA - 0:45-1:00]
-Oyununuzu fiyatlandırırken hangi kriteri kullanıyorsunuz? Yorumlara yazın.
-```
-
-**📈 Grafik:** `price_sweet_spot.png`
-
----
-
-## 4. Görünmez Kayıplar: Steam'de Her 100 Oyundan Kaçı Yok Oluyor?
+## 3. Görünmez Kayıplar: Steam'de Her 100 Oyundan Kaçı Yok Oluyor?
 
 **📊 Analitik Yorum**
 54,122 ücretli indie oyunun 22,296 tanesi (%41.2) hiç görünür olmadı — 10'den az review aldı. Bu oyunların çoğu çıktıktan sonra sessizce yok oldu.
@@ -120,7 +90,7 @@ Oyununuzu çıkarmadan önce bu veriyi görmenizi istedim. Wishliste eklemek iç
 
 ---
 
-## 5. Kalite Tuzağı: Pazarlaması İyi Ama Oyuncuyu Üzen Türler
+## 4. Kalite Tuzağı: Pazarlaması İyi Ama Oyuncuyu Üzen Türler
 
 **📊 Analitik Yorum**
 Görünürlük (171+ review) kazandığı halde, oyuncuları memnun etmediği için (<%80 skor) 'gerçek başarı' sayılamayan oyunların oranı analiz edildi. En büyük kalite tuzağı 'City Builder' türünde. Görünürlük oranı %33.3, ama kalite filtresi eklenince başarı oranı %18.8'ye düşüyor (%14.5 kayıp). Pazarlama satıyor ama oyun üzüyor.

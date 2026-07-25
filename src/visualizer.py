@@ -309,64 +309,6 @@ def chart_80pct_cliff(df):
 
 
 # ---------------------------------------------------------------------------
-# Grafik 3 — Fiyat Tatlı Noktası
-# ---------------------------------------------------------------------------
-
-def chart_price_sweet_spot(df):
-    """
-    Fiyat bandına göre medyan sahip sayısı — ücretsiz AYRI gösterilir.
-    Mesaj: 'Ucuz satmak sizi kurtarmaz.'
-    """
-    paid  = df[df["is_indie"] & ~df["is_free"] & (df["price"] > 0)].copy()
-    free  = df[df["is_indie"] & df["is_free"]].copy()
-    n_paid = len(paid)
-    n_free = len(free)
-
-    bins   = [0, 5, 10, 15, 20, 30, float("inf")]
-    labels = ["$1-5", "$5-10", "$10-15", "$15-20", "$20-30", "$30+"]
-    paid["bucket"] = pd.cut(paid["price"], bins=bins, labels=labels)
-
-    stats = paid.groupby("bucket", observed=True).agg(
-        medyan=("total_reviews", "median"),
-        n=("total_reviews", "count")
-    ).reset_index()
-
-    free_median = free["total_reviews"].median()
-
-    fig, ax = plt.subplots(figsize=(11, 6))
-
-    colors = [C["gray"]] * len(stats)
-    # En yüksek medyana sahip bandı vurgula
-    best_idx = stats["medyan"].idxmax()
-    colors[best_idx] = C["green"]
-
-    bars = ax.bar(stats["bucket"].astype(str), stats["medyan"],
-                  color=colors, width=0.6)
-
-    for bar, row in zip(bars, stats.itertuples()):
-        ax.text(bar.get_x() + bar.get_width() / 2,
-                bar.get_height() + 5,
-                f"{row.medyan:.0f}\n(n={row.n:,})",
-                ha="center", va="bottom", fontsize=9.5, color=C["text"])
-
-    # Ücretsiz referans çizgisi
-    ax.axhline(free_median, color=C["purple"], linewidth=1.5,
-               linestyle="--", label=f"Ücretsiz oyun medyanı: {free_median:.0f} (n={n_free:,})")
-
-    ax.set_title("Fiyat Bandına Göre Medyan Review Sayısı\n"
-                 "Indie (ücretli) oyunlarda tatlı nokta nerede?",
-                 fontweight="bold", pad=14)
-    ax.set_xlabel("Fiyat Bandı (Ücretli Oyunlar)")
-    ax.set_ylabel("Medyan Review Sayısı")
-    ax.legend(framealpha=0.15, edgecolor=C["grid"])
-    ax.grid(True, axis="y", alpha=0.3)
-    _note(ax, f"n={n_paid:,} ücretli indie oyun  |  Ücretsiz oyunlar ayrı tutuldu  |  "
-              f"Medyan kullanıldı (uç değerlerin etkisi yok)")
-    fig.tight_layout()
-    return _save(fig, "price_sweet_spot.png")
-
-
-# ---------------------------------------------------------------------------
 # Grafik 4 — En İyi Tag Kombinasyonları (Tag Sinerjisi)
 # ---------------------------------------------------------------------------
 
@@ -497,7 +439,6 @@ def run_charts(snapshot="march2025"):
 
     chart_hype_vs_reality(df)
     chart_80pct_cliff(df)
-    chart_price_sweet_spot(df)
     chart_tag_synergy(df)
     chart_top10_paid_indie(df)
 

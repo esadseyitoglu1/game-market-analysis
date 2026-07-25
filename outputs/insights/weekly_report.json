@@ -298,58 +298,6 @@
     "grafik": "coop_multiplier.png"
   },
   {
-    "baslik": "Fiyat Tatlı Noktası: Ucuz Satmak Sizi Kurtarmıyor",
-    "veri": {
-      "n_ucretli": 47669,
-      "n_ucretsiz": 4560,
-      "ucretsiz_medyan_review": 51.0,
-      "bantlar": [
-        {
-          "bucket": "$1-5",
-          "medyan_review": 14.0,
-          "n": 26425,
-          "medyan_fiyat": 2.99
-        },
-        {
-          "bucket": "$5-10",
-          "medyan_review": 24.0,
-          "n": 11895,
-          "medyan_fiyat": 8.39
-        },
-        {
-          "bucket": "$10-15",
-          "medyan_review": 62.0,
-          "n": 4903,
-          "medyan_fiyat": 14.99
-        },
-        {
-          "bucket": "$15-20",
-          "medyan_review": 162.0,
-          "n": 2963,
-          "medyan_fiyat": 19.99
-        },
-        {
-          "bucket": "$20-30",
-          "medyan_review": 364.0,
-          "n": 1204,
-          "medyan_fiyat": 24.99
-        },
-        {
-          "bucket": "$30+",
-          "medyan_review": 57.0,
-          "n": 279,
-          "medyan_fiyat": 39.99
-        }
-      ],
-      "en_iyi_bant": "$20-30",
-      "en_kotu_bant": "$1-5"
-    },
-    "yorum": "47,669 ücretli indie oyun analiz edildi (ücretsizler ayrı). En yüksek medyan review: $20-30 bandı (364 review, n=1,204). En düşük: $1-5 bandı (14 review). Ücretsiz oyunların medyanı ise 51 review.",
-    "hook": "Oyununuzu $1-5'a satarsanız medyan 14 review. $20-30'a satarsanız 364. Fiyat, kalite sinyali gönderiyor.",
-    "script": "[HOOK - 0:00-0:05]\nOyununuzu ucuza satmak daha çok insana ulaştırır mı? Veri hayır diyor.\n\n[VERİ - 0:05-0:25]\n47,669 ücretli indie oyunun fiyat ve review verilerini analiz ettim. Ücretsiz oyunları dışarıda bıraktım — adil karşılaştırma için. $20-30 bandındaki oyunların medyan review sayısı 364. $1-5 bandındakiler sadece 14.\n\n[AÇIKLAMA - 0:25-0:45]\nBu neden oluyor? İki teori var:\n1. Fiyat, kalite sinyali — oyuncular ucuz oyunu 'kötü' sanıyor.\n2. Daha pahalı oyunlar genellikle daha iyi pazarlanmış, daha büyük ekipler.\nHer ikisi de muhtemelen doğru.\n\n[CTA - 0:45-1:00]\nOyununuzu fiyatlandırırken hangi kriteri kullanıyorsunuz? Yorumlara yazın.",
-    "grafik": "price_sweet_spot.png"
-  },
-  {
     "baslik": "Görünmez Kayıplar: Steam'de Her 100 Oyundan Kaçı Yok Oluyor?",
     "veri": {
       "n_ucretli_indie": 54122,
