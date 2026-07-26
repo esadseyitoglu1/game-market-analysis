@@ -8,14 +8,15 @@ Vizyon:
   - Sade, sosyal medyada paylaşılabilir tasarım
 
 5 grafik:
-import logging
-log = logging.getLogger(__name__)
   1. hype_vs_reality.png  — Hype Balonu vs Gerçek Başarı (tür bazlı)
   2. the_80pct_cliff.png  — %80 Review Uçurumu
   3. price_sweet_spot.png — Fiyat Tatlı Noktası (medyan sahip)
   4. tag_synergy.png      — En İyi Tag Kombinasyonları
   5. top10_paid_indie.png — Ücretli Indie Top 10
 """
+
+import logging
+log = logging.getLogger(__name__)
 
 import ast
 import argparse

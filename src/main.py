@@ -26,7 +26,8 @@ log = logging.getLogger("Orchestrator")
 
 # Modulleri ice aktar
 from src.processor import run_pipeline as run_processor
-from src.visualizer import run as run_visualizer
+from src.visualizer import run_charts as run_visualizer
+from src.anomaly_detector import run as run_anomaly
 from src.insight_engine import run as run_engine
 
 def main():
@@ -43,8 +44,12 @@ def main():
         log.info("--- STEP 2: Visualizer ---")
         run_visualizer("march2025")
         
-        # 3. Yorumlama ve Senaryo Uretimi (Kati JSON Ciktisi)
-        log.info("--- STEP 3: Insight Engine ---")
+        # 3. Otonom Anomali Tarayici (Faz 2 Zekasi)
+        log.info("--- STEP 3: Autonomous Anomaly Detector ---")
+        run_anomaly("march2025")
+        
+        # 4. Yorumlama ve Senaryo Uretimi (Kati JSON Ciktisi)
+        log.info("--- STEP 4: Insight Engine ---")
         run_engine("march2025")
         
         log.info("="*50)

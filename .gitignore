@@ -22,3 +22,8 @@ genre_trend.py
 # OS
 .DS_Store
 Thumbs.db
+
+# Security & Secrets
+scratch/
+.env
+secret*/

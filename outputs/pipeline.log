@@ -1,0 +1,151 @@
+2026-07-25 21:28:00,065 [INFO] Orchestrator: ==================================================
+2026-07-25 21:28:00,066 [INFO] Orchestrator: PIPELINE STARTING: n8n Automation
+2026-07-25 21:28:00,066 [INFO] Orchestrator: ==================================================
+2026-07-25 21:28:00,066 [INFO] Orchestrator: --- STEP 1: Data Processing ---
+2026-07-25 21:28:00,066 [INFO] src.processor: Loading games_march2025_cleaned.csv ...
+2026-07-25 21:28:02,612 [INFO] src.processor:   Loaded 89,618 rows x 29 columns
+2026-07-25 21:28:07,164 [INFO] src.processor: After cleaning: 89,618 rows
+2026-07-25 21:28:08,242 [INFO] src.processor: Saved -> C:\Users\Monster\Desktop\game-market-analysis\data\processed\steam_games_march2025.csv  (89,618 rows)
+2026-07-25 21:28:08,282 [INFO] Orchestrator: --- STEP 2: Visualizer ---
+2026-07-25 21:28:08,283 [ERROR] Orchestrator: PIPELINE FAILED!
+Traceback (most recent call last):
+  File "C:\Users\Monster\Desktop\game-market-analysis\src\main.py", line 44, in main
+    run_visualizer("march2025")
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\Monster\Desktop\game-market-analysis\src\visualizer.py", line 555, in run_charts
+    log.info(f"Veri yukleniyor ({snapshot})...")
+    ^^^
+NameError: name 'log' is not defined
+2026-07-25 21:29:05,120 [INFO] Orchestrator: ==================================================
+2026-07-25 21:29:05,120 [INFO] Orchestrator: PIPELINE STARTING: n8n Automation
+2026-07-25 21:29:05,120 [INFO] Orchestrator: ==================================================
+2026-07-25 21:29:05,120 [INFO] Orchestrator: --- STEP 1: Data Processing ---
+2026-07-25 21:29:05,120 [INFO] src.processor: Loading games_march2025_cleaned.csv ...
+2026-07-25 21:29:07,737 [INFO] src.processor:   Loaded 89,618 rows x 29 columns
+2026-07-25 21:29:12,295 [INFO] src.processor: After cleaning: 89,618 rows
+2026-07-25 21:29:13,456 [INFO] src.processor: Saved -> C:\Users\Monster\Desktop\game-market-analysis\data\processed\steam_games_march2025.csv  (89,618 rows)
+2026-07-25 21:29:13,493 [INFO] Orchestrator: --- STEP 2: Visualizer ---
+2026-07-25 21:29:13,493 [INFO] src.visualizer: Veri yukleniyor (march2025)...
+2026-07-25 21:29:16,980 [INFO] src.visualizer:   89,618 oyun  |  Indie: 63,189  |  Ucretli Indie: 54,122
+
+2026-07-25 21:29:16,980 [INFO] src.visualizer: Grafikler olusturuluyor...
+2026-07-25 21:29:17,971 [INFO] src.visualizer:   Kaydedildi -> hype_vs_reality.png
+2026-07-25 21:29:18,510 [INFO] src.visualizer:   Kaydedildi -> the_80pct_cliff.png
+2026-07-25 21:29:34,754 [INFO] src.visualizer:   Kaydedildi -> tag_synergy.png
+2026-07-25 21:29:35,206 [INFO] src.visualizer:   Kaydedildi -> top10_paid_indie.png
+2026-07-25 21:29:37,563 [INFO] src.visualizer:   Kaydedildi -> critics_vs_players.png
+2026-07-25 21:29:37,563 [INFO] src.visualizer: 
+Tumu hazir -> C:\Users\Monster\Desktop\game-market-analysis\outputs\charts
+2026-07-25 21:29:37,613 [INFO] Orchestrator: --- STEP 3: Insight Engine ---
+2026-07-25 21:29:37,613 [INFO] src.insight_engine: Veri yukleniyor (march2025)...
+2026-07-25 21:29:41,511 [INFO] src.insight_engine:   89,618 oyun  |  Indie: 63,189
+
+2026-07-25 21:29:41,512 [INFO] src.insight_engine: Cikarimlari hesaplaniyor...
+2026-07-25 21:29:41,512 [INFO] src.insight_engine:   [1/7] Hype Balonu Tespiti...
+2026-07-25 21:29:41,882 [INFO] src.insight_engine:   [2/7] Co-op Carpani...
+2026-07-25 21:29:42,163 [INFO] src.insight_engine:   [3/7] Gorünmez Kayiplar (Dead on Arrival)...
+2026-07-25 21:29:42,274 [INFO] src.insight_engine:   [4/7] Kalite Tuzagi (Pazarlama)...
+2026-07-25 21:29:42,651 [INFO] src.insight_engine:   [5/7] Tag Sinerjisi...
+2026-07-25 21:29:57,868 [INFO] src.insight_engine:   [6/7] Eleştirmenler vs Oyuncular...
+2026-07-25 21:29:57,873 [INFO] src.insight_engine:   [7/7] %80 Kalite Uçurumu...
+2026-07-25 21:29:57,874 [INFO] src.insight_engine: 
+Rapor yaziliyor...
+2026-07-25 21:29:57,875 [INFO] src.insight_engine:   -> C:\Users\Monster\Desktop\game-market-analysis\outputs\insights\weekly_report.md
+2026-07-25 21:29:57,875 [INFO] src.insight_engine:   -> C:\Users\Monster\Desktop\game-market-analysis\outputs\insights\weekly_report.json
+2026-07-25 21:29:57,876 [INFO] src.insight_engine: 
+Tamamlandi.
+2026-07-25 21:29:57,911 [INFO] Orchestrator: ==================================================
+2026-07-25 21:29:57,911 [INFO] Orchestrator: PIPELINE COMPLETED SUCCESSFULLY
+2026-07-25 21:29:57,911 [INFO] Orchestrator: ==================================================
+2026-07-25 22:15:06,368 [INFO] Orchestrator: ==================================================
+2026-07-25 22:15:06,368 [INFO] Orchestrator: PIPELINE STARTING: n8n Automation
+2026-07-25 22:15:06,368 [INFO] Orchestrator: ==================================================
+2026-07-25 22:15:06,368 [INFO] Orchestrator: --- STEP 1: Data Processing ---
+2026-07-25 22:15:07,005 [INFO] src.processor: [CACHE MISS] Yeni veri tespit edildi veya ilk calistirma. Isleniyor...
+2026-07-25 22:15:07,005 [INFO] src.processor: Loading games_march2025_cleaned.csv ...
+2026-07-25 22:15:09,445 [INFO] src.processor:   Loaded 89,618 rows x 29 columns
+2026-07-25 22:15:13,927 [INFO] src.processor: After cleaning: 89,618 rows
+2026-07-25 22:15:15,056 [INFO] src.processor: Saved -> C:\Users\Monster\Desktop\game-market-analysis\data\processed\steam_games_march2025.csv  (89,618 rows)
+2026-07-25 22:15:15,092 [INFO] Orchestrator: --- STEP 2: Visualizer ---
+2026-07-25 22:15:15,092 [INFO] src.visualizer: Veri yukleniyor (march2025)...
+2026-07-25 22:15:18,462 [INFO] src.visualizer:   89,618 oyun  |  Indie: 63,189  |  Ucretli Indie: 54,122
+
+2026-07-25 22:15:18,462 [INFO] src.visualizer: Grafikler olusturuluyor...
+2026-07-25 22:15:19,402 [INFO] src.visualizer:   Kaydedildi -> hype_vs_reality.png
+2026-07-25 22:15:20,027 [INFO] src.visualizer:   Kaydedildi -> the_80pct_cliff.png
+2026-07-25 22:15:36,677 [INFO] src.visualizer:   Kaydedildi -> tag_synergy.png
+2026-07-25 22:15:37,100 [INFO] src.visualizer:   Kaydedildi -> top10_paid_indie.png
+2026-07-25 22:15:38,822 [INFO] src.visualizer:   Kaydedildi -> critics_vs_players.png
+2026-07-25 22:15:38,822 [INFO] src.visualizer: 
+Tumu hazir -> C:\Users\Monster\Desktop\game-market-analysis\outputs\charts
+2026-07-25 22:15:38,853 [INFO] Orchestrator: --- STEP 3: Autonomous Anomaly Detector ---
+2026-07-25 22:15:38,853 [INFO] src.anomaly_detector: Tarayici Baslatiliyor (Otonom Anomali Avcisi)...
+2026-07-25 22:15:41,590 [INFO] src.anomaly_detector: Found 88 Quality Traps
+2026-07-25 22:15:41,593 [INFO] src.anomaly_detector: Found 11 Hype Balloons
+2026-07-25 22:15:42,482 [INFO] src.anomaly_detector:   Bulunan Anomali Sayisi: 99
+2026-07-25 22:15:42,484 [INFO] src.anomaly_detector:   Kaydedildi -> C:\Users\Monster\Desktop\game-market-analysis\outputs\insights\autonomous_anomalies.json
+2026-07-25 22:15:42,484 [INFO] Orchestrator: --- STEP 4: Insight Engine ---
+2026-07-25 22:15:42,484 [INFO] src.insight_engine: Veri yukleniyor (march2025)...
+2026-07-25 22:15:45,575 [INFO] src.insight_engine:   89,618 oyun  |  Indie: 63,189
+
+2026-07-25 22:15:45,575 [INFO] src.insight_engine: Cikarimlari hesaplaniyor...
+2026-07-25 22:15:45,575 [INFO] src.insight_engine:   [1/7] Hype Balonu Tespiti...
+2026-07-25 22:15:45,932 [INFO] src.insight_engine:   [2/7] Co-op Carpani...
+2026-07-25 22:15:46,217 [INFO] src.insight_engine:   [3/7] Gorünmez Kayiplar (Dead on Arrival)...
+2026-07-25 22:15:46,318 [INFO] src.insight_engine:   [4/7] Kalite Tuzagi (Pazarlama)...
+2026-07-25 22:15:46,675 [INFO] src.insight_engine:   [5/7] Tag Sinerjisi...
+2026-07-25 22:16:01,830 [INFO] src.insight_engine:   [6/7] Eleştirmenler vs Oyuncular...
+2026-07-25 22:16:01,836 [INFO] src.insight_engine:   [7/7] %80 Kalite Uçurumu...
+2026-07-25 22:16:01,836 [INFO] src.insight_engine: 
+Rapor yaziliyor...
+2026-07-25 22:16:01,837 [INFO] src.insight_engine:   -> C:\Users\Monster\Desktop\game-market-analysis\outputs\insights\weekly_report.md
+2026-07-25 22:16:01,839 [INFO] src.insight_engine:   -> C:\Users\Monster\Desktop\game-market-analysis\outputs\insights\weekly_report.json
+2026-07-25 22:16:01,839 [INFO] src.insight_engine: 
+Tamamlandi.
+2026-07-25 22:16:01,886 [INFO] Orchestrator: ==================================================
+2026-07-25 22:16:01,886 [INFO] Orchestrator: PIPELINE COMPLETED SUCCESSFULLY
+2026-07-25 22:16:01,886 [INFO] Orchestrator: ==================================================
+2026-07-25 22:16:09,963 [INFO] Orchestrator: ==================================================
+2026-07-25 22:16:09,963 [INFO] Orchestrator: PIPELINE STARTING: n8n Automation
+2026-07-25 22:16:09,963 [INFO] Orchestrator: ==================================================
+2026-07-25 22:16:09,963 [INFO] Orchestrator: --- STEP 1: Data Processing ---
+2026-07-25 22:16:10,600 [INFO] src.processor: [CACHE HIT] Veri degismemis (93be8c61). Islem atliyor.
+2026-07-25 22:16:10,601 [INFO] Orchestrator: --- STEP 2: Visualizer ---
+2026-07-25 22:16:10,601 [INFO] src.visualizer: Veri yukleniyor (march2025)...
+2026-07-25 22:16:13,881 [INFO] src.visualizer:   89,618 oyun  |  Indie: 63,189  |  Ucretli Indie: 54,122
+
+2026-07-25 22:16:13,881 [INFO] src.visualizer: Grafikler olusturuluyor...
+2026-07-25 22:16:14,843 [INFO] src.visualizer:   Kaydedildi -> hype_vs_reality.png
+2026-07-25 22:16:15,423 [INFO] src.visualizer:   Kaydedildi -> the_80pct_cliff.png
+2026-07-25 22:16:32,943 [INFO] src.visualizer:   Kaydedildi -> tag_synergy.png
+2026-07-25 22:16:33,460 [INFO] src.visualizer:   Kaydedildi -> top10_paid_indie.png
+2026-07-25 22:16:35,200 [INFO] src.visualizer:   Kaydedildi -> critics_vs_players.png
+2026-07-25 22:16:35,200 [INFO] src.visualizer: 
+Tumu hazir -> C:\Users\Monster\Desktop\game-market-analysis\outputs\charts
+2026-07-25 22:16:35,230 [INFO] Orchestrator: --- STEP 3: Autonomous Anomaly Detector ---
+2026-07-25 22:16:35,230 [INFO] src.anomaly_detector: Tarayici Baslatiliyor (Otonom Anomali Avcisi)...
+2026-07-25 22:16:38,960 [INFO] src.anomaly_detector: Found 88 Quality Traps
+2026-07-25 22:16:38,962 [INFO] src.anomaly_detector: Found 11 Hype Balloons
+2026-07-25 22:16:40,265 [INFO] src.anomaly_detector:   Bulunan Anomali Sayisi: 99
+2026-07-25 22:16:40,266 [INFO] src.anomaly_detector:   Kaydedildi -> C:\Users\Monster\Desktop\game-market-analysis\outputs\insights\autonomous_anomalies.json
+2026-07-25 22:16:40,267 [INFO] Orchestrator: --- STEP 4: Insight Engine ---
+2026-07-25 22:16:40,267 [INFO] src.insight_engine: Veri yukleniyor (march2025)...
+2026-07-25 22:16:45,627 [INFO] src.insight_engine:   89,618 oyun  |  Indie: 63,189
+
+2026-07-25 22:16:45,628 [INFO] src.insight_engine: Cikarimlari hesaplaniyor...
+2026-07-25 22:16:45,628 [INFO] src.insight_engine:   [1/7] Hype Balonu Tespiti...
+2026-07-25 22:16:46,289 [INFO] src.insight_engine:   [2/7] Co-op Carpani...
+2026-07-25 22:16:46,749 [INFO] src.insight_engine:   [3/7] Gorünmez Kayiplar (Dead on Arrival)...
+2026-07-25 22:16:46,912 [INFO] src.insight_engine:   [4/7] Kalite Tuzagi (Pazarlama)...
+2026-07-25 22:16:47,467 [INFO] src.insight_engine:   [5/7] Tag Sinerjisi...
+2026-07-25 22:17:11,512 [INFO] src.insight_engine:   [6/7] Eleştirmenler vs Oyuncular...
+2026-07-25 22:17:11,525 [INFO] src.insight_engine:   [7/7] %80 Kalite Uçurumu...
+2026-07-25 22:17:11,526 [INFO] src.insight_engine: 
+Rapor yaziliyor...
+2026-07-25 22:17:11,528 [INFO] src.insight_engine:   -> C:\Users\Monster\Desktop\game-market-analysis\outputs\insights\weekly_report.md
+2026-07-25 22:17:11,529 [INFO] src.insight_engine:   -> C:\Users\Monster\Desktop\game-market-analysis\outputs\insights\weekly_report.json
+2026-07-25 22:17:11,529 [INFO] src.insight_engine: 
+Tamamlandi.
+2026-07-25 22:17:11,579 [INFO] Orchestrator: ==================================================
+2026-07-25 22:17:11,579 [INFO] Orchestrator: PIPELINE COMPLETED SUCCESSFULLY
+2026-07-25 22:17:11,579 [INFO] Orchestrator: ==================================================

@@ -14,6 +14,7 @@ from pathlib import Path
 
 import ast
 import logging
+import hashlib
 import pandas as pd
 
 log = logging.getLogger(__name__)
@@ -197,6 +198,13 @@ def save_processed(df: pd.DataFrame, filename: str) -> Path:
     return output_path
 
 
+def _calculate_md5(filepath: Path) -> str:
+    hash_md5 = hashlib.md5()
+    with open(filepath, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
+
 def run_pipeline(snapshot: str = "march2025") -> dict[str, Path]:
     """End-to-end pipeline: clean one or both snapshots and save to processed/.
 
@@ -219,9 +227,25 @@ def run_pipeline(snapshot: str = "march2025") -> dict[str, Path]:
         if not raw_path.exists():
             log.warning(f"[SKIP] {filename} not found in data/raw/")
             continue
+            
+        md5_path = PROCESSED_DIR / f"{name}_raw.md5"
+        current_md5 = _calculate_md5(raw_path)
+        
+        if md5_path.exists():
+            with open(md5_path, "r") as f:
+                saved_md5 = f.read().strip()
+            if saved_md5 == current_md5:
+                log.info(f"[CACHE HIT] Veri degismemis ({current_md5[:8]}). Islem atliyor.")
+                results[name] = PROCESSED_DIR / f"steam_games_{name}.csv"
+                continue
 
+        log.info(f"[CACHE MISS] Yeni veri tespit edildi veya ilk calistirma. Isleniyor...")
         df = clean_app_list(raw_path)
         out_path = save_processed(df, f"steam_games_{name}.csv")
+        
+        with open(md5_path, "w") as f:
+            f.write(current_md5)
+            
         results[name] = out_path
 
     return results

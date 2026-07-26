@@ -1,5 +1,5 @@
 # Steam Indie Pazar Zekası Raporu
-**Üretildi:** 25 July 2026, 21:08  |  **Veri:** Kaggle steam-games-dataset (march2025)  |  **Uyarı:** SteamSpy verileri tahminidir, Valve resmi rakam paylaşmaz.
+**Üretildi:** 25 July 2026, 22:17  |  **Veri:** Kaggle steam-games-dataset (march2025)  |  **Uyarı:** SteamSpy verileri tahminidir, Valve resmi rakam paylaşmaz.
 
 ---
 

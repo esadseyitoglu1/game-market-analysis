@@ -1,0 +1,657 @@
+[
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "1980s",
+    "finding": "İnceleme puanı harika (88.9%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "1990's",
+    "finding": "İnceleme puanı harika (88.9%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "2.5D",
+    "finding": "İnceleme puanı harika (87.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "2D",
+    "finding": "İnceleme puanı harika (88.9%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "2D Fighter",
+    "finding": "İnceleme puanı harika (88.3%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "2D Platformer",
+    "finding": "İnceleme puanı harika (92.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "4 Player Local",
+    "finding": "İnceleme puanı harika (87.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Abstract",
+    "finding": "İnceleme puanı harika (90.3%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Action Roguelike",
+    "finding": "İnceleme puanı harika (86.3%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Addictive",
+    "finding": "İnceleme puanı harika (88.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Ambient",
+    "finding": "İnceleme puanı harika (91.7%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Arcade",
+    "finding": "İnceleme puanı harika (87.5%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Boomer Shooter",
+    "finding": "İnceleme puanı harika (91.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Boss Rush",
+    "finding": "İnceleme puanı harika (92.7%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Bullet Hell",
+    "finding": "İnceleme puanı harika (89.5%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Cartoon",
+    "finding": "İnceleme puanı harika (89.1%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Cartoony",
+    "finding": "İnceleme puanı harika (89.6%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Cats",
+    "finding": "İnceleme puanı harika (93.3%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Choices Matter",
+    "finding": "İnceleme puanı harika (86.7%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Collectathon",
+    "finding": "İnceleme puanı harika (90.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Colorful",
+    "finding": "İnceleme puanı harika (89.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Comedy",
+    "finding": "İnceleme puanı harika (88.6%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Comic Book",
+    "finding": "İnceleme puanı harika (89.2%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Controller",
+    "finding": "İnceleme puanı harika (90.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Conversation",
+    "finding": "İnceleme puanı harika (89.3%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Cozy",
+    "finding": "İnceleme puanı harika (93.9%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Cute",
+    "finding": "İnceleme puanı harika (89.7%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Dark Comedy",
+    "finding": "İnceleme puanı harika (88.4%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Dark Humor",
+    "finding": "İnceleme puanı harika (88.8%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Dating Sim",
+    "finding": "İnceleme puanı harika (86.4%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Design & Illustration",
+    "finding": "İnceleme puanı harika (90.7%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Dog",
+    "finding": "İnceleme puanı harika (91.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Drama",
+    "finding": "İnceleme puanı harika (87.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Dystopian ",
+    "finding": "İnceleme puanı harika (87.5%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Education",
+    "finding": "İnceleme puanı harika (86.1%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Electronic Music",
+    "finding": "İnceleme puanı harika (96.1%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Emotional",
+    "finding": "İnceleme puanı harika (89.7%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Faith",
+    "finding": "İnceleme puanı harika (88.7%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Family Friendly",
+    "finding": "İnceleme puanı harika (88.4%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Foreign",
+    "finding": "İnceleme puanı harika (90.3%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Funny",
+    "finding": "İnceleme puanı harika (88.1%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Grid-Based Movement",
+    "finding": "İnceleme puanı harika (93.8%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Hacking",
+    "finding": "İnceleme puanı harika (87.4%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Hand-drawn",
+    "finding": "İnceleme puanı harika (89.7%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Instrumental Music",
+    "finding": "İnceleme puanı harika (97.1%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Intentionally Awkward Controls",
+    "finding": "İnceleme puanı harika (91.6%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Interactive Fiction",
+    "finding": "İnceleme puanı harika (87.5%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "LEGO",
+    "finding": "İnceleme puanı harika (90.7%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "LGBTQ+",
+    "finding": "İnceleme puanı harika (90.1%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Lemmings",
+    "finding": "İnceleme puanı harika (88.3%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Level Editor",
+    "finding": "İnceleme puanı harika (90.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Linear",
+    "finding": "İnceleme puanı harika (90.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Local Co-Op",
+    "finding": "İnceleme puanı harika (87.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Local Multiplayer",
+    "finding": "İnceleme puanı harika (87.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Logic",
+    "finding": "İnceleme puanı harika (90.5%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Lore-Rich",
+    "finding": "İnceleme puanı harika (87.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Mini Golf",
+    "finding": "İnceleme puanı harika (86.4%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Minigames",
+    "finding": "İnceleme puanı harika (87.8%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Minimalist",
+    "finding": "İnceleme puanı harika (90.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Mouse only",
+    "finding": "İnceleme puanı harika (87.4%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Multiple Endings",
+    "finding": "İnceleme puanı harika (87.8%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Narration",
+    "finding": "İnceleme puanı harika (86.5%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Narrative",
+    "finding": "İnceleme puanı harika (90.6%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Nature",
+    "finding": "İnceleme puanı harika (88.2%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Nonlinear",
+    "finding": "İnceleme puanı harika (87.2%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Nostalgia",
+    "finding": "İnceleme puanı harika (90.8%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Old School",
+    "finding": "İnceleme puanı harika (88.9%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Otome",
+    "finding": "İnceleme puanı harika (87.5%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Parkour",
+    "finding": "İnceleme puanı harika (88.3%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Parody ",
+    "finding": "İnceleme puanı harika (88.4%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Party",
+    "finding": "İnceleme puanı harika (89.6%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Party Game",
+    "finding": "İnceleme puanı harika (90.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Philosophical",
+    "finding": "İnceleme puanı harika (90.4%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Physics",
+    "finding": "İnceleme puanı harika (86.5%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Pixel Graphics",
+    "finding": "İnceleme puanı harika (89.2%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Platformer",
+    "finding": "İnceleme puanı harika (87.5%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Point & Click",
+    "finding": "İnceleme puanı harika (87.6%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Pool",
+    "finding": "İnceleme puanı harika (87.1%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Precision Platformer",
+    "finding": "İnceleme puanı harika (93.3%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Programming",
+    "finding": "İnceleme puanı harika (90.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Psychedelic",
+    "finding": "İnceleme puanı harika (87.5%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Puzzle",
+    "finding": "İnceleme puanı harika (87.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Puzzle-Platformer",
+    "finding": "İnceleme puanı harika (88.5%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Quick-Time Events",
+    "finding": "İnceleme puanı harika (88.9%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Relaxing",
+    "finding": "İnceleme puanı harika (88.2%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Retro",
+    "finding": "İnceleme puanı harika (88.6%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Rhythm",
+    "finding": "İnceleme puanı harika (87.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Romance",
+    "finding": "İnceleme puanı harika (88.6%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Runner",
+    "finding": "İnceleme puanı harika (86.3%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Satire",
+    "finding": "İnceleme puanı harika (87.5%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Score Attack",
+    "finding": "İnceleme puanı harika (91.5%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Shoot 'Em Up",
+    "finding": "İnceleme puanı harika (86.8%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Side Scroller",
+    "finding": "İnceleme puanı harika (86.4%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Snow",
+    "finding": "İnceleme puanı harika (90.6%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Sokoban",
+    "finding": "İnceleme puanı harika (96.6%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Solitaire",
+    "finding": "İnceleme puanı harika (89.5%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Soundtrack",
+    "finding": "İnceleme puanı harika (86.6%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Spaceships",
+    "finding": "İnceleme puanı harika (87.9%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Spelling",
+    "finding": "İnceleme puanı harika (86.4%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Split Screen",
+    "finding": "İnceleme puanı harika (86.9%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Stylized",
+    "finding": "İnceleme puanı harika (88.2%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Submarine",
+    "finding": "İnceleme puanı harika (86.7%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Surreal",
+    "finding": "İnceleme puanı harika (87.5%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Tennis",
+    "finding": "İnceleme puanı harika (88.1%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Text-Based",
+    "finding": "İnceleme puanı harika (86.2%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Time Attack",
+    "finding": "İnceleme puanı harika (90.3%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Time Manipulation",
+    "finding": "İnceleme puanı harika (89.3%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Time Travel",
+    "finding": "İnceleme puanı harika (87.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Top-Down",
+    "finding": "İnceleme puanı harika (88.9%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Top-Down Shooter",
+    "finding": "İnceleme puanı harika (87.5%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Traditional Roguelike",
+    "finding": "İnceleme puanı harika (86.2%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Transhumanism",
+    "finding": "İnceleme puanı harika (87.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Tutorial",
+    "finding": "İnceleme puanı harika (90.2%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Twin Stick Shooter",
+    "finding": "İnceleme puanı harika (87.5%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Typing",
+    "finding": "İnceleme puanı harika (88.0%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Unforgiving",
+    "finding": "İnceleme puanı harika (90.8%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Visual Novel",
+    "finding": "İnceleme puanı harika (87.5%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Wholesome",
+    "finding": "İnceleme puanı harika (94.8%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Kalite Tuzağı (Oyuncular seviyor ama satmıyor)",
+    "tag": "Word Game",
+    "finding": "İnceleme puanı harika (86.8%), ancak satışlar yerlerde sürünüyor (Ortalama 10,000 kişi). Bu türdeki oyunlar dar ama fanatik bir kitleye hitap ettiği için puanı şişiriyor ama para kazandırmıyor."
+  },
+  {
+    "type": "Hype Balonu (Pazarlama harikası ama oyuncuyu üzen)",
+    "tag": "4X",
+    "finding": "Oyuncuların puanları berbat (71.4%), ama satışlar ortalamanın çok üstünde (Ortalama 35,000 kişi). Oyuncular bu türe o kadar aç ki oyun kötü olsa bile satın alıyorlar."
+  },
+  {
+    "type": "Hype Balonu (Pazarlama harikası ama oyuncuyu üzen)",
+    "tag": "Diplomacy",
+    "finding": "Oyuncuların puanları berbat (80.0%), ama satışlar ortalamanın çok üstünde (Ortalama 35,000 kişi). Oyuncular bu türe o kadar aç ki oyun kötü olsa bile satın alıyorlar."
+  },
+  {
+    "type": "Hype Balonu (Pazarlama harikası ama oyuncuyu üzen)",
+    "tag": "Dwarf",
+    "finding": "Oyuncuların puanları berbat (79.6%), ama satışlar ortalamanın çok üstünde (Ortalama 35,000 kişi). Oyuncular bu türe o kadar aç ki oyun kötü olsa bile satın alıyorlar."
+  },
+  {
+    "type": "Hype Balonu (Pazarlama harikası ama oyuncuyu üzen)",
+    "tag": "Free to Play",
+    "finding": "Oyuncuların puanları berbat (80.0%), ama satışlar ortalamanın çok üstünde (Ortalama 35,000 kişi). Oyuncular bu türe o kadar aç ki oyun kötü olsa bile satın alıyorlar."
+  },
+  {
+    "type": "Hype Balonu (Pazarlama harikası ama oyuncuyu üzen)",
+    "tag": "Heist",
+    "finding": "Oyuncuların puanları berbat (80.0%), ama satışlar ortalamanın çok üstünde (Ortalama 35,000 kişi). Oyuncular bu türe o kadar aç ki oyun kötü olsa bile satın alıyorlar."
+  },
+  {
+    "type": "Hype Balonu (Pazarlama harikası ama oyuncuyu üzen)",
+    "tag": "Illuminati",
+    "finding": "Oyuncuların puanları berbat (79.3%), ama satışlar ortalamanın çok üstünde (Ortalama 35,000 kişi). Oyuncular bu türe o kadar aç ki oyun kötü olsa bile satın alıyorlar."
+  },
+  {
+    "type": "Hype Balonu (Pazarlama harikası ama oyuncuyu üzen)",
+    "tag": "MMORPG",
+    "finding": "Oyuncuların puanları berbat (68.5%), ama satışlar ortalamanın çok üstünde (Ortalama 35,000 kişi). Oyuncular bu türe o kadar aç ki oyun kötü olsa bile satın alıyorlar."
+  },
+  {
+    "type": "Hype Balonu (Pazarlama harikası ama oyuncuyu üzen)",
+    "tag": "Mars",
+    "finding": "Oyuncuların puanları berbat (77.8%), ama satışlar ortalamanın çok üstünde (Ortalama 35,000 kişi). Oyuncular bu türe o kadar aç ki oyun kötü olsa bile satın alıyorlar."
+  },
+  {
+    "type": "Hype Balonu (Pazarlama harikası ama oyuncuyu üzen)",
+    "tag": "Open World Survival Craft",
+    "finding": "Oyuncuların puanları berbat (70.0%), ama satışlar ortalamanın çok üstünde (Ortalama 35,000 kişi). Oyuncular bu türe o kadar aç ki oyun kötü olsa bile satın alıyorlar."
+  },
+  {
+    "type": "Hype Balonu (Pazarlama harikası ama oyuncuyu üzen)",
+    "tag": "Real-Time with Pause",
+    "finding": "Oyuncuların puanları berbat (77.8%), ama satışlar ortalamanın çok üstünde (Ortalama 35,000 kişi). Oyuncular bu türe o kadar aç ki oyun kötü olsa bile satın alıyorlar."
+  },
+  {
+    "type": "Hype Balonu (Pazarlama harikası ama oyuncuyu üzen)",
+    "tag": "Turn-Based",
+    "finding": "Oyuncuların puanları berbat (81.0%), ama satışlar ortalamanın çok üstünde (Ortalama 35,000 kişi). Oyuncular bu türe o kadar aç ki oyun kötü olsa bile satın alıyorlar."
+  },
+  {
+    "type": "Hype Balonu (Pazarlama harikası ama oyuncuyu üzen)",
+    "tag": "World War II",
+    "finding": "Oyuncuların puanları berbat (79.1%), ama satışlar ortalamanın çok üstünde (Ortalama 35,000 kişi). Oyuncular bu türe o kadar aç ki oyun kötü olsa bile satın alıyorlar."
+  }
+]

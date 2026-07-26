@@ -135,11 +135,15 @@ python -m src.merge_pipeline --pages 50 --add-new  # tam güncelleme
 
 - [x] Eski grafikler silindi
 - [x] CONTEXT.md güncellendi
-- [ ] `visualizer.py` yeniden yaz (5 yeni grafik)
-- [ ] `insight_engine.py` yaz (soru havuzunu koda çevir)
-- [ ] Visualizer'ı insight engine'e bağla (dinamik grafik)
-- [ ] `run_pipeline.sh` (Debian bash script)
-- [ ] n8n workflow JSON (Telegram bildirimi dahil)
+- [x] `visualizer.py` yeniden yaz (5 yeni grafik)
+- [x] `insight_engine.py` yaz (soru havuzunu koda çevir)
+- [x] Visualizer'ı insight engine'e bağla (dinamik grafik)
+- [x] `run_pipeline.sh` (Debian bash script)
+- [x] n8n workflow JSON (Telegram bildirimi dahil)
+
+### 🚀 Faz 4 (İleri Düzey Otomasyonlar - Gelecek Hedefler)
+- [ ] **Görsel Otonomi:** YZ'nin seçtiği anomaliye ait grafiğin (`outputs/figures/*.png`) n8n üzerinden okunup Telegram'a fotoğraf olarak gönderilmesi.
+- [ ] **Sonsuz Veri Döngüsü:** Sabit Kaggle veri setinin (CSV), belirli periyotlarla Steam API'sinden otonom olarak beslenip güncellenmesi.
 
 ---
 

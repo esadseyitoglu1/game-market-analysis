@@ -8,8 +8,6 @@ Vizyon:
 Çalıştırma:
   python -m src.insight_engine
   python -m src.insight_engine --snapshot may2024
-import logging
-log = logging.getLogger(__name__)
 
 Her çıkarım (Insight) bir dict döndürür:
   {
@@ -21,6 +19,9 @@ Her çıkarım (Insight) bir dict döndürür:
     "grafik":   str,    # Üretilecek grafik dosya adı (veya None)
   }
 """
+
+import logging
+log = logging.getLogger(__name__)
 
 import ast
 import json
