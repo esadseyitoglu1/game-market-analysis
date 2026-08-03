@@ -1,5 +1,5 @@
 {
-  "run_id": "2026-08-03T21:02:44",
+  "run_id": "2026-08-03T21:56:10",
   "schema_version": "2.0",
   "snapshot": "march2025",
   "universe": {
@@ -35,7 +35,7 @@
       },
       "hook": "Sen şu an 'Bullet Hell (pazara göre göreli trend, 2016-2024)' hakkında yanlış biliyor olabilirsin: veri 2255 oyun üzerinden bunun görünürlüğü düşürüyor.",
       "sales_estimate": null,
-      "chart_path": null,
+      "chart_path": "outputs/charts/finding_bullet_hell_pazara_gore_goreli_trend_2016_2024_trend.png",
       "confidence": "medium",
       "fragile": false,
       "exemplars": []
@@ -60,7 +60,7 @@
       },
       "hook": "Sen şu an 'Visual Novel (pazara göre göreli trend, 2016-2024)' hakkında yanlış biliyor olabilirsin: veri 3271 oyun üzerinden bunun görünürlüğü düşürüyor.",
       "sales_estimate": null,
-      "chart_path": null,
+      "chart_path": "outputs/charts/finding_visual_novel_pazara_gore_goreli_trend_2016_2024_trend.png",
       "confidence": "medium",
       "fragile": false,
       "exemplars": []
@@ -85,7 +85,7 @@
       },
       "hook": "Sen şu an 'Metroidvania (pazara göre göreli trend, 2016-2024)' hakkında yanlış biliyor olabilirsin: veri 852 oyun üzerinden bunun görünürlüğü düşürüyor.",
       "sales_estimate": null,
-      "chart_path": null,
+      "chart_path": "outputs/charts/finding_metroidvania_pazara_gore_goreli_trend_2016_2024_trend.png",
       "confidence": "medium",
       "fragile": false,
       "exemplars": []
@@ -110,7 +110,7 @@
       },
       "hook": "Sen şu an 'Puzzle (pazara göre göreli trend, 2016-2024)' hakkında yanlış biliyor olabilirsin: veri 9974 oyun üzerinden bunun görünürlüğü düşürüyor.",
       "sales_estimate": null,
-      "chart_path": null,
+      "chart_path": "outputs/charts/finding_puzzle_pazara_gore_goreli_trend_2016_2024_trend.png",
       "confidence": "medium",
       "fragile": false,
       "exemplars": []
@@ -135,7 +135,7 @@
       },
       "hook": "Sen şu an 'Survival (pazara göre göreli trend, 2016-2024)' hakkında yanlış biliyor olabilirsin: veri 4069 oyun üzerinden bunun görünürlüğü düşürüyor.",
       "sales_estimate": null,
-      "chart_path": null,
+      "chart_path": "outputs/charts/finding_survival_pazara_gore_goreli_trend_2016_2024_trend.png",
       "confidence": "medium",
       "fragile": false,
       "exemplars": []

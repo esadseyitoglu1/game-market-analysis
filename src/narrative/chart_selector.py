@@ -15,6 +15,7 @@ fonksiyonuna gideceğine bu modül karar veriyor.
 """
 
 import logging
+import unicodedata
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -78,8 +79,16 @@ def _note(ax, text: str):
 
 
 def _safe_filename(label: str) -> str:
-    """Finding.label'dan güvenli bir dosya adı üretir (boşluk/özel karakter temizliği)."""
-    safe = "".join(c if c.isalnum() else "_" for c in label.lower())
+    """Finding.label'dan güvenli bir dosya adı üretir (boşluk/özel karakter temizliği).
+
+    ASCII'ye zorlanıyor (unicodedata.normalize + encode/decode) — 'c.isalnum()'
+    Python'da Unicode-aware olduğu için Türkçe karakterleri (ö, ğ, ş, ...)
+    alfanümerik sayıp OLDUĞU GİBİ bırakıyordu. n8n'in çalıştığı Linux sunucuda
+    bu, "Read Binary File" node'unun path'i bulamamasına yol açabilir (Windows'ta
+    üretilen UTF-8 dosya adı, sunucu tarafında farklı normalize/encode edilebilir).
+    """
+    ascii_label = unicodedata.normalize("NFKD", label.lower()).encode("ascii", "ignore").decode("ascii")
+    safe = "".join(c if c.isalnum() else "_" for c in ascii_label)
     while "__" in safe:
         safe = safe.replace("__", "_")
     return safe.strip("_")[:60]
@@ -236,7 +245,12 @@ def render_chart_for_finding(finding: Finding) -> Finding:
 
     try:
         path = fn(finding)
-        finding.chart_path = str(path.relative_to(path.parent.parent.parent))
+        # NOT: as_posix() kullanılıyor — Path'in string haline (Windows'ta
+        # otomatik ters slash \ üretir) DEĞİL. n8n sunucusu Linux'ta çalışıyor,
+        # bu yol n8n'in "Read Binary File" node'una doğrudan verileceği için
+        # işletim-sistemi-bağımsız (/ ile ayrılmış) olmak ZORUNDA. Bu olmadan
+        # yerelde (Windows) üretilen findings.json sunucuda çalışmıyordu.
+        finding.chart_path = path.relative_to(path.parent.parent.parent).as_posix()
         log.info(f"  chart_selector: '{finding.label}' -> {path.name}")
     except Exception as e:
         log.warning(f"  chart_selector: '{finding.label}' için grafik üretilemedi: {e}")

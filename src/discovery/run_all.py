@@ -31,7 +31,8 @@ from src.discovery.generators import (
 from src.discovery.families.studio_repeat import test_studio_repeat
 from src.discovery.families.temporal import test_temporal_trend
 from src.discovery.families.quality_cliff import test_cliff_at_80, test_quality_trap
-from src.contracts import write_findings_contract
+from src.narrative.chart_selector import render_chart_for_finding
+from src.contracts import write_findings_contract, select_top_findings
 
 log = logging.getLogger(__name__)
 
@@ -116,11 +117,20 @@ def collect_all_findings(snapshot: str = "march2025") -> tuple[list[Finding], in
 
 
 def run_discovery(snapshot: str = "march2025") -> Path:
-    """Tüm keşif motorunu çalıştırır, hafıza mekanizmasını uygular, findings.json yazar.
+    """Tüm keşif motorunu çalıştırır, hafıza mekanizmasını uygular, LLM'e
+    gidecek bulguların grafiklerini üretir ve findings.json yazar.
 
     Hafıza mekanizması eski anomaly_detector.py'deki used_tags.txt ile AYNI
     mantık (bkz. o dosyadaki NOT) ama artık tag yerine Finding.label bazlı —
     çünkü artık tag-dışı bulgular da var (numeric_split, studio_repeat, temporal).
+
+    GRAFİK ÜRETİMİ (bkz. plan — kullanıcının isteği: "bu içeriği destekleyecek
+    grafik tarzı şeyler de üretmeli"): chart_selector.py zaten yazılmıştı ama
+    hiçbir yerden çağrılmıyordu — findings.json'a chart_path hiç girmiyordu,
+    n8n'e giden video script'lerinin hiçbir görseli yoktu. Burada SADECE
+    LLM'e gidecek (en fazla 5) bulgu için grafik üretiliyor — 277 bulgunun
+    hepsi için değil, çünkü her grafik matplotlib çizimi gerektiriyor ve
+    gereksiz 272 dosya üretmenin bir faydası yok.
     """
     all_findings, n_universe = collect_all_findings(snapshot)
 
@@ -133,13 +143,22 @@ def run_discovery(snapshot: str = "march2025") -> Path:
             os.remove(HISTORY_FILE)
         fresh = all_findings
 
+    # LLM'e gidecek bulguları ÖNCE seç (deterministik, en yüksek |effect|),
+    # SONRA sadece bunlar için grafik üret — write_findings_contract zaten
+    # aynı seçimi kendi içinde tekrar yapıyor (select_top_findings saf/yan
+    # etkisiz bir fonksiyon, aynı girdide her zaman aynı 5'i seçer), bu yüzden
+    # burada üretilen chart_path'lerin contract'a giden Finding'lerle
+    # eşleştiğinden emin olabiliyoruz.
+    to_chart = select_top_findings(fresh)
+    log.info(f"  {len(to_chart)} bulgu için grafik üretiliyor...")
+    for finding in to_chart:
+        render_chart_for_finding(finding)
+
     path = write_findings_contract(fresh, universe_n=n_universe, snapshot=snapshot)
 
-    # findings.json'a GİDEN (yani LLM'e gönderilen, en fazla 5) bulguların
-    # etiketlerini hafızaya yaz — sadece görülenler tekrar önerilmesin.
-    from src.contracts import select_top_findings
-    sent = select_top_findings(fresh)
-    _save_history([f.label for f in sent])
+    # findings.json'a GİDEN bulguların etiketlerini hafızaya yaz — sadece
+    # görülenler tekrar önerilmesin.
+    _save_history([f.label for f in to_chart])
 
     return path
 
