@@ -1,0 +1,144 @@
+{
+  "run_id": "2026-08-03T21:02:44",
+  "schema_version": "2.0",
+  "snapshot": "march2025",
+  "universe": {
+    "n": 31991,
+    "filter": "indie, 2016-2024, >=10 review",
+    "metric": "yıl-içi log-review percentile (visibility_pct)"
+  },
+  "caveats": [
+    "Korelasyon, nedensellik değildir. Bir bulgunun 'X özelliği görünürlüğü artırıyor' demesi, X'i eklerseniz otomatik başarı gelir demek değildir.",
+    "Owners (sahip sayısı) verisi KULLANILMADI — SteamSpy bu alanı kova/aralık formatında verir ve indie evreninin büyük kısmı tek kovaya düşer, çözünürlüksüzdür. Görünürlük metriği yerine review sayısının yıl-içi percentile'ı kullanıldı.",
+    "Her bulgu istatistiksel bir geçitten (Mann-Whitney U + Benjamini-Hochberg FDR + etki büyüklüğü ≥0.20 + bootstrap %95 güven aralığı) geçmiştir, ama örneklem büyüklüğü küçük olan bulgularda (confidence='medium') temkinli dil kullanılmalıdır."
+  ],
+  "total_findings_discovered": 277,
+  "total_findings_sent": 5,
+  "findings": [
+    {
+      "baslik": "Bullet Hell (pazara göre göreli trend, 2016-2024): Görünürlük Kaybı",
+      "claim": "'Bullet Hell (pazara göre göreli trend, 2016-2024)' grubundaki 2255 oyun, karşılaştırma grubuna göre daha DÜŞÜK görünürlükte (etki -0.90, %95 GA [+nan, +nan]).",
+      "evidence": {
+        "family": "temporal_trend",
+        "n": 2255,
+        "n_baseline": 0,
+        "effect": -0.9,
+        "effect_ci": [
+          NaN,
+          NaN
+        ],
+        "p_value": 0.0009430623223403288,
+        "q_value": NaN,
+        "direction": "negative",
+        "group_median": 95.1,
+        "baseline_median": 91.4
+      },
+      "hook": "Sen şu an 'Bullet Hell (pazara göre göreli trend, 2016-2024)' hakkında yanlış biliyor olabilirsin: veri 2255 oyun üzerinden bunun görünürlüğü düşürüyor.",
+      "sales_estimate": null,
+      "chart_path": null,
+      "confidence": "medium",
+      "fragile": false,
+      "exemplars": []
+    },
+    {
+      "baslik": "Visual Novel (pazara göre göreli trend, 2016-2024): Görünürlük Kaybı",
+      "claim": "'Visual Novel (pazara göre göreli trend, 2016-2024)' grubundaki 3271 oyun, karşılaştırma grubuna göre daha DÜŞÜK görünürlükte (etki -0.83, %95 GA [+nan, +nan]).",
+      "evidence": {
+        "family": "temporal_trend",
+        "n": 3271,
+        "n_baseline": 0,
+        "effect": -0.8285,
+        "effect_ci": [
+          NaN,
+          NaN
+        ],
+        "p_value": 0.00579537319943972,
+        "q_value": NaN,
+        "direction": "negative",
+        "group_median": 94.4,
+        "baseline_median": 91.4
+      },
+      "hook": "Sen şu an 'Visual Novel (pazara göre göreli trend, 2016-2024)' hakkında yanlış biliyor olabilirsin: veri 3271 oyun üzerinden bunun görünürlüğü düşürüyor.",
+      "sales_estimate": null,
+      "chart_path": null,
+      "confidence": "medium",
+      "fragile": false,
+      "exemplars": []
+    },
+    {
+      "baslik": "Metroidvania (pazara göre göreli trend, 2016-2024): Görünürlük Kaybı",
+      "claim": "'Metroidvania (pazara göre göreli trend, 2016-2024)' grubundaki 852 oyun, karşılaştırma grubuna göre daha DÜŞÜK görünürlükte (etki -0.82, %95 GA [+nan, +nan]).",
+      "evidence": {
+        "family": "temporal_trend",
+        "n": 852,
+        "n_baseline": 0,
+        "effect": -0.8167,
+        "effect_ci": [
+          NaN,
+          NaN
+        ],
+        "p_value": 0.0072247852463587885,
+        "q_value": NaN,
+        "direction": "negative",
+        "group_median": 91.6,
+        "baseline_median": 91.4
+      },
+      "hook": "Sen şu an 'Metroidvania (pazara göre göreli trend, 2016-2024)' hakkında yanlış biliyor olabilirsin: veri 852 oyun üzerinden bunun görünürlüğü düşürüyor.",
+      "sales_estimate": null,
+      "chart_path": null,
+      "confidence": "medium",
+      "fragile": false,
+      "exemplars": []
+    },
+    {
+      "baslik": "Puzzle (pazara göre göreli trend, 2016-2024): Görünürlük Kaybı",
+      "claim": "'Puzzle (pazara göre göreli trend, 2016-2024)' grubundaki 9974 oyun, karşılaştırma grubuna göre daha DÜŞÜK görünürlükte (etki -0.77, %95 GA [+nan, +nan]).",
+      "evidence": {
+        "family": "temporal_trend",
+        "n": 9974,
+        "n_baseline": 0,
+        "effect": -0.7667,
+        "effect_ci": [
+          NaN,
+          NaN
+        ],
+        "p_value": 0.01594401657897403,
+        "q_value": NaN,
+        "direction": "negative",
+        "group_median": 95.1,
+        "baseline_median": 91.4
+      },
+      "hook": "Sen şu an 'Puzzle (pazara göre göreli trend, 2016-2024)' hakkında yanlış biliyor olabilirsin: veri 9974 oyun üzerinden bunun görünürlüğü düşürüyor.",
+      "sales_estimate": null,
+      "chart_path": null,
+      "confidence": "medium",
+      "fragile": false,
+      "exemplars": []
+    },
+    {
+      "baslik": "Survival (pazara göre göreli trend, 2016-2024): Görünürlük Kaybı",
+      "claim": "'Survival (pazara göre göreli trend, 2016-2024)' grubundaki 4069 oyun, karşılaştırma grubuna göre daha DÜŞÜK görünürlükte (etki -0.70, %95 GA [+nan, +nan]).",
+      "evidence": {
+        "family": "temporal_trend",
+        "n": 4069,
+        "n_baseline": 0,
+        "effect": -0.7,
+        "effect_ci": [
+          NaN,
+          NaN
+        ],
+        "p_value": 0.03576957497026173,
+        "q_value": NaN,
+        "direction": "negative",
+        "group_median": 83.65,
+        "baseline_median": 91.4
+      },
+      "hook": "Sen şu an 'Survival (pazara göre göreli trend, 2016-2024)' hakkında yanlış biliyor olabilirsin: veri 4069 oyun üzerinden bunun görünürlüğü düşürüyor.",
+      "sales_estimate": null,
+      "chart_path": null,
+      "confidence": "medium",
+      "fragile": false,
+      "exemplars": []
+    }
+  ]
+}

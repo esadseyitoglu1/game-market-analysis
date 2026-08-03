@@ -18,15 +18,11 @@ Vizyon:
 import logging
 log = logging.getLogger(__name__)
 
-import ast
 import argparse
 from pathlib import Path
-from itertools import combinations
 
 import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
 import pandas as pd
-import numpy as np
 
 # ---------------------------------------------------------------------------
 # Renk sistemi
@@ -106,17 +102,17 @@ def _note(ax, text):
 
 
 def _load(snapshot="march2025"):
-    df = pd.read_csv(PROCESSED_DIR / f"steam_games_{snapshot}.csv", low_memory=False)
-    df["release_date"]  = pd.to_datetime(df["release_date"], errors="coerce")
-    df["release_year"]  = df["release_date"].dt.year.astype("Int64")
-    df["release_month"] = df["release_date"].dt.month.astype("Int64")
-    df["price"]         = pd.to_numeric(df["price"], errors="coerce").fillna(0)
-    df["positive"]      = pd.to_numeric(df["positive"], errors="coerce").fillna(0)
-    df["negative"]      = pd.to_numeric(df["negative"], errors="coerce").fillna(0)
+    """NOT (2026-08-03): src.metrics.load_universe()'e devrediliyor — bkz.
+    insight_engine.py:_load() içindeki aynı notu. `owners_mid` burada SADECE
+    chart_top10_paid_indie() geriye dönük çalışsın diye korunuyor; o grafiğin
+    kendisi owners kova-çökmesi yüzünden anlamsız (bkz. plan — Adım 6'da
+    kaldırılacak). `is_free` analyzer.py uyumluluğu için ayrıca ekleniyor.
+    """
+    from src.metrics import load_universe
 
-    total = df["positive"] + df["negative"]
-    df["review_score"] = (df["positive"] / total.replace(0, float("nan")) * 100).round(1)
-    df["total_reviews"] = total
+    df = load_universe(snapshot)
+    df["release_month"] = df["release_date"].dt.month.astype("Int64")
+    df["is_free"] = df["price"] == 0
 
     def _mid(val):
         try:
@@ -130,27 +126,6 @@ def _load(snapshot="march2025"):
         df["estimated_owners"].apply(_mid) if "estimated_owners" in df.columns else 0
     )
     df["owners_mid"] = pd.to_numeric(df["owners_mid"], errors="coerce").fillna(0)
-
-    def _tags(val):
-        if pd.isna(val): return []
-        try:
-            r = ast.literal_eval(str(val))
-            return list(r.keys()) if isinstance(r, dict) else (r if isinstance(r, list) else [])
-        except:
-            return []
-
-    def _genres(val):
-        if pd.isna(val): return []
-        try:
-            r = ast.literal_eval(str(val))
-            return r if isinstance(r, list) else []
-        except:
-            return []
-
-    df["tags_list"]   = df["tags"].apply(_tags)
-    df["genres_list"] = df["genres"].apply(_genres) if "genres" in df.columns else [[] for _ in range(len(df))]
-    df["is_indie"]    = df["genres_list"].apply(lambda g: "Indie" in g)
-    df["is_free"]     = df["price"] == 0
 
     return df
 
@@ -297,15 +272,25 @@ def chart_80pct_cliff(df):
     ax.axvline(x=4.5, color=C["yellow"], linewidth=2, linestyle="--", alpha=0.8)
     ax.text(4.6, ax.get_ylim()[1] * 0.85, "Very Positive\nEşiği (%80)",
             color=C["yellow"], fontsize=10, fontweight="bold")
-            
-    # Kalite Tuzağı vurgusu (90-95% bandı)
-    trap_y = stats.loc[stats["score_band"] == "90-95%", "medyan_review"].values[0]
-    ax.annotate("KALİTE TUZAĞI\nAşırı niş oyunlar\nskoru şişirir,\ngörünürlüğü düşürür.",
-                xy=(7, trap_y + 15), xytext=(7, trap_y + 40),
-                ha="center", color=C["blue"], fontweight="bold", fontsize=9,
-                arrowprops=dict(facecolor=C["blue"], edgecolor=C["blue"], arrowstyle="->", lw=1.5))
 
-    ax.set_title("Kalite Uçurumu: %80 Barajı ve Steam'in 'Kalite Tuzağı'\n"
+    # Kalite Tuzağı vurgusu (90-95% bandı) — KOŞULLU (bkz. plan Adım 4).
+    # Eskiden bu annotation KOŞULSUZ çiziliyordu — veri tersini gösterse bile
+    # ok her zaman burada belirirdi. Gerçek veriyle test edildi (bkz.
+    # discovery/families/quality_cliff.py): 90-95% bandı ile 85-90% bandı
+    # arasındaki fark İSTATİSTİKSEL OLARAK ANLAMLI değilse (Mann-Whitney U +
+    # etki büyüklüğü + bootstrap testi geçmezse), bu ok artık ÇİZİLMEZ.
+    from src.discovery.families.quality_cliff import test_quality_trap
+    trap_finding = test_quality_trap(df)
+    title_suffix = ""
+    if trap_finding is not None:
+        trap_y = stats.loc[stats["score_band"] == "90-95%", "medyan_review"].values[0]
+        ax.annotate("KALİTE TUZAĞI\nAşırı niş oyunlar\nskoru şişirir,\ngörünürlüğü düşürür.",
+                    xy=(7, trap_y + 15), xytext=(7, trap_y + 40),
+                    ha="center", color=C["blue"], fontweight="bold", fontsize=9,
+                    arrowprops=dict(facecolor=C["blue"], edgecolor=C["blue"], arrowstyle="->", lw=1.5))
+        title_suffix = " ve Steam'in 'Kalite Tuzağı'"
+
+    ax.set_title(f"Kalite Uçurumu: %80 Barajı{title_suffix}\n"
                  "%80'i geçmek görünürlüğü patlatır. Ancak %90+ skor her zaman başarı demek değildir.",
                  fontweight="bold", pad=14)
     ax.set_xlabel("Steam Oyuncu Memnuniyeti Skoru (%)")
@@ -327,74 +312,57 @@ def chart_80pct_cliff(df):
 # ---------------------------------------------------------------------------
 
 def chart_tag_synergy(df):
+    """GERÇEK HESABA ÇEVRİLDİ (2026-08-03) — eskiden bu fonksiyon KENDİ ham
+    tag-çifti hesabını yapıyordu (medyan review'a göre sırala, en yükseği al),
+    hiçbir istatistiksel test yoktu. Bu, insight_engine.py'deki AYNI hesabın
+    ikinci bir kopyasıydı — pipeline'ın %58'i bu tekrarlı hesaba gidiyordu
+    (bkz. plan Context bölümü).
+
+    Artık discovery/generators.py + discovery/gate.py üzerinden GERÇEK
+    istatistiksel geçitten geçmiş tag_pair bulgularını kullanıyor — aynı
+    hesap insight_engine.py'de de kullanılıyor (src.metrics.engaged_universe +
+    generate_pairwise_hypotheses + evaluate_batch), burada TEKRARLANMIYOR.
     """
-    En yüksek medyan review getiren 2-tag (tür) kombinasyonları.
-    Mesaj: 'Bu iki tür birlikte olunca altın.'
-    """
-    indie = df[df["is_indie"] & (df["total_reviews"] > 0)].copy()
-    n_total = len(indie)
-    
-    # Başarı eşiğini al (ör: 171+ review ve %80+ kalite)
-    success_threshold, quality_threshold, _ = calc_success_threshold(df)
+    from src.metrics import engaged_universe
+    from src.discovery.generators import generate_pairwise_hypotheses
+    from src.discovery.gate import evaluate_batch
 
-    # En sık görülen tag'leri bul (analiz için)
-    from collections import Counter
-    all_tags = [t for tags in indie["tags_list"] for t in tags]
-    
-    # Meta-tag'leri çıkar (gerçek tür sinerjisi bulmak için)
-    ignore_tags = {
-        "Indie", "Singleplayer", "Multiplayer", "Co-op", "2D", "3D", 
-        "Early Access", "Free to Play", "Casual", "Action", "Adventure",
-        "Strategy", "Simulation", "RPG", "Great Soundtrack", "Atmospheric",
-        "Pixel Graphics", "Story Rich", "Sci-fi", "Fantasy", "Anime",
-        "VR", "Gore", "Violent", "Nudity", "Sexual Content"
-    }
-    
-    top_tags = [t for t, _ in Counter(all_tags).most_common(60) if t not in ignore_tags]
+    universe = engaged_universe(df).reset_index(drop=True)
+    n_total = len(universe)
+    values = universe["visibility_pct"].values
 
-    combo_stats = []
-    for t1, t2 in combinations(top_tags, 2):
-        mask = indie["tags_list"].apply(lambda tags: t1 in tags and t2 in tags)
-        sub  = indie[mask]
-        if len(sub) < 30: # Min 30 oyun
-            continue
-        combo_stats.append({
-            "combo": f"{t1} + {t2}",
-            "medyan_review": sub["total_reviews"].median(),
-            "medyan_score": sub["review_score"].median(),
-            "n": len(sub)
-        })
+    hyps = generate_pairwise_hypotheses(universe, "tags_list", top_n=40, min_count=30)
+    findings = evaluate_batch(hyps, values, min_n=30)
 
-    if not combo_stats:
-        log.warning("  Tag Synergy: yeterli veri yok, atlandi.")
+    if not findings:
+        log.warning("  Tag Synergy: gate'ten geçen bulgu yok, grafik atlandı.")
         return
 
-    stats = (pd.DataFrame(combo_stats)
-             .sort_values("medyan_review", ascending=False)
-             .head(12)
-             .sort_values("medyan_review", ascending=True))
+    top_findings = sorted(findings, key=lambda f: -abs(f.effect))[:12]
+    top_findings.sort(key=lambda f: f.effect)  # barh için küçükten büyüğe
 
     fig, ax = plt.subplots(figsize=(12, 8))
-    
-    # Renk mantığı: Hem görünürlük (171) hem de kalite (%80) eşiğini geçiyorsa YEŞİL (Başarılı)
-    colors = [C["green"] if (row["medyan_review"] >= success_threshold and row["medyan_score"] >= quality_threshold) else C["blue"] 
-              for _, row in stats.iterrows()]
-              
-    bars = ax.barh(stats["combo"], stats["medyan_review"], color=colors, height=0.6)
 
-    for bar, row in zip(bars, stats.itertuples()):
-        ax.text(bar.get_width() + (ax.get_xlim()[1] * 0.02),
-                bar.get_y() + bar.get_height() / 2,
-                f"{row.medyan_review:.0f}  (n={row.n}, %{row.medyan_score:.0f})",
-                va="center", fontsize=9, color=C["text"])
+    colors = [C["green"] if f.effect > 0 else C["red"] for f in top_findings]
+    labels = [f.label for f in top_findings]
+    effects = [f.effect for f in top_findings]
 
-    ax.set_title("Hangi İki Tür Bir Arada Olunca Başarı İhtimali Artıyor?\n"
-                 f"Yeşil barlar: Ortalama bir oyun hem {success_threshold}+ review alıyor, hem de %{quality_threshold}+ pozitif not alıyor.",
+    bars = ax.barh(labels, effects, color=colors, height=0.6)
+
+    for bar, f in zip(bars, top_findings):
+        offset = ax.get_xlim()[1] * 0.02 if f.effect >= 0 else -ax.get_xlim()[1] * 0.02
+        ha = "left" if f.effect >= 0 else "right"
+        ax.text(bar.get_width() + offset, bar.get_y() + bar.get_height() / 2,
+                 f"{f.effect:+.2f}  (n={f.n})", va="center", ha=ha, fontsize=9, color=C["text"])
+
+    ax.set_title("Hangi İki Tür Bir Arada Olunca Görünürlük Değişiyor?\n"
+                 "Yalnızca istatistiksel geçitten (Mann-Whitney U + BH-FDR + etki büyüklüğü + bootstrap) geçen çiftler gösteriliyor.",
                  fontweight="bold", pad=14)
-    ax.set_xlabel("Ortalama Bir Oyunun Aldığı Review Sayısı")
+    ax.set_xlabel("Etki Büyüklüğü (rank-biserial, karşılaştırma grubuna göre)")
+    ax.axvline(x=0, color=C["gray"], linewidth=1)
     ax.grid(True, axis="x", alpha=0.3)
-    _note(ax, f"n={n_total:,} indie oyun  |  Min 30 oyunlu kombinasyonlar  |  "
-              f"Meta-tagler hariç tutuldu  |  Çift eşik (Görünürlük + Kalite) kullanıldı")
+    _note(ax, f"n={n_total:,} indie oyun (>=10 review, 2016-2024)  |  Min 30 oyunlu kombinasyonlar  |  "
+              f"Meta-tagler ve marka-uygunsuz etiketler hariç tutuldu")
     fig.tight_layout()
     return _save(fig, "tag_synergy.png")
 
@@ -404,16 +372,20 @@ def chart_tag_synergy(df):
 # ---------------------------------------------------------------------------
 
 def chart_top10_paid_indie(df):
-    """
-    Ücretsiz oyunları filtrele, ücretli indie top 10.
-    Mesaj: 'Başarının anatomisi — bu oyunlar ne yaptı?'
+    """DÜZELTİLDİ (2026-08-03) — eskiden `owners_mid`'e göre sıralıyordu.
+    SteamSpy'ın owners alanı kova/aralık formatında geldiği için (bkz. plan
+    Context bölümü) 10 oyunun 9'u AYNI kovaya (dolayısıyla aynı owners_mid
+    değerine, ör. "35.0M") düşüyordu — sıralama pratikte anlamsızdı, barlar
+    görsel olarak özdeşti. Artık `total_reviews` kullanılıyor (gerçek, sürekli
+    bir dağılıma sahip, kova yok) — grafiğin konsepti ("en başarılı ücretli
+    indie oyunlar") korunuyor, sadece ölçüm düzeltildi.
     """
     paid_indie = df[
         df["is_indie"] & ~df["is_free"] & (df["price"] > 0) &
         (df["total_reviews"] >= 100)
     ].copy()
 
-    top10 = paid_indie.nlargest(10, "owners_mid").sort_values("owners_mid", ascending=True)
+    top10 = paid_indie.nlargest(10, "total_reviews").sort_values("total_reviews", ascending=True)
     n_total = len(paid_indie)
 
     # Fiyat bandına göre renk
@@ -425,13 +397,12 @@ def chart_top10_paid_indie(df):
     colors = [price_color(p) for p in top10["price"]]
 
     fig, ax = plt.subplots(figsize=(12, 7))
-    bars = ax.barh(top10["name"], top10["owners_mid"] / 1_000_000,
-                   color=colors, height=0.65)
+    bars = ax.barh(top10["name"], top10["total_reviews"], color=colors, height=0.65)
 
     for bar, row in zip(bars, top10.itertuples()):
-        label = (f"{row.owners_mid/1_000_000:.1f}M sahip  |  "
+        label = (f"{row.total_reviews:,} review  |  "
                  f"${row.price:.2f}  |  %{row.review_score:.0f} poz.")
-        ax.text(bar.get_width() + 0.03,
+        ax.text(bar.get_width() + (ax.get_xlim()[1] * 0.01),
                 bar.get_y() + bar.get_height() / 2,
                 label, va="center", fontsize=8.5, color=C["text"])
 
@@ -444,13 +415,14 @@ def chart_top10_paid_indie(df):
     ax.legend(handles=legend, framealpha=0.15, edgecolor=C["grid"],
               title="Fiyat Bandı", loc="lower right")
 
-    ax.set_title("Ücretli Indie Oyunlar — En Fazla Sahibe Ulaşan 10 Oyun\n"
+    ax.set_title("Ücretli Indie Oyunlar — En Çok Review Alan 10 Oyun\n"
                  "Ücretsiz ve F2P oyunlar hariç tutuldu",
                  fontweight="bold", pad=14)
-    ax.set_xlabel("Tahmini Sahip (milyon)")
+    ax.set_xlabel("Toplam Review Sayısı (görünürlük proxy'si)")
     ax.grid(True, axis="x", alpha=0.3)
     _note(ax, f"n={n_total:,} ücretli indie oyun (min 100 review)  |  "
-              f"Ücretsiz/F2P oyunlar hariç: adil karşılaştırma için")
+              f"Ücretsiz/F2P oyunlar hariç: adil karşılaştırma için  |  "
+              f"Owners (sahip sayısı) KULLANILMADI — SteamSpy kova formatı çözünürlüksüz")
     fig.tight_layout()
     return _save(fig, "top10_paid_indie.png")
 

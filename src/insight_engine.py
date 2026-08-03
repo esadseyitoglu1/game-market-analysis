@@ -23,16 +23,15 @@ Her çıkarım (Insight) bir dict döndürür:
 import logging
 log = logging.getLogger(__name__)
 
-import ast
 import json
 import argparse
 from pathlib import Path
 from datetime import datetime
-from itertools import combinations
-from collections import Counter
 
 import pandas as pd
 import numpy as np
+
+from src.metrics import load_universe
 
 # ---------------------------------------------------------------------------
 PROCESSED_DIR = Path(__file__).resolve().parent.parent / "data" / "processed"
@@ -44,39 +43,19 @@ OUTPUT_DIR    = Path(__file__).resolve().parent.parent / "outputs" / "insights"
 # ---------------------------------------------------------------------------
 
 def _load(snapshot="march2025") -> pd.DataFrame:
-    df = pd.read_csv(PROCESSED_DIR / f"steam_games_{snapshot}.csv", low_memory=False)
-    df["release_date"]  = pd.to_datetime(df["release_date"], errors="coerce")
-    df["release_year"]  = df["release_date"].dt.year.astype("Int64")
+    """NOT (2026-08-03): Bu fonksiyon eskiden kendi tag/genre-parse mantığını
+    tekrar yazıyordu (anomaly_detector.py ve analyzer.py'de de birer kopyası
+    vardı — bkz. plan Context bölümü, "4 farklı _load() kopyası" sorunu). Artık
+    src.metrics.load_universe()'e devrediyor — bu, visibility_pct (yaş-normalize
+    görünürlük metriği) hesabını da içeriyor ve families/quality_cliff.py gibi
+    yeni discovery modüllerinin ihtiyaç duyduğu ortak veri şemasını sağlıyor.
+    `release_month` eklentisi (eski kodda vardı, hiçbir insight'ta kullanılmıyordu)
+    ve `is_free` (analyzer.py'de tanımlıydı, burada kullanılmıyordu) burada
+    ayrıca eklenmeye devam ediyor — geriye dönük uyumluluk için.
+    """
+    df = load_universe(snapshot)
     df["release_month"] = df["release_date"].dt.month.astype("Int64")
-    df["price"]         = pd.to_numeric(df["price"], errors="coerce").fillna(0)
-    df["positive"]      = pd.to_numeric(df["positive"], errors="coerce").fillna(0)
-    df["negative"]      = pd.to_numeric(df["negative"], errors="coerce").fillna(0)
-
-    total = df["positive"] + df["negative"]
-    df["review_score"]  = (df["positive"] / total.replace(0, float("nan")) * 100).round(1)
-    df["total_reviews"] = total
-
-    def _tags(val):
-        if pd.isna(val): return []
-        try:
-            r = ast.literal_eval(str(val))
-            return list(r.keys()) if isinstance(r, dict) else (r if isinstance(r, list) else [])
-        except:
-            return []
-
-    def _genres(val):
-        if pd.isna(val): return []
-        try:
-            r = ast.literal_eval(str(val))
-            return r if isinstance(r, list) else []
-        except:
-            return []
-
-    df["tags_list"]   = df["tags"].apply(_tags)
-    df["genres_list"] = df["genres"].apply(_genres) if "genres" in df.columns else [[] for _ in range(len(df))]
-    df["is_indie"]    = df["genres_list"].apply(lambda g: "Indie" in g)
-    df["is_free"]     = df["price"] == 0
-
+    df["is_free"] = df["price"] == 0
     return df
 
 
@@ -295,8 +274,15 @@ def insight_coop_multiplier(df: pd.DataFrame) -> dict:
         f"Yoksa zaten büyük ekipler co-op yapabiliyor ve onların pazarlama bütçesi de büyük mü? "
         f"Her iki senaryo da mümkün. Veri ikisini ayıramıyor.\n\n"
         f"[BAĞLAM - 0:40-0:50]\n"
-        f"Analiz ettiğim tüm türlerin tamamında "
-        f"co-op pozitif bir çarpan etkisi yaratıyor. Pattern tutarlı.\n\n"
+        + (
+            f"Analiz ettiğim {len(stats)} türün TAMAMINDA co-op pozitif bir çarpan etkisi yaratıyor "
+            f"(en düşük çarpan bile '{en_dusuk['tag']}' türünde {en_dusuk['carpan']}x). Pattern tutarlı.\n\n"
+            if en_dusuk["carpan"] > 1
+            else
+            f"Ancak bu pattern tüm türlerde geçerli değil — '{en_dusuk['tag']}' türünde çarpan "
+            f"sadece {en_dusuk['carpan']}x (bazı türlerde etkinin zayıfladığını gösteriyor).\n\n"
+        )
+        +
         f"[CTA - 0:50-1:00]\n"
         f"Co-op eklemek tabii ki kolay değil — ama veriler bunu hak ettiğini söylüyor. "
         f"Oyununuzda co-op var mı? Neden var, neden yok? Yorumlara yazın."
@@ -484,78 +470,59 @@ def insight_quality_trap(df: pd.DataFrame) -> dict:
 # ---------------------------------------------------------------------------
 
 def insight_tag_synergy(df: pd.DataFrame) -> dict:
-    from collections import Counter
-    from itertools import combinations
-    
-    indie = df[df["is_indie"] & (df["total_reviews"] > 0)].copy()
-    success_threshold, quality_threshold, _ = _success_threshold(df)
-    
-    all_tags = [t for tags in indie["tags_list"] for t in tags]
-    ignore_tags = {
-        "Indie", "Singleplayer", "Multiplayer", "Co-op", "2D", "3D", 
-        "Early Access", "Free to Play", "Casual", "Action", "Adventure",
-        "Strategy", "Simulation", "RPG", "Great Soundtrack", "Atmospheric",
-        "Pixel Graphics", "Story Rich", "Sci-fi", "Fantasy", "Anime",
-        "VR", "Gore", "Violent", "Nudity", "Sexual Content"
-    }
-    top_tags = [t for t, _ in Counter(all_tags).most_common(60) if t not in ignore_tags]
+    """GERÇEK HESABA ÇEVRİLDİ (2026-08-03) — eskiden bu fonksiyon SADECE
+    max(medyan_review) tag-çiftini seçip "altın madeni" ilan ediyordu, HİÇBİR
+    istatistiksel test/confounding kontrolü yoktu. Bu tam olarak "Visual Novel
+    + FPS" gibi sahte bulguların kaynağıydı (bkz. plan Context bölümü —
+    çok-tag'li oyunların zaten daha "ilgilenilmiş" olduğu confounding sorunu,
+    Spearman 0.64→0.208).
 
-    combo_stats = []
-    for t1, t2 in combinations(top_tags, 2):
-        mask = indie["tags_list"].apply(lambda tags: t1 in tags and t2 in tags)
-        sub  = indie[mask]
-        if len(sub) < 30:
-            continue
-        combo_stats.append({
-            "combo": f"{t1} + {t2}",
-            "medyan_review": sub["total_reviews"].median(),
-            "medyan_score": sub["review_score"].median(),
-            "n": len(sub)
-        })
+    Artık discovery/generators.py + discovery/gate.py üzerinden GERÇEK bir
+    istatistiksel geçitten geçiyor: Mann-Whitney U + BH-FDR + etki büyüklüğü
+    (>=0.20) + bootstrap %95 GA. Sadece gate'i geçen bir çift varsa, o çift
+    "sinerji" olarak sunulur — geçmiyorsa bu insight hiç üretilmez (eskiden
+    hep bir "top" vardı, artık kanıt yoksa iddia da yok).
+    """
+    from src.metrics import engaged_universe
+    from src.discovery.generators import generate_pairwise_hypotheses
+    from src.discovery.gate import evaluate_batch
+    from src.narrative.templates import render_claim
 
-    if not combo_stats:
+    universe = engaged_universe(df).reset_index(drop=True)
+    values = universe["visibility_pct"].values
+
+    hyps = generate_pairwise_hypotheses(universe, "tags_list", top_n=40, min_count=30)
+    findings = evaluate_batch(hyps, values, min_n=30)
+
+    if not findings:
         return {}
 
-    stats = (pd.DataFrame(combo_stats)
-             .sort_values("medyan_review", ascending=False))
-             
-    top = stats.iloc[0]
-    
-    yorum = (
-        f"En iyi sinerji: {top['combo']}. "
-        f"Bu tür kombinasyonuna sahip {top['n']} oyunun ortalama (medyan) görünürlüğü {top['medyan_review']:.0f} review. "
-        f"Aynı zamanda kalite ortalaması %{top['medyan_score']:.0f}."
-    )
-    
+    top = max(findings, key=lambda f: abs(f.effect))
+    claim = render_claim(top)
+    t1, t2 = top.label.split(" + ")
+
+    yorum = claim
+
     hook = (
-        f"Oyununuzu yaparken '{top['combo'].split(' + ')[0]}' ile '{top['combo'].split(' + ')[1]}' türünü birleştirirseniz ne olur? "
-        f"Veriye göre: Başarı şansınız tavan yapar."
+        f"Sen şu an '{t1}' ile '{t2}' türlerini birlikte kullanmanın rastgele olduğunu düşünüyor olabilirsin. "
+        f"Veri {top.n} oyun üzerinden bunun tersini gösteriyor."
     )
-    
+
     script = (
         f"[HOOK - 0:00-0:05]\n"
-        f"Bazı oyun türlerini birleştirmek resmen hile yapmak gibidir. Veriyle kanıtlayayım.\n\n"
+        f"'{t1}' ve '{t2}' türlerini birlikte kullanan oyunlar tesadüfen mi öne çıkıyor? Veriyle bakalım.\n\n"
         f"[VERİ - 0:05-0:25]\n"
-        f"Steam'deki indie oyunları inceledim ve 'en başarılı tür kombinasyonlarını' çıkardım. "
-        f"Listenin zirvesinde harika bir ikili var: {top['combo']}. "
-        f"Steam genelinde bir oyunun 'çok başarılı' sayılması için bizim eşiğimiz {success_threshold}+ review ve %{quality_threshold}+ olumlu yorumdu.\n\n"
-        f"[ANALİZ - 0:25-0:45]\n"
-        f"İşin mucizevi kısmı şu: Bu pazar o kadar aç ki, "
-        f"'{top['combo']}' türünde yapacağınız şaheser bir oyunu geçtim, "
-        f"en SIRADAN, en ORTALAMA oyun bile {top['medyan_review']:.0f} review alıyor ve pazarın başarı barajını paramparça ediyor! "
-        f"Yani bu kitle, bu iki türün birleşimine doyamıyor.\n\n"
-        f"[CTA - 0:45-1:00]\n"
-        f"Sizce neden '{top['combo']}' bu kadar iyi çalışıyor? Yorumlarda tartışalım."
+        f"{claim}\n\n"
+        f"[UYARI]\n"
+        f"Bu bir korelasyondur, nedensellik değildir — çok tag taşıyan oyunlar zaten geliştiricisinin "
+        f"daha çok ilgilendiği oyunlar olabilir.\n\n"
+        f"[CTA]\n"
+        f"Sizce '{t1}' ve '{t2}' neden birlikte iyi çalışıyor? Yorumlarda tartışalım."
     )
-    
+
     return {
-        "baslik": f"Tag Sinerjisi: {top['combo']} Altın Madeni",
-        "veri": {
-            "top_combo": top["combo"],
-            "medyan_review": top["medyan_review"],
-            "medyan_score": top["medyan_score"],
-            "n": top["n"],
-        },
+        "baslik": f"Tag Sinerjisi: {top.label}",
+        "veri": top.as_dict(),
         "yorum": yorum,
         "hook": hook,
         "script": script,
@@ -679,44 +646,130 @@ def generate_report(insights: list[dict], snapshot: str) -> Path:
 
 
 # ---------------------------------------------------------------------------
+# Telegram Digest — YEDEK çıktı, GERÇEK n8n akışında KULLANILMIYOR
+# ---------------------------------------------------------------------------
+# NOT (2026-08-03): Gerçek n8n akışı şu şekilde çalıştığı doğrulandı: Python
+# autonomous_anomalies.json'u (ham anomaliler) üretir -> bu doğrudan n8n'deki
+# LLM (Claude) node'una gider -> LLM kendi yaratıcı script'ini yazar (bkz.
+# docs/n8n_system_prompt.md) -> Telegram'a o gider. Yani seçim ve metin üretimi
+# LLM'e ait, Python'a değil — bu bilinçli/onaylanmış tasarım.
+#
+# Bu fonksiyon, Telegram'ın 4096 karakter sert limitine karşı bir GÜVENLİK AĞI
+# olarak yazıldı ("Bad Request: message is too long" hatasına karşı), ama asıl
+# çözüm n8n'deki LLM system prompt'una eklenen "UZUNLUK LİMİTİ" kuralı oldu
+# (LLM kendi çıktısını 3500 karakterle sınırlıyor). Yani bu fonksiyonun ürettiği
+# telegram_digest.md dosyası ŞU AN n8n workflow'una BAĞLI DEĞİL. Silinmedi çünkü
+# ileride Python'un kendi metnini doğrudan yollamak istenirse hazır dursun diye.
+# Yeni bir asistan bu fonksiyonu görüp "n8n bunu kullanıyor" varsaymasın.
+TELEGRAM_CHAR_LIMIT = 4096
+TELEGRAM_SAFE_LIMIT = 3500  # başlık/emoji gibi n8n'in ekleyebileceği payı için marj
+
+
+def generate_telegram_digest(insights: list[dict]) -> Path:
+    """weekly_report'taki insight'lardan Telegram'a güvenle gönderilebilecek
+    tek bir kısa özet üretir ve outputs/insights/telegram_digest.md'ye yazar.
+    """
+    valid = [ins for ins in insights if ins]
+    digest_path = OUTPUT_DIR / "telegram_digest.md"
+
+    if not valid:
+        digest_path.write_text("Bu hafta üretilecek bir içerik bulunamadı.", encoding="utf-8")
+        return digest_path
+
+    # Script'i en uzun olan (=en detaylı anlatılan) insight'ı seç — genelde en
+    # "dolu" olan budur. Deterministik: aynı girdide her zaman aynı seçim.
+    chosen = max(valid, key=lambda ins: len(ins.get("script", "")))
+
+    parts = [
+        f"🔥 HAFTANIN RİBAT VERİ ANOMALİSİ: {chosen['baslik']}",
+        "",
+        f"🎬 [EDİTÖRE NOT]: {chosen['yorum']}",
+        "",
+        chosen["script"],
+        "",
+        f"📈 Grafik: {chosen.get('grafik') or 'Henüz yok'}",
+    ]
+    text = "\n".join(parts)
+
+    if len(text) > TELEGRAM_SAFE_LIMIT:
+        # Sahneleri SİLMEK yerine sondan kırpıyoruz — CTA/son sahne kaybolsa
+        # bile hook + veri gerçeği (en kritik kısım) korunur.
+        text = text[:TELEGRAM_SAFE_LIMIT - 20].rstrip() + "\n\n[...devamı kırpıldı]"
+
+    digest_path.write_text(text, encoding="utf-8")
+    log.info(f"  Telegram digest: {len(text)} karakter (limit {TELEGRAM_SAFE_LIMIT})")
+    return digest_path
+
+
+# ---------------------------------------------------------------------------
 # INSIGHT 7 — Kalite Uçurumu ve %80 Barajı
 # ---------------------------------------------------------------------------
 
 def insight_80pct_cliff(df: pd.DataFrame) -> dict:
+    """GERÇEK HESABA ÇEVRİLDİ (2026-08-03) — eskiden bu fonksiyon `df`
+    parametresini hiç kullanmıyordu, tüm iddialar (özellikle "Kalite Tuzağı")
+    elle yazılmıştı. Şimdi src/discovery/families/quality_cliff.py üzerinden
+    GERÇEK istatistiksel testler çalıştırılıyor; her iddia SADECE gate'ten
+    geçerse metne dökülüyor. Test sonucu (bu yazılırken, march2025 snapshot'ında):
+    "%80 Uçurumu" GERÇEKTEN doğrulandı (effect=+0.277, n=19.219), ama "Kalite
+    Tuzağı" (90-95 bandının 85-90'dan düşük olduğu) istatistiksel olarak
+    DOĞRULANAMADI — eski sistem bunu kanıtsız, kesin bir gerçek gibi sunuyordu.
+    """
+    from src.discovery.families.quality_cliff import test_cliff_at_80, test_quality_trap
+    from src.narrative.templates import render_claim
+
+    cliff_finding = test_cliff_at_80(df)
+    trap_finding = test_quality_trap(df)
+
+    if cliff_finding is None:
+        # Evren çok küçükse (min_n altında) bu insight hiç üretilemez —
+        # eski sistemin "her zaman statik metin döndür" davranışının aksine.
+        return {}
+
+    cliff_claim = render_claim(cliff_finding)
+
+    if trap_finding is not None:
+        trap_claim = render_claim(trap_finding)
+        trap_section = (
+            f"[KALİTE TUZAĞI - 0:20-0:40]\n"
+            f"Veri ayrıca şunu gösteriyor: {trap_claim} "
+            f"Bu, çok dar bir kitleye hitap eden oyunların skoru şişirip ana akıma ulaşamadığı anlamına gelebilir "
+            f"(korelasyon, nedensellik değildir)."
+        )
+    else:
+        trap_section = (
+            f"[NOT]\n"
+            f"90-95% bandı ile 85-90% bandı arasında, bu veri setinde istatistiksel olarak anlamlı bir "
+            f"görünürlük farkı TESPİT EDİLEMEDİ. 'Kalite Tuzağı' iddiası bu snapshot'ta desteklenmiyor."
+        )
+
     yorum = (
-        "Steam'in %80 (Very Positive) barajı tam bir uçurumdur. "
-        "%79'dan %80'e geçiş, görünürlüğü (dolayısıyla satışları) katlar. "
-        "Ancak grafikteki asıl anomali 90-95% bandındadır. Bu banttaki oyunların ortalama görünürlüğü, "
-        "85-90% bandındakilerden daha düşüktür. Bu 'Kalite Tuzağı'dır; çok dar bir kitleye (niş) hitap eden oyunlar "
-        "skoru şişirir ama ana akıma ulaşamadıkları için görünürlükleri düşer. "
-        "Sadece 95%+ olan evrensel şaheserler (Stardew Valley vb.) bu tuzağı aşıp tepeye yerleşir."
+        f"{cliff_claim} "
+        + ("Ayrıca 90-95% bandında istatistiksel olarak doğrulanmış bir düşüş eğilimi var."
+           if trap_finding else
+           "90-95% bandında ise anlamlı bir 'tuzak' etkisi bu snapshot'ta bulunamadı.")
     )
 
     hook = (
-        "Oyununuz Steam'de %93 olumlu not alsa bile neden kimse tarafından oynanmıyor olabilir? "
-        "İşte Steam'in acımasız 'Kalite Tuzağı' ve %80 Uçurumu."
+        f"Sen şu an Steam'in %80 (Very Positive) barajını sadece bir rozet sanıyor olabilirsin. "
+        f"Veri {cliff_finding.n} oyun üzerinden gösteriyor ki bu eşiği geçmek görünürlüğü gerçekten değiştiriyor."
     )
 
     script = (
-        f"[BİLGİ NOTU - Ekranda Belirir]\n"
-        f"*Steam verilerinde her 1 inceleme (review) ortalama 30-50 satışa eşittir. İnceleme sayısı görünürlüğün ve satışın kanıtıdır.*\n\n"
-        f"[HOOK - 0:00-0:05]\n"
-        f"Steam'de oyununuz %93 not alırsa zengin olacağınızı mı sanıyorsunuz? Veriler tam tersini söylüyor.\n\n"
-        f"[UÇURUM - 0:05-0:20]\n"
-        f"Steam algoritmasının altın kuralı şudur: %80 (Very Positive) barajını geçemeyen oyunlar görünmezdir. "
-        f"%80'i aştığınız an, algoritma sizi ana sayfaya fırlatır ve satışlarınız katlanır. Buraya kadar her şey mantıklı.\n\n"
-        f"[KALİTE TUZAĞI - 0:20-0:40]\n"
-        f"Peki neden %90-95 arası puan alan oyunların görünürlüğü ve satışları, %85 alanlardan DAHA DÜŞÜK? "
-        f"Buna 'Kalite Tuzağı' diyoruz. Bu oyunlar o kadar 'niş' ve dar bir kitleye hitap eder ki, sadece fanatikleri alıp 100 üzerinden 93 verir. "
-        f"Ama ana akım oyuncu bu oyunu asla almaz. Yani notunuz şişer, ama cüzdanınız boş kalır.\n\n"
-        f"[ŞAHESERLER - 0:40-0:55]\n"
-        f"Sadece %95 üzerine çıkabilen evrensel şaheserler (Stardew Valley, Hades gibi) bu tuzağı aşar. "
-        f"Hedefiniz %95 almak değil, %85 bandında kalıp kitlelere hitap eden bir oyun yapmak olmalı."
+        f"[VERİ GERÇEĞİ - 0:00-0:20]\n"
+        f"{cliff_claim}\n\n"
+        f"{trap_section}\n\n"
+        f"[CTA]\n"
+        f"Bu bulgular Mann-Whitney U testi + Benjamini-Hochberg FDR düzeltmesi + bootstrap güven aralığı "
+        f"ile doğrulanmıştır (q={cliff_finding.q_value if not np.isnan(cliff_finding.q_value) else 'hesaplanmadı'})."
     )
 
     return {
-        "baslik": "Kalite Uçurumu: %80 Barajı ve Kalite Tuzağı",
-        "veri": {},
+        "baslik": "Kalite Uçurumu: %80 Barajı" + (" ve Kalite Tuzağı" if trap_finding else ""),
+        "veri": {
+            "cliff": cliff_finding.as_dict() if cliff_finding else None,
+            "quality_trap": trap_finding.as_dict() if trap_finding else None,
+        },
         "yorum": yorum,
         "hook": hook,
         "script": script,
@@ -762,23 +815,36 @@ def run(snapshot="march2025"):
     log.info(f"  -> {report_path}")
 
     # JSON da çıkar (n8n'in okuyacağı Kati Kontrat formatinda)
-    import uuid
     run_id = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
-    
+
+    # total_insights: SADECE boş olmayan insight'ları say. Eskiden len(insights)
+    # kullanılıyordu — bir insight fonksiyonu erken çıkıp {} döndürürse (bkz.
+    # insight_coop_multiplier, insight_quality_trap vb. birden fazla erken-return
+    # noktası var) generate_report bu boş kaydı atlıyor ama sayaç yine de 7
+    # diyordu. n8n/LLM tarafı "insights dizisinde 7 öğe var" bekleyip aslında
+    # 6 gerçek insight bulunca şaşırabiliyordu.
+    valid_insights = [ins for ins in insights if ins]
+
     n8n_contract = {
         "run_id": run_id,
         "status": "success",
         "content_ready": True,
-        "total_insights": len(insights),
-        "insights": insights
+        "total_insights": len(valid_insights),
+        "insights": valid_insights
     }
-    
+
     json_path = OUTPUT_DIR / "weekly_report.json"
     json_path.write_text(
         json.dumps(n8n_contract, ensure_ascii=False, indent=2, default=str),
         encoding="utf-8"
     )
     log.info(f"  -> {json_path}")
+
+    # Telegram'a GÜVENLE gönderilebilecek kırpılmış özet (bkz. generate_telegram_digest
+    # docstring'i — Telegram'ın 4096 karakter sert sınırı yüzünden eklendi).
+    digest_path = generate_telegram_digest(insights)
+    log.info(f"  -> {digest_path}")
+
     log.info("\nTamamlandi.")
     return insights
 

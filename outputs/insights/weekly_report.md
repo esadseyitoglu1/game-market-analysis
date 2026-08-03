@@ -1,5 +1,5 @@
 # Steam Indie Pazar Zekası Raporu
-**Üretildi:** 25 July 2026, 22:17  |  **Veri:** Kaggle steam-games-dataset (march2025)  |  **Uyarı:** SteamSpy verileri tahminidir, Valve resmi rakam paylaşmaz.
+**Üretildi:** 03 August 2026, 21:03  |  **Veri:** Kaggle steam-games-dataset (march2025)  |  **Uyarı:** SteamSpy verileri tahminidir, Valve resmi rakam paylaşmaz.
 
 ---
 
@@ -53,7 +53,7 @@ Oyununuza tek bir özellik ekleyerek review sayınızı 7.5x artırabilirsiniz.
 Ama bu bir korelasyon, nedensellik değil. Co-op eklemek mi başarı getiriyor? Yoksa zaten büyük ekipler co-op yapabiliyor ve onların pazarlama bütçesi de büyük mü? Her iki senaryo da mümkün. Veri ikisini ayıramıyor.
 
 [BAĞLAM - 0:40-0:50]
-Analiz ettiğim tüm türlerin tamamında co-op pozitif bir çarpan etkisi yaratıyor. Pattern tutarlı.
+Analiz ettiğim 11 türün TAMAMINDA co-op pozitif bir çarpan etkisi yaratıyor (en düşük çarpan bile 'Top-Down Shooter' türünde 2.6x). Pattern tutarlı.
 
 [CTA - 0:50-1:00]
 Co-op eklemek tabii ki kolay değil — ama veriler bunu hak ettiğini söylüyor. Oyununuzda co-op var mı? Neden var, neden yok? Yorumlara yazın.
@@ -120,27 +120,27 @@ Sizce neden 'City Builder' oyunları genellikle beklentinin altında kalıyor? F
 
 ---
 
-## 5. Tag Sinerjisi: Visual Novel + FPS Altın Madeni
+## 5. Tag Sinerjisi: Anime + Psychological Horror
 
 **📊 Analitik Yorum**
-En iyi sinerji: Visual Novel + FPS. Bu tür kombinasyonuna sahip 72 oyunun ortalama (medyan) görünürlüğü 437 review. Aynı zamanda kalite ortalaması %81.
+'Anime + Psychological Horror' birleşimini birlikte taşıyan 399 oyun, benzerlerine göre daha yüksek görünürlük diliminde (etki +0.39, %95 GA [+0.35, +0.44]).
 
 **🎣 Video Hook (İlk 3 Saniye)**
-> Oyununuzu yaparken 'Visual Novel' ile 'FPS' türünü birleştirirseniz ne olur? Veriye göre: Başarı şansınız tavan yapar.
+> Sen şu an 'Anime' ile 'Psychological Horror' türlerini birlikte kullanmanın rastgele olduğunu düşünüyor olabilirsin. Veri 399 oyun üzerinden bunun tersini gösteriyor.
 
 **📝 Script Taslağı**
 ```
 [HOOK - 0:00-0:05]
-Bazı oyun türlerini birleştirmek resmen hile yapmak gibidir. Veriyle kanıtlayayım.
+'Anime' ve 'Psychological Horror' türlerini birlikte kullanan oyunlar tesadüfen mi öne çıkıyor? Veriyle bakalım.
 
 [VERİ - 0:05-0:25]
-Steam'deki indie oyunları inceledim ve 'en başarılı tür kombinasyonlarını' çıkardım. Listenin zirvesinde harika bir ikili var: Visual Novel + FPS. Steam genelinde bir oyunun 'çok başarılı' sayılması için bizim eşiğimiz 171+ review ve %80+ olumlu yorumdu.
+'Anime + Psychological Horror' birleşimini birlikte taşıyan 399 oyun, benzerlerine göre daha yüksek görünürlük diliminde (etki +0.39, %95 GA [+0.35, +0.44]).
 
-[ANALİZ - 0:25-0:45]
-İşin mucizevi kısmı şu: Bu pazar o kadar aç ki, 'Visual Novel + FPS' türünde yapacağınız şaheser bir oyunu geçtim, en SIRADAN, en ORTALAMA oyun bile 437 review alıyor ve pazarın başarı barajını paramparça ediyor! Yani bu kitle, bu iki türün birleşimine doyamıyor.
+[UYARI]
+Bu bir korelasyondur, nedensellik değildir — çok tag taşıyan oyunlar zaten geliştiricisinin daha çok ilgilendiği oyunlar olabilir.
 
-[CTA - 0:45-1:00]
-Sizce neden 'Visual Novel + FPS' bu kadar iyi çalışıyor? Yorumlarda tartışalım.
+[CTA]
+Sizce 'Anime' ve 'Psychological Horror' neden birlikte iyi çalışıyor? Yorumlarda tartışalım.
 ```
 
 **📈 Grafik:** `tag_synergy.png`
@@ -174,30 +174,24 @@ Eğer indie geliştiriciyseniz sormanız gereken tek soru var: Oyununuzu kime ya
 
 ---
 
-## 7. Kalite Uçurumu: %80 Barajı ve Kalite Tuzağı
+## 7. Kalite Uçurumu: %80 Barajı
 
 **📊 Analitik Yorum**
-Steam'in %80 (Very Positive) barajı tam bir uçurumdur. %79'dan %80'e geçiş, görünürlüğü (dolayısıyla satışları) katlar. Ancak grafikteki asıl anomali 90-95% bandındadır. Bu banttaki oyunların ortalama görünürlüğü, 85-90% bandındakilerden daha düşüktür. Bu 'Kalite Tuzağı'dır; çok dar bir kitleye (niş) hitap eden oyunlar skoru şişirir ama ana akıma ulaşamadıkları için görünürlükleri düşer. Sadece 95%+ olan evrensel şaheserler (Stardew Valley vb.) bu tuzağı aşıp tepeye yerleşir.
+'Review skoru >=80% (Very Positive)' grubundaki 19219 oyun, karşılaştırma grubuna göre daha yüksek görünürlükte (etki +0.28, %95 GA [+0.27, +0.28]). 90-95% bandında ise anlamlı bir 'tuzak' etkisi bu snapshot'ta bulunamadı.
 
 **🎣 Video Hook (İlk 3 Saniye)**
-> Oyununuz Steam'de %93 olumlu not alsa bile neden kimse tarafından oynanmıyor olabilir? İşte Steam'in acımasız 'Kalite Tuzağı' ve %80 Uçurumu.
+> Sen şu an Steam'in %80 (Very Positive) barajını sadece bir rozet sanıyor olabilirsin. Veri 19219 oyun üzerinden gösteriyor ki bu eşiği geçmek görünürlüğü gerçekten değiştiriyor.
 
 **📝 Script Taslağı**
 ```
-[BİLGİ NOTU - Ekranda Belirir]
-*Steam verilerinde her 1 inceleme (review) ortalama 30-50 satışa eşittir. İnceleme sayısı görünürlüğün ve satışın kanıtıdır.*
+[VERİ GERÇEĞİ - 0:00-0:20]
+'Review skoru >=80% (Very Positive)' grubundaki 19219 oyun, karşılaştırma grubuna göre daha yüksek görünürlükte (etki +0.28, %95 GA [+0.27, +0.28]).
 
-[HOOK - 0:00-0:05]
-Steam'de oyununuz %93 not alırsa zengin olacağınızı mı sanıyorsunuz? Veriler tam tersini söylüyor.
+[NOT]
+90-95% bandı ile 85-90% bandı arasında, bu veri setinde istatistiksel olarak anlamlı bir görünürlük farkı TESPİT EDİLEMEDİ. 'Kalite Tuzağı' iddiası bu snapshot'ta desteklenmiyor.
 
-[UÇURUM - 0:05-0:20]
-Steam algoritmasının altın kuralı şudur: %80 (Very Positive) barajını geçemeyen oyunlar görünmezdir. %80'i aştığınız an, algoritma sizi ana sayfaya fırlatır ve satışlarınız katlanır. Buraya kadar her şey mantıklı.
-
-[KALİTE TUZAĞI - 0:20-0:40]
-Peki neden %90-95 arası puan alan oyunların görünürlüğü ve satışları, %85 alanlardan DAHA DÜŞÜK? Buna 'Kalite Tuzağı' diyoruz. Bu oyunlar o kadar 'niş' ve dar bir kitleye hitap eder ki, sadece fanatikleri alıp 100 üzerinden 93 verir. Ama ana akım oyuncu bu oyunu asla almaz. Yani notunuz şişer, ama cüzdanınız boş kalır.
-
-[ŞAHESERLER - 0:40-0:55]
-Sadece %95 üzerine çıkabilen evrensel şaheserler (Stardew Valley, Hades gibi) bu tuzağı aşar. Hedefiniz %95 almak değil, %85 bandında kalıp kitlelere hitap eden bir oyun yapmak olmalı.
+[CTA]
+Bu bulgular Mann-Whitney U testi + Benjamini-Hochberg FDR düzeltmesi + bootstrap güven aralığı ile doğrulanmıştır (q=hesaplanmadı).
 ```
 
 **📈 Grafik:** `the_80pct_cliff.png`

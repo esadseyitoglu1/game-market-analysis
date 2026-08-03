@@ -6,6 +6,7 @@ Outputs a JSON of raw findings for an LLM to consume.
 
 import logging
 import json
+import random
 from pathlib import Path
 import pandas as pd
 import numpy as np
@@ -13,6 +14,11 @@ import numpy as np
 log = logging.getLogger(__name__)
 PROCESSED_DIR = Path(__file__).resolve().parent.parent / "data" / "processed"
 OUTPUT_DIR = Path(__file__).resolve().parent.parent / "outputs" / "insights"
+
+# Sabit seed: aynı veri setinde her çalıştırma aynı 10 anomaliyi seçsin
+# (tekrarlanabilirlik / reproducibility için). Eskiden seed'siz random.shuffle
+# kullanılıyordu, bu da pipeline'ı denetlenemez kılıyordu.
+RANDOM_SEED = 42
 
 def _load(snapshot="march2025") -> pd.DataFrame:
     df = pd.read_csv(PROCESSED_DIR / f"steam_games_{snapshot}.csv", low_memory=False)
@@ -141,37 +147,43 @@ def find_anomalies(snapshot="march2025"):
                 })
                 decay_count += 1
     log.info(f"Found {decay_count} Decay Anomalies")
-            
-    import random
-    import os
-    
+
     # Sisteme "Hafıza" ekliyoruz: Geçmişte LLM'e sunulan konuları bir daha asla sunma.
-    history_file = os.path.join(os.path.dirname(__file__), "..", "outputs", "insights", "used_tags.txt")
-    
+    # NOT: Dizin, dosyayı okumadan/yazmadan ÖNCE oluşturulmalı — aksi halde ilk
+    # çalıştırmada (outputs/insights/ henüz yokken) FileNotFoundError alınır.
+    insights_dir = os.path.join(os.path.dirname(__file__), "..", "outputs", "insights")
+    os.makedirs(insights_dir, exist_ok=True)
+    history_file = os.path.join(insights_dir, "used_tags.txt")
+
     used_tags = set()
     if os.path.exists(history_file):
         with open(history_file, "r", encoding="utf-8") as f:
             used_tags = set(line.strip() for line in f)
-            
+
     # Daha önce kullanılanları çöpe at
     fresh_anomalies = [a for a in anomalies if a["tag"] not in used_tags]
-    
+
     # Eğer 131 konunun hepsini tüketirsek (aylar sonra), hafızayı sıfırla başa dön
     if len(fresh_anomalies) < 10:
         used_tags = set()
         fresh_anomalies = anomalies
         if os.path.exists(history_file):
             os.remove(history_file)
-            
-    # Kalan taze verileri karıştır ve 10 tane seç
-    random.shuffle(fresh_anomalies)
+
+    # Kalan taze verileri DETERMİNİSTİK sırala ve 10 tane seç.
+    # Eskiden random.shuffle (seed'siz) kullanılıyordu — bu, aynı girdiyle
+    # farklı çıktı üretip pipeline'ı tekrarlanamaz (non-reproducible) kılıyordu.
+    # Sabit seed'li bir RNG ile karıştırma hâlâ "çeşitlilik" hissi verir ama
+    # aynı veri setinde her çalıştırmada aynı sonucu üretir.
+    rng = random.Random(RANDOM_SEED)
+    rng.shuffle(fresh_anomalies)
     final_anomalies = fresh_anomalies[:10]
-    
+
     # Seçilen bu 10 konuyu hafızaya kaydet ki haftaya bir daha çıkmasınlar!
     with open(history_file, "a", encoding="utf-8") as f:
         for a in final_anomalies:
             f.write(a["tag"] + "\n")
-    
+
     return final_anomalies
 
 def run(snapshot="march2025"):
