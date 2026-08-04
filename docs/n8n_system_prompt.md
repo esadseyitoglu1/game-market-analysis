@@ -97,14 +97,22 @@ varsayılan olarak sadece `/home/node/.n8n-files`'a kısıtlıyor. Çözüm,
 
 ```yaml
 environment:
-  - N8N_RESTRICT_FILE_ACCESS_TO=/home/node/.n8n-files,/srv/charts,/srv/insights
+  - N8N_RESTRICT_FILE_ACCESS_TO=/home/node/.n8n-files;/srv/charts;/srv/insights
 ```
 
-Doğrulandı: `docker exec services-n8n-1 printenv | grep N8N_RESTRICT` doğru
-değeri gösteriyor. **Özet: bu path'e erişmek için üç ayrı izin katmanı vardı
-— (1) Docker bind mount, (2) Linux dosya izinleri (`/root` sorunu), (3) n8n'in
-kendi `N8N_RESTRICT_FILE_ACCESS_TO` allowlist'i — üçü de ayrı ayrı
-çözülmesi gerekiyordu.**
+**DİKKAT — AYRAÇ VİRGÜL DEĞİL, NOKTALI VİRGÜL (`;`).** İlk denemede virgülle
+(`,`) ayrılmış path listesi kullanıldı, bu n8n 2.x'te ÇALIŞMADI — hata aynen
+devam etti, `printenv` değişkeni doğru gösterse bile n8n içeride bunu tek bir
+path olarak yorumluyordu (bkz. n8n community forum:
+`N8N_RESTRICT_FILE_ACCESS_TO in 2.0`). n8n 2.0'daki breaking change'den beri
+çoklu dizin ayracı `;`. Sunucuda `sed` ile virgül → noktalı virgül değiştirilip
+`docker compose up -d --force-recreate n8n` ile container yeniden oluşturuldu,
+`docker exec services-n8n-1 printenv | grep N8N_RESTRICT` ile doğrulandı.
+
+**Özet: bu path'e erişmek için üç ayrı izin katmanı vardı — (1) Docker bind
+mount, (2) Linux dosya izinleri (`/root` sorunu), (3) n8n'in kendi
+`N8N_RESTRICT_FILE_ACCESS_TO` allowlist'i (VİRGÜL değil NOKTALI VİRGÜL ile
+ayrılmalı) — üçü de ayrı ayrı çözülmesi gerekiyordu.**
 
 Bu path'ler ayrıca artık HER ZAMAN `/` ayracı ve SADECE ASCII karakter
 içeriyor (Windows'ta üretilse bile) — `chart_selector.py`'deki `.as_posix()`
