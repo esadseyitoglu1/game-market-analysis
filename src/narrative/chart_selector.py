@@ -166,29 +166,59 @@ def chart_before_after(finding: Finding) -> Path:
 
 
 def chart_trend_line(finding: Finding) -> Path:
-    """temporal bulguları için: yıllara göre trend çizgisi.
+    """temporal bulguları için: tag'in trendi PAZAR ORTALAMASIYLA birlikte.
 
-    NOT: Finding nesnesi yıl-bazlı seriyi taşımıyor (sadece özet istatistik).
-    Bu fonksiyon families/temporal.py tarafından `evidence` alanına konan
-    yıllık seriyi kullanır (bkz. Adım 5).
+    Tek başına tag'in çizgisi ("bu iyi mi kötü mü, neye göre?") bağlamsız ve
+    okunaksızdı — families/temporal.py zaten "pazara göre göreli" testi
+    yapıyor (detrend, bkz. o dosyanın docstring'i) ama grafik bunu hiç
+    göstermiyordu. Artık iki çizgi birden çizilir (tag vs pazar medyanı) ve
+    aradaki fark taranarak vurgulanır — izleyici "tag mi düşüyor yoksa pazar
+    mı ondan hızlı yükseliyor" ayrımını görsel olarak anında yakalar.
     """
     _style()
-    fig, ax = plt.subplots(figsize=(7, 4))
+    fig, ax = plt.subplots(figsize=(8, 4.5))
 
     yearly = finding.evidence.get("yearly_series", {})
-    if yearly:
+    market = finding.evidence.get("market_yearly_series", {})
+
+    if yearly and market:
         years = sorted(yearly.keys())
-        vals = [yearly[y] for y in years]
+        tag_vals = [yearly[y] for y in years]
+        market_vals = [market[y] for y in years]
         color = C["green"] if finding.direction == "positive" else C["red"]
-        ax.plot(years, vals, marker="o", color=color, linewidth=2)
+
+        ax.plot(years, tag_vals, marker="o", markersize=7, color=color,
+                linewidth=2.5, label=finding.label.split(" (")[0], zorder=3)
+        ax.plot(years, market_vals, marker="o", markersize=5, color=C["muted"],
+                linewidth=1.8, linestyle="--", label="Pazar geneli (tüm indie)", zorder=2)
+        ax.fill_between(years, tag_vals, market_vals, color=color, alpha=0.12, zorder=1)
+
+        ax.legend(loc="upper left", framealpha=0.2, labelcolor=C["text"], fontsize=9)
+
+        # Sabit eksen-koordinatı (0-1) kullanılıyor — veri noktasına göre
+        # (xy=son yıl, son değer) konumlandırma başlıkla çakışıyordu (son
+        # nokta genelde grafiğin üst kısmında oluyor, başlık da orada).
+        last_gap = tag_vals[-1] - market_vals[-1]
+        gap_word = "üstünde" if last_gap >= 0 else "altında"
+        ax.text(0.98, 0.04, f"Son yılda: {abs(last_gap):.1f} puan pazarın {gap_word}",
+                transform=ax.transAxes, ha="right", va="bottom",
+                fontsize=9.5, color=color, fontweight="bold",
+                bbox=dict(boxstyle="round,pad=0.3", facecolor=C["panel"], edgecolor=color, linewidth=1))
     else:
         ax.text(0.5, 0.5, "Yıllık seri verisi yok", ha="center", va="center",
                 transform=ax.transAxes, color=C["muted"])
 
+    tag_name = finding.label.split(" (")[0]
+    # DİKKAT: direction, MUTLAK seviyeye değil pazarla aradaki FARKIN eğimine
+    # (relative_diff'in slope'una) bakıyor — bkz. families/temporal.py. Yani
+    # tag hâlâ pazarın üstünde olsa bile "negative" çıkabilir (fark daralıyorsa).
+    # Başlık bunu net ayırt etmeli, yoksa grafikle (çizgi hâlâ üstte) çelişir.
+    trend_word = "farkını pazara karşı kaybediyor" if finding.direction == "negative" else "farkını pazara karşı açıyor"
     ax.set_xlabel("Yıl")
-    ax.set_ylabel("Medyan görünürlük / kalite")
-    ax.set_title(f"{finding.label}\netki={finding.effect:+.2f}  n={finding.n}")
-    _note(ax, f"n={finding.n}")
+    ax.set_ylabel("Medyan review skoru")
+    ax.set_title(f"'{tag_name}' etiketi pazara göre {trend_word}\nn={finding.n} oyun  |  Spearman ρ={finding.effect:+.2f}")
+    _note(ax, f"n={finding.n}  |  Kesikli çizgi = tüm indie pazarının aynı yıllardaki medyanı  |  "
+              f"ρ, tag-pazar FARKININ zamanla nasıl değiştiğini ölçer (mutlak seviyeyi değil)")
 
     return _save(fig, f"finding_{_safe_filename(finding.label)}_trend.png")
 
