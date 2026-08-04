@@ -33,6 +33,19 @@ yapısı" bölümüne bak.
 4. Geri kalan kurallar (VERİYE SADAKAT, UYARI ZORUNLULUĞU, IDENTITY
    DISRUPTION, TELEGRAM KORUMASI/yıldız yasağı) **aynen korundu** — bunlar
    tek/çoklu bulgu ayrımından bağımsız, hâlâ geçerli.
+6. **Script canlı testte cümlenin ORTASINDA kesiliyordu (2026-08-04 bulundu).**
+   Kullanıcı gerçek Telegram çıktısını paylaştı — "[25-40sn - RİBAT ANALİZİ /
+   ÇÖZÜM] GÖRSEL" yazıp orada duruyordu, [40-50sn - CTA] bölümü hiç yoktu.
+   İki ayrı sebep: (a) "Message a model" node'unda `maxTokensToSample`
+   ayarlanmamıştı — n8n'in Anthropic node'u düşük bir varsayılanla
+   sınırlıyordu, LLM'in kendi cevabı fiziksel olarak kesiliyordu (finish_reason
+   max_tokens). `options.maxTokensToSample: 2048` eklendi. (b) "Split Caption
+   Script" node'undaki `.slice(0, 3200)` de karakter sayısına göre kör kesim
+   yapıyordu — bir cümlenin ortasında bile durabiliyordu. `trimToBoundary()`
+   yardımcı fonksiyonu eklendi: son `\n\n`/`. `/`\n` sınırını bulup ORADA
+   kesiyor (limitin yarısından sonraki bir sınır varsa), script limiti de
+   3200'den 3800'e çıkarıldı (Telegram'ın gerçek sınırı 4096, biraz daha pay
+   bırakıldı).
 5. **`{{ $json }}` → `{{ JSON.stringify($json, null, 2) }}` (2026-08-04 bulundu).**
    n8n, expression içinde bir objeyi (`$json`) düz metne gömerken JavaScript'in
    varsayılan `toString()`'ini kullanıyor — bu bir obje için `[object Object]`

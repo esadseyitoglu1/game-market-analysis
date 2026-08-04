@@ -40,8 +40,17 @@ INSIGHTS_DIR = Path(__file__).resolve().parent.parent.parent / "outputs" / "insi
 HISTORY_FILE = INSIGHTS_DIR / "finding_history.txt"
 HISTORY_RESET_THRESHOLD = 5  # taze bulgu sayısı bunun altına düşerse hafıza sıfırlanır
 
+# NOT (2026-08-04): "median_playtime_forever" bilerek burada YOK.
+# average_playtime_forever > 0 ve median_playtime_forever > 0 neredeyse HER
+# ZAMAN aynı oyun kümesini seçiyor (doğrulandı: engaged_universe'de ikisi de
+# birebir aynı 4011 oyun) — bir oyunun ortalama oynanma süresi 0'dan büyükse
+# medyanı da öyle olur, istatistiksel olarak eş anlamlı iki kolon. İkisini
+# birden taramak select_top_findings'e neredeyse birebir aynı cümleyi iki kez
+# "farklı bulgu" gibi sunma riski taşıyordu (canlı n8n testinde görüldü —
+# iki ayrı video script'i, %90 aynı içerik). average_playtime_forever
+# temsilci olarak bırakıldı (playtime ailesinin daha yaygın kullanılan alanı).
 NUMERIC_COLUMNS = ["achievements", "dlc_count", "average_playtime_forever",
-                    "median_playtime_forever", "required_age", "discount"]
+                    "required_age", "discount"]
 BOOLEAN_COLUMNS = ["windows", "mac", "linux"]
 
 # temporal_trend ailesi için taranacak popüler tag'ler — tüm tag'leri taramak

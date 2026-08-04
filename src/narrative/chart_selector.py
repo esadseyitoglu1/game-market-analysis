@@ -67,14 +67,24 @@ def _save(fig, name: str) -> Path:
     return p
 
 
-def _note(ax, text: str):
-    """visualizer.py:_note() ile aynı — zorunlu kaynak/metodoloji damgası."""
+def _note(ax, text: str, y: float = -0.22):
+    """visualizer.py:_note() ile aynı — zorunlu kaynak/metodoloji damgası.
+
+    NOT (2026-08-04 düzeltildi): sabit y=-0.14 konumu, x-ekseni etiketi
+    ("Görünürlük percentile...") ile ÇAKIŞIYORDU — n8n'e giden canlı
+    çıktıda görüldü (Boomer Shooter / playtime grafiklerinde rakamlar ve
+    eksen yazısı üst üste biniyordu). Kök neden: figürün alt boşluğu
+    (subplots_adjust ile büyütülmeden) bu notu barındıracak kadar geniş
+    değildi. Çözüm: her chart fonksiyonu HEM `fig.subplots_adjust(bottom=...)`
+    HEM bu fonksiyona uygun bir `y` değeri veriyor — ikisi birbiriyle
+    orantılı olmalı, biri değişirse diğeri de kontrol edilmeli.
+    """
     full_text = (
         f"{text}\n"
         "Veri: Kaggle (artermiloff/steam-games-dataset, Mart 2025, ~90k oyun) + SteamSpy API  |  "
         "Metrik: yıl-içi log-review percentile (visibility_pct) — owners KULLANILMADI."
     )
-    ax.text(0.01, -0.14, full_text, transform=ax.transAxes,
+    ax.text(0.01, y, full_text, transform=ax.transAxes,
             fontsize=7.5, color=C["muted"], va="top", wrap=True)
 
 
@@ -113,7 +123,9 @@ def chart_bar_comparison(finding: Finding) -> Path:
     ax.set_xlabel("Görünürlük percentile (visibility_pct, medyan)")
     ax.set_title(f"{finding.label}\netki={finding.effect:+.2f}  n={finding.n}  q={finding.q_value:.4f}")
     ax.set_xlim(0, 1.1)
-    _note(ax, f"n={finding.n} (grup) / n={finding.n_baseline} (baseline)  |  Mann-Whitney U + BH-FDR + bootstrap %95 GA ile doğrulandı")
+    _note(ax, f"n={finding.n} (grup) / n={finding.n_baseline} (baseline)  |  Mann-Whitney U + BH-FDR + bootstrap %95 GA ile doğrulandı",
+          y=-0.32)
+    fig.subplots_adjust(bottom=0.42)
 
     return _save(fig, f"finding_{_safe_filename(finding.label)}_bar.png")
 
@@ -138,6 +150,7 @@ def chart_box_plot(finding: Finding) -> Path:
     ax.set_ylabel("Görünürlük percentile (medyan)")
     ax.set_title(f"{finding.label}\netki={finding.effect:+.2f}  n={finding.n}")
     _note(ax, f"n={finding.n} (grup) / n={finding.n_baseline} (baseline)")
+    fig.subplots_adjust(bottom=0.28)
 
     return _save(fig, f"finding_{_safe_filename(finding.label)}_box.png")
 
@@ -161,6 +174,7 @@ def chart_before_after(finding: Finding) -> Path:
     ax.set_title(f"{finding.label}\netki={finding.effect:+.2f}  n={finding.n}")
     ax.set_ylim(0, 1.1)
     _note(ax, f"n={finding.n} tekrar-stüdyo karşılaştırması")
+    fig.subplots_adjust(bottom=0.28)
 
     return _save(fig, f"finding_{_safe_filename(finding.label)}_before_after.png")
 
@@ -219,6 +233,7 @@ def chart_trend_line(finding: Finding) -> Path:
     ax.set_title(f"'{tag_name}' etiketi pazara göre {trend_word}\nn={finding.n} oyun  |  Spearman ρ={finding.effect:+.2f}")
     _note(ax, f"n={finding.n}  |  Kesikli çizgi = tüm indie pazarının aynı yıllardaki medyanı  |  "
               f"ρ, tag-pazar FARKININ zamanla nasıl değiştiğini ölçer (mutlak seviyeyi değil)")
+    fig.subplots_adjust(bottom=0.26)
 
     return _save(fig, f"finding_{_safe_filename(finding.label)}_trend.png")
 
@@ -242,6 +257,7 @@ def chart_scatter_gap(finding: Finding) -> Path:
     ax.set_ylabel("Steam review_score (grup)")
     ax.set_title(f"Eleştirmen-Oyuncu Kopuşu\netki={finding.effect:+.2f}  n={finding.n}")
     _note(ax, f"n={finding.n}")
+    fig.subplots_adjust(bottom=0.28)
 
     return _save(fig, f"finding_{_safe_filename(finding.label)}_scatter.png")
 

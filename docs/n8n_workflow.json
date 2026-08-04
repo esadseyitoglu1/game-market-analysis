@@ -113,7 +113,9 @@
           ]
         },
         "simplifyOutput": true,
-        "options": {}
+        "options": {
+          "maxTokensToSample": 2048
+        }
       },
       "id": "f6f6f6f6-0006-0006-0006-f6f6f6f6f6f6",
       "name": "Message a model",
@@ -132,7 +134,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const llmOutput = $input.first().json.text\n  || ($input.first().json.content?.[0]?.text)\n  || '';\nconst parts = llmOutput.split('---CAPTION_END---');\nconst caption = (parts[0] || '').trim().slice(0, 1024);\nconst script  = (parts[1] || '').trim().slice(0, 3200);\nreturn [{ json: { caption, script } }];"
+        "jsCode": "function trimToBoundary(text, maxLen) {\n  if (text.length <= maxLen) return text;\n  const cut = text.slice(0, maxLen);\n  const lastBreak = Math.max(cut.lastIndexOf('\\n\\n'), cut.lastIndexOf('. '), cut.lastIndexOf('\\n'));\n  return (lastBreak > maxLen * 0.5 ? cut.slice(0, lastBreak + 1) : cut).trim();\n}\n\nconst llmOutput = $input.first().json.text\n  || ($input.first().json.content?.[0]?.text)\n  || '';\nconst parts = llmOutput.split('---CAPTION_END---');\nconst caption = trimToBoundary((parts[0] || '').trim(), 1024);\nconst script  = trimToBoundary((parts[1] || '').trim(), 3800);\nreturn [{ json: { caption, script } }];"
       },
       "id": "a7a7a7a7-0007-0007-0007-a7a7a7a7a7a7",
       "name": "Split Caption Script",
