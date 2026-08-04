@@ -18,7 +18,12 @@ from pathlib import Path
 
 import pandas as pd
 
-from src.fetcher import fetch_app_list, fetch_app_details, REQUEST_DELAY_SECONDS
+from src.fetcher import (
+    fetch_app_list,
+    fetch_app_details,
+    fetch_full_app_list_by_appid,
+    REQUEST_DELAY_SECONDS,
+)
 from src.processor import _parse_estimated_owners
 
 PROCESSED_DIR = Path(__file__).resolve().parent.parent / "data" / "processed"
@@ -181,44 +186,71 @@ def enrich_new_game(appid: int) -> dict | None:
 
 
 def add_new_games(base_df: pd.DataFrame, api_df: pd.DataFrame,
-                  max_new: int = 50) -> tuple[pd.DataFrame, int]:
+                  max_new: int = 50, full_catalog: bool = True) -> tuple[pd.DataFrame, int]:
     """Base'de olmayan yeni oyunları bulup Steam Store API'den zenginleştir ve ekle.
 
     UPSERT'in INSERT kısmı.
 
-    max_new: Bir seferde kaç yeni oyun işlensin (API rate limit için)
+    full_catalog=True (varsayılan): "yeni oyun" havuzu SteamSpy'ın popülerlik-
+    sıralı listesi (api_df) yerine fetch_full_app_list_by_appid() ile çekilir.
+    NEDEN: api_df sadece SteamSpy'ın 'all' endpoint'inden gelen ilk birkaç
+    sayfa (popülerlik sırası) — bu yüzden "yeni oyun" olarak SADECE en popüler
+    oyunlar arasından yeni çıkanlar bulunuyordu, indie kuyruğu hiç
+    keşfedilmiyordu (bkz. plan — "SteamSpy top-1000 sınırlaması"). Steam'in
+    resmi IStoreService/GetAppList'i appid sırasına göre TÜM katalogu tarar,
+    popülerlik ayrımı yapmaz — indie oyunlar da diğerleri kadar keşfedilir.
+
+    max_new: Bir seferde kaç yeni oyun işlensin (Steam Store API rate limit
+    resmi olarak dokümante edilmemiş, temkinli tutuluyor).
     """
     base_ids = set(base_df["appid"].astype(int))
-    api_ids  = set(api_df["appid"].astype(int))
 
-    # Fark kümesi — Java'da: apiIds.removeAll(baseIds)
-    new_ids = api_ids - base_ids
-    print(f"  Yeni oyun sayısı (API'de var, base'de yok): {len(new_ids):,}")
+    if full_catalog:
+        print("  Tam Steam katalogu çekiliyor (appid sırasına göre, indie dahil)...")
+        catalog = fetch_full_app_list_by_appid()
+        catalog_ids = {int(a["appid"]) for a in catalog if "appid" in a}
+        catalog_names = {int(a["appid"]): a.get("name", "") for a in catalog if "appid" in a}
+    else:
+        catalog_ids = set(api_df["appid"].astype(int))
+        catalog_names = {}
+
+    # Fark kümesi — Java'da: catalogIds.removeAll(baseIds)
+    new_ids = catalog_ids - base_ids
+    print(f"  Yeni oyun sayısı (katalogda var, base'de yok): {len(new_ids):,}")
 
     if not new_ids:
         return base_df, 0
 
-    # max_new kadarını işle
-    to_process = list(new_ids)[:max_new]
-    print(f"  Bu seferlik {len(to_process)} yeni oyun işlenecek...")
+    # max_new kadarını işle — EN BÜYÜK appid'lerden başlanıyor (Steam appid'leri
+    # zaman içinde artan sırada atanır, bu yüzden en büyük appid ≈ en yeni
+    # kayıt). Küçükten büyüğe sıralasaydık (appid=10, 20, 30...) Counter-Strike
+    # gibi 2000'lerin başından kalma oyunları "yeni" diye işlemiş olurduk —
+    # bu, ilk denemede gerçek veriyle test edilirken yakalandı.
+    to_process = sorted(new_ids, reverse=True)[:max_new]
+    print(f"  Bu seferlik {len(to_process)} yeni oyun işlenecek (en yüksek appid'ler)...")
 
     new_rows = []
-    api_indexed = api_df.set_index("appid")
+    api_indexed = api_df.set_index("appid") if not api_df.empty else pd.DataFrame()
 
     for i, appid in enumerate(to_process, 1):
         print(f"    [{i}/{len(to_process)}] appid {appid} zenginleştiriliyor...")
 
-        # SteamSpy'dan temel veriyi al
-        spy_row = api_indexed.loc[appid].to_dict() if appid in api_indexed.index else {}
+        # SteamSpy'da varsa (popüler yeni oyunlar için) temel istatistikleri al
+        spy_row = {}
+        if not api_indexed.empty and appid in api_indexed.index:
+            spy_row = api_indexed.loc[appid].to_dict()
 
-        # Steam Store API'den detay çek
+        # Steam Store API'den detay çek (tür, tag, yayın tarihi — bunlar SteamSpy'da yok)
         time.sleep(REQUEST_DELAY_SECONDS)  # rate limit
         enriched = enrich_new_game(appid)
+
+        # SteamSpy'da yoksa (indie kuyruğunda sıkça olur) isim katalogdan gelir
+        name = spy_row.get("name") or catalog_names.get(appid, "")
 
         # Satırı birleştir
         row = {
             "appid": appid,
-            "name": spy_row.get("name", ""),
+            "name": name,
             "positive": spy_row.get("positive", 0),
             "negative": spy_row.get("negative", 0),
             "estimated_owners": str(spy_row.get("owners", "")).replace(" .. ", " - ").replace(",", ""),
@@ -245,7 +277,8 @@ def add_new_games(base_df: pd.DataFrame, api_df: pd.DataFrame,
 def run_merge(base_snapshot: str = "march2025",
               pages: int = 1,
               add_new: bool = False,
-              max_new: int = 50) -> Path:
+              max_new: int = 50,
+              full_catalog: bool = True) -> Path:
     """Tam merge pipeline'ı çalıştır.
 
     Args:
@@ -253,6 +286,9 @@ def run_merge(base_snapshot: str = "march2025",
         pages:         Kaç SteamSpy sayfası çekilsin
         add_new:       Yeni oyunlar da eklensin mi (Steam API çağrısı gerektirir)
         max_new:       Tek seferde max kaç yeni oyun eklensin
+        full_catalog:  Yeni oyun havuzu için Steam'in TAM katalogu mu (appid
+                       sıralı, indie dahil) yoksa sadece SteamSpy'ın popülerlik
+                       sıralı listesi mi taransın (bkz. add_new_games notu)
 
     Returns:
         Oluşturulan CSV dosyasının Path'i
@@ -278,7 +314,7 @@ def run_merge(base_snapshot: str = "march2025",
     added = 0
     if add_new:
         print(f"\n4. Yeni oyunlar ekleniyor (max {max_new})...")
-        base_df, added = add_new_games(base_df, api_df, max_new=max_new)
+        base_df, added = add_new_games(base_df, api_df, max_new=max_new, full_catalog=full_catalog)
         print(f"   {added} yeni oyun eklendi")
     else:
         print("\n4. Yeni oyun ekleme atlandı (--add-new bayrağı yok)")
@@ -305,6 +341,10 @@ if __name__ == "__main__":
                         help="Yeni oyunları Steam Store API'den zenginleştirip ekle")
     parser.add_argument("--max-new", type=int, default=50,
                         help="Tek seferde max kaç yeni oyun eklensin (default: 50)")
+    parser.add_argument("--no-full-catalog", action="store_false", dest="full_catalog",
+                        help="Yeni oyun taramasını SteamSpy'ın popülerlik-sıralı "
+                             "listesiyle sınırla (varsayılan: Steam'in TAM katalogu, "
+                             "indie dahil — bkz. add_new_games notu)")
     args = parser.parse_args()
 
     run_merge(
@@ -312,4 +352,5 @@ if __name__ == "__main__":
         pages=args.pages,
         add_new=args.add_new,
         max_new=args.max_new,
+        full_catalog=args.full_catalog,
     )
