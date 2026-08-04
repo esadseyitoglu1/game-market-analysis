@@ -1,0 +1,358 @@
+{
+  "name": "Game Market Analysis - Foto + Script",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 9,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "id": "a1a1a1a1-0001-0001-0001-a1a1a1a1a1a1",
+      "name": "Schedule Trigger (Her Pazartesi)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "command",
+        "operation": "execute",
+        "command": "/root/game-market-analysis/venv/bin/python -m src.main"
+      },
+      "id": "b2b2b2b2-0002-0002-0002-b2b2b2b2b2b2",
+      "name": "Execute a command",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        220,
+        300
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "CREDENTIAL_ID_DEGISTIR",
+          "name": "SSH Password account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "command",
+        "operation": "execute",
+        "command": "cat /root/game-market-analysis/outputs/insights/findings.json"
+      },
+      "id": "c3c3c3c3-0003-0003-0003-c3c3c3c3c3c3",
+      "name": "Execute a command1",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        440,
+        300
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "CREDENTIAL_ID_DEGISTIR",
+          "name": "SSH Password account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.stdout;\nconst parsed = JSON.parse(raw);\nreturn parsed.findings.map(finding => ({ json: finding }));"
+      },
+      "id": "d4d4d4d4-0004-0004-0004-d4d4d4d4d4d4",
+      "name": "Parse findings JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "e5e5e5e5-0005-0005-0005-e5e5e5e5e5e5",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        880,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "text",
+        "operation": "message",
+        "modelId": {
+          "__rl": true,
+          "value": "claude-sonnet-4-6",
+          "mode": "list",
+          "cachedResultName": "claude-sonnet-4-6"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Rolün: Sen, \"Ribat Games Studio\" markasının veri odaklı, hyper-fast ve görsel hikaye anlatımında usta Reels Yönetmenisin. Görevin; sana iletilen KANITLANMIŞ TEK BİR Steam veri bulgusunu (JSON), bir video editörünün anında kurguya başlayabileceği, SFX (Ses Efekti) notları içeren, saniye saniye planlanmış vurucu bir Görsel Blueprint'e (Çekim Listesi/Senaryo) çevirmek. Bu bulgunun kendine ait bir grafiği zaten üretildi ve Telegram'a AYRICA fotoğraf olarak gönderilecek — sen sadece metni üret, resmi sen eklemiyorsun.\n\nAşağıda, veri motorumuzun bulduğu ve istatistiksel olarak DOĞRULANMIŞ (Mann-Whitney U testi + Benjamini-Hochberg FDR düzeltmesi + etki büyüklüğü eşiği + bootstrap güven aralığı) TEK bir bulgu var. Gerçek, ham veriden hesaplanmıştır — hiçbir sayıyı sen uydurmuyorsun, sadece anlatıyorsun:\n\n{{ $json }}\n\nBu bulgu şu alanları taşır: \"baslik\" (bulgunun konusu), \"claim\" (veriden üretilmiş kanıtlı cümle — bunu OLDUĞU GİBİ kullan, sayıları değiştirme), \"evidence\" (n=örneklem büyüklüğü, effect=etki büyüklüğü, effect_ci=güven aralığı, q_value=istatistiksel güven — effect_ci \"NaN\" ise bu alanı YOK SAY, sadece effect ve claim'e odaklan), \"hook\" (video açılışı için öneri), \"confidence\" (\"high\" veya \"medium\" — medium ise videoda belirsizlik ifade et), \"exemplars\" (varsa gerçek oyun adı örnekleri — SADECE bunları kullan, oyun adı UYDURMA), \"chart_path\" (bu alanı YOK SAY, sadece n8n kullanıyor, sen metinde bahsetme).\n\nRibat Games Studio Tonu: Otoriter ama cool. Asla ders vermez, \"ezber bozar\". Cümleler kısa, kelimeler şamar gibi olmalı. Akademik laf salatası (Z-skor, p-değeri gibi teknik terimler doğrudan) YASAK — ama bulgunun GÜCÜNÜ (\"129 oyun üzerinden test edildi\", \"çok net bir fark\") günlük dille aktarmak SERBEST ve TEŞVİK EDİLİR.\n\nKATI KURALLAR:\n\nVERİYE SADAKAT (EN ÖNEMLİ KURAL): Sana verilen \"claim\" alanındaki cümle zaten doğrulanmış veridir — bu cümledeki HİÇBİR sayıyı değiştirme, yuvarlama, abartma veya \"tahminen\" gibi ifadelerle belirsizleştirme. Videoyu bu cümle etrafında kur. \"exemplars\" alanında oyun adı verilmişse SADECE o adları kullan; verilmemişse hiçbir oyun adı UYDURMA. confidence=\"medium\" olan bulgularda \"veriler işaret ediyor\" gibi temkinli bir dil kullan, \"kesinlikle\" gibi kesin ifadelerden KAÇIN.\n\nUYARI (CAVEAT) ZORUNLULUĞU: Sana JSON'da (üst seviyede, findings dışında) bir \"caveats\" listesi de verilecek (ör. \"Korelasyon, nedensellik değildir\"). [UYARI/RE-HOOK] bölümünde bu uyarılardan en az birini kendi cümlenle, doğal bir şekilde belirt. Bunu atlamak YASAK.\n\nUZUNLUK: GÖRSEL, EKRAN YAZISI ve SFX/MÜZİK alanlarını kısa vurucu ifadeler halinde yaz (tam cümle değil). Sadece SESLENDİRME alanlarında belirtilen cümle/kelime sınırlarına kadar tam cümle kullan.\n\nKRİSTAL BERRAKLIĞINDA ANLATIM: Kanca ve pazarlama taktikleri kullanmak iyidir ama HİKAYE ANLAŞILMAZ OLMAMALIDIR. Videoyu kurgulayacak editör \"Burada ne anlatılmak isteniyor?\" diye düşünmemelidir. Veriyi ve çözümü sokaktaki insanın (veya 10 yaşındaki bir çocuğun) anlayacağı netlikte anlat.\n\nIDENTITY DISRUPTION (KİMLİK SARSMA): Hook (Kanca) bölümüne her zaman \"SEN/SENİN\" kelimeleriyle başla ve izleyicinin şu an büyük ihtimalle yaptığı bir \"HATAYI\" (varsa \"hook\" alanındaki öneriyi temel alarak) yüzüne vurarak videoya başla.\n\nTELEGRAM KORUMASI: Metnin HİÇBİR YERİNDE kalınlaştırma veya italik yapmak için yıldız işareti (* veya **) KULLANMA.\n\nÇIKTI FORMATI — İKİ AYRI BÖLÜM ÜRET, aralarına TAM OLARAK şu ayracı koy: ---CAPTION_END---\nBirinci bölüm (CAPTION, Telegram foto altyazısı, EN FAZLA 900 karakter — bu sert bir limit, aşarsan Telegram fotoğrafı reddeder): Sadece HOOK + VERİ GERÇEĞİ kısaca özetlenmiş halde, emoji kullanılabilir.\nİkinci bölüm (SCRIPT, ayrı mesaj olarak gidecek, EN FAZLA 3200 karakter): Aşağıdaki tam blueprint yapısı.\n\n📹 [Bulgunun \"baslik\" alanından türetilmiş vurucu başlık]\n\n🎬 [EDİTÖRE NOT / VİDEONUN AMACI]: [Bu bulgunun ne anlama geldiğini, videonun ana fikrini, \"claim\" cümlesindeki veriyi 2-3 basit cümleyle açıkla.]\n\n[00-03sn - HOOK]\nGÖRSEL: [Kısa ifade. Çok spesifik oyun içi betimleme.]\nEKRAN YAZISI: [Sessiz izleyici için devasa ve çarpıcı metin]\nSFX/MÜZİK: [Kısa ifade.]\nSESLENDİRME: [Maksimum 2 cümle. \"Sen\" diyerek başla, hook alanını temel al.]\n\n[03-15sn - VERİ GERÇEĞİ]\nGÖRSEL: [Kısa ifade. Verinin görselleştirilmesi — burada Telegram'a AYRICA gönderilen grafiği referans verebilirsin, ör. \"az önceki grafikte gördüğün gibi\".]\nEKRAN YAZISI: [Kilit rakamlar: n, etki, varsa örnek oyun adları]\nSFX/MÜZİK: [Kısa ifade.]\nSESLENDİRME: \"claim\" alanındaki cümleyi doğal bir dille, sayıları DEĞİŞTİRMEDEN anlat. Maks 30 kelime.\n\n[15-25sn - UYARI/RE-HOOK]\nGÖRSEL: [Kısa ifade.]\nEKRAN YAZISI: [Kısa, dikkat çekici uyarı ifadesi]\nSFX/MÜZİK: [Kısa ifade.]\nSESLENDİRME: caveats listesinden bir uyarıyı doğal dille belirt (zorunlu). Maks 25 kelime.\n\n[25-40sn - RİBAT ANALİZİ / ÇÖZÜM]\nGÖRSEL: [Kısa ifade.]\nEKRAN YAZISI: [Çözüm önerisinin kısa özeti]\nSFX/MÜZİK: [Kısa ifade.]\nSESLENDİRME: [Bu bulgudan çıkan somut tavsiye. Maks 30 kelime.]\n\n[40-50sn - CTA]\nGÖRSEL: [Kısa ifade. Ribat Games Studio logosu]\nEKRAN YAZISI: [Takip et/Yorum yap]\nSFX/MÜZİK: [Kısa ifade.]\nSESLENDİRME: [Yorumlara davet.]\n\n📝 CAPTION (Instagram için ayrı, buradaki Telegram caption'dan farklı): [Maksimum 3 cümlelik Instagram açıklaması + etiketler.]",
+              "role": "user"
+            }
+          ]
+        },
+        "simplifyOutput": true,
+        "options": {}
+      },
+      "id": "f6f6f6f6-0006-0006-0006-f6f6f6f6f6f6",
+      "name": "Message a model",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        300
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": "CREDENTIAL_ID_DEGISTIR",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const llmOutput = $input.first().json.text\n  || ($input.first().json.content?.[0]?.text)\n  || '';\nconst parts = llmOutput.split('---CAPTION_END---');\nconst caption = (parts[0] || '').trim().slice(0, 1024);\nconst script  = (parts[1] || '').trim().slice(0, 3200);\nreturn [{ json: { caption, script } }];"
+      },
+      "id": "a7a7a7a7-0007-0007-0007-a7a7a7a7a7a7",
+      "name": "Split Caption Script",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "filePath": "={{ \"/srv/\" + $(\"Loop Over Items\").item.json.chart_path.replace(\"outputs/\", \"\") }}",
+        "options": {}
+      },
+      "id": "b8b8b8b8-0008-0008-0008-b8b8b8b8b8b8",
+      "name": "Read Chart Image",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        1540,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "sendPhoto",
+        "chatId": "-5340601406",
+        "binaryData": true,
+        "binaryPropertyName": "data",
+        "caption": "={{ $(\"Split Caption Script\").item.json.caption }}",
+        "additionalFields": {}
+      },
+      "id": "c9c9c9c9-0009-0009-0009-c9c9c9c9c9c9",
+      "name": "Telegram Send Photo",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1760,
+        300
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "CREDENTIAL_ID_DEGISTIR",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "-5340601406",
+        "text": "={{ $(\"Split Caption Script\").item.json.script }}",
+        "additionalFields": {}
+      },
+      "id": "d0d0d0d0-0010-0010-0010-d0d0d0d0d0d0",
+      "name": "Telegram'a Gönder",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1980,
+        300
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "CREDENTIAL_ID_DEGISTIR",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "-5340601406",
+        "text": "✅ Haftalık oyun pazarı analizi tamamlandı.",
+        "additionalFields": {}
+      },
+      "id": "e1e1e1e1-0011-0011-0011-e1e1e1e1e1e1",
+      "name": "Telegram Done",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1100,
+        520
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "CREDENTIAL_ID_DEGISTIR",
+          "name": "Telegram account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger (Her Pazartesi)": {
+      "main": [
+        [
+          {
+            "node": "Execute a command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a command": {
+      "main": [
+        [
+          {
+            "node": "Execute a command1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a command1": {
+      "main": [
+        [
+          {
+            "node": "Parse findings JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse findings JSON": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram Done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Split Caption Script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Caption Script": {
+      "main": [
+        [
+          {
+            "node": "Read Chart Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Chart Image": {
+      "main": [
+        [
+          {
+            "node": "Telegram Send Photo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Send Photo": {
+      "main": [
+        [
+          {
+            "node": "Telegram'a Gönder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram'a Gönder": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

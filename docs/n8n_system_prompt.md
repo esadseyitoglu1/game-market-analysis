@@ -52,14 +52,36 @@ Execute Command (python -m src.main → pipeline'ı çalıştırır)
   → (Loop bitince) isteğe bağlı özet mesajı
 ```
 
-**Not — path birleştirme:** `findings.json`'daki `chart_path` repo-köküne
-göreli (`outputs/charts/...`), çünkü `chart_selector.py` bunu böyle üretiyor
-(bkz. `render_chart_for_finding`). n8n'in "Read Binary File" node'una TAM yol
-vermek gerekiyor — sunucuda repo `/root/game-market-analysis` altında olduğu
-için yukarıdaki expression (`"/root/game-market-analysis/" + $json.chart_path`)
-kullanılmalı. Bu path'ler ayrıca artık HER ZAMAN `/` ayracı ve SADECE ASCII
-karakter içeriyor (Windows'ta üretilse bile) — `chart_selector.py`'deki
-`.as_posix()` ve `unicodedata`-tabanlı dosya adı temizliği bunu garanti ediyor.
+**Not — path birleştirme (2026-08-04 güncellendi, /srv mount'u):**
+`findings.json`'daki `chart_path` repo-köküne göreli (`outputs/charts/...`),
+çünkü `chart_selector.py` bunu böyle üretiyor (bkz. `render_chart_for_finding`).
+
+n8n container'ı (`services-n8n-1`) Docker içinde `node` kullanıcısıyla (uid
+1000, root DEĞİL) çalışıyor. İlk denemede mount hedefi `/root/game-market-analysis/outputs`
+olarak ayarlanmıştı — bu **ÇALIŞMADI**: `EACCES: permission denied`. Kök
+neden `/root` klasörünün kendisinin `700` (sadece gerçek root erişebilir)
+olması — bu Linux'ta standart ve GÜVENLİK GEREĞİ böyle kalmalı, `/root`'u
+`chmod` ile açmak yanlış çözüm olurdu. Bunun yerine `docker-compose.yml`'deki
+mount hedefi `/root` dışına, `/srv` altına taşındı:
+
+```yaml
+volumes:
+  - /root/game-market-analysis/outputs/charts:/srv/charts:ro
+  - /root/game-market-analysis/outputs/insights:/srv/insights:ro
+```
+
+Yani n8n'in "Read Binary File" node'unda path artık:
+`={{ "/srv/" + $json.chart_path.replace("outputs/", "") }}`
+(`chart_path` = `outputs/charts/finding_x.png` → `.replace("outputs/","")` =
+`charts/finding_x.png` → sonuç `/srv/charts/finding_x.png`.)
+
+Doğrulandı: `docker exec services-n8n-1 cat /srv/insights/findings.json`
+sunucuda hatasız çalıştı, `/srv/charts/` altındaki PNG'ler container içinden
+görünüyor.
+
+Bu path'ler ayrıca artık HER ZAMAN `/` ayracı ve SADECE ASCII karakter
+içeriyor (Windows'ta üretilse bile) — `chart_selector.py`'deki `.as_posix()`
+ve `unicodedata`-tabanlı dosya adı temizliği bunu garanti ediyor.
 
 ## n8n tarafında yapman gerekenler
 
