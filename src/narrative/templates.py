@@ -80,6 +80,20 @@ TEMPLATES: dict[str, dict[str, str]] = {
             "DÜŞÜK görünürlükte (etki {effect:+.2f}, %95 GA [{ci_lo:+.2f}, {ci_hi:+.2f}])."
         ),
     },
+    # temporal_trend: GA içermez (bu aile bootstrap uygulamıyor, effect_ci
+    # her zaman NaN — bkz. families/temporal.py). Etki, pazarla-arasındaki
+    # FARKIN yıllar içindeki eğimini ölçen bir Spearman ρ, klasik grup-karşı-
+    # baseline GA'sı değil, bu yüzden ayrı ve doğru şekilde ifade ediliyor.
+    "temporal_trend": {
+        "positive": (
+            "'{label}' grubundaki {n} oyun, pazarın genel trendine göre zamanla "
+            "görünürlük farkını AÇIYOR (Spearman ilişkisi {effect:+.2f})."
+        ),
+        "negative": (
+            "'{label}' grubundaki {n} oyun, pazarın genel trendine göre zamanla "
+            "görünürlük farkını KAYBEDİYOR (Spearman ilişkisi {effect:+.2f})."
+        ),
+    },
     # Tag-tek/tag-çift/vb. dışında kalan aileler için genel şablon (fallback)
     "default": {
         "positive": (
@@ -108,6 +122,8 @@ def _template_key_for_family(family: str) -> str:
         return "numeric_split"
     if family == "entity_repeat":
         return "entity_repeat"
+    if family == "temporal_trend":
+        return "temporal_trend"
     return "default"
 
 

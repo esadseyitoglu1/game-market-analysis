@@ -55,14 +55,50 @@ def build_universe_metadata(n: int, min_reviews: int = 10,
     }
 
 
-def select_top_findings(findings: list[Finding], max_n: int = MAX_FINDINGS_FOR_LLM) -> list[Finding]:
+MAX_PER_FAMILY = 2  # aynı aileden LLM'e gidecek en fazla bulgu sayısı
+
+
+def select_top_findings(findings: list[Finding], max_n: int = MAX_FINDINGS_FOR_LLM,
+                          max_per_family: int = MAX_PER_FAMILY) -> list[Finding]:
     """LLM'e gidecek en fazla max_n bulguyu DETERMİNİSTİK seçer — en yüksek
-    |effect| büyüklüğüne göre sıralanır. Rastgelelik yok (eski sistemin
+    |effect| büyüklüğüne göre sıralanır, rastgelelik yok (eski sistemin
     seed'siz random.shuffle sorununun tekrarlanmaması için, bkz. Adım 0).
+
+    AİLE ÇEŞİTLİLİĞİ (2026-08-04 eklendi): Sadece |effect|'e göre sıralamak,
+    bir ailenin (özellikle temporal_trend — Spearman ρ değerleri diğer
+    ailelerin rank-biserial etkilerinden sistematik olarak daha yüksek çıkıyor)
+    TÜM 5 slotu tek başına doldurmasına yol açıyordu — canlı çalıştırmada
+    5 bulgunun 5'i de temporal_trend'den ve hepsi "görünürlük kaybı" temalıydı,
+    aylık video paketi tekdüze olurdu. Artık her aileden en fazla
+    max_per_family (varsayılan 2) bulgu alınır; kalan slotlar, aile sınırına
+    takılmamış en güçlü bulgularla (yine |effect| sırasına göre) doldurulur.
+    Seçim hâlâ tamamen deterministik — sadece iki geçişli (aile-sınırlı, sonra
+    dolgu) bir sıralama, rastgelelik yok.
     """
     non_fragile = [f for f in findings if not f.fragile]
     ranked = sorted(non_fragile, key=lambda f: -abs(f.effect))
-    return ranked[:max_n]
+
+    selected: list[Finding] = []
+    family_counts: dict[str, int] = {}
+    leftover: list[Finding] = []
+
+    for f in ranked:
+        if len(selected) >= max_n:
+            break
+        if family_counts.get(f.family, 0) < max_per_family:
+            selected.append(f)
+            family_counts[f.family] = family_counts.get(f.family, 0) + 1
+        else:
+            leftover.append(f)
+
+    # Aile sınırı yüzünden dışarıda kalanlarla eksik slotları doldur
+    # (örn. tüm bulgular 2 aileden geliyorsa, max_n'e ulaşmak için sınırı gevşet)
+    for f in leftover:
+        if len(selected) >= max_n:
+            break
+        selected.append(f)
+
+    return selected
 
 
 def write_findings_contract(all_findings: list[Finding], universe_n: int,
