@@ -33,6 +33,14 @@ yapısı" bölümüne bak.
 4. Geri kalan kurallar (VERİYE SADAKAT, UYARI ZORUNLULUĞU, IDENTITY
    DISRUPTION, TELEGRAM KORUMASI/yıldız yasağı) **aynen korundu** — bunlar
    tek/çoklu bulgu ayrımından bağımsız, hâlâ geçerli.
+5. **`{{ $json }}` → `{{ JSON.stringify($json, null, 2) }}` (2026-08-04 bulundu).**
+   n8n, expression içinde bir objeyi (`$json`) düz metne gömerken JavaScript'in
+   varsayılan `toString()`'ini kullanıyor — bu bir obje için `[object Object]`
+   üretir, JSON içeriğini DEĞİL. LLM'e giden mesajda bulgunun tüm alanları
+   kayboluyordu; LLM de bunu fark edip "elimde işlenebilir veri yok" diye
+   cevap veriyordu (canlı örnekte görüldü). `JSON.stringify` ile açıkça
+   metne çevirmek zorunlu — n8n'de obje enjekte ederken bu HER ZAMAN
+   yapılmalı, `{{ $json }}` tek başına asla kullanılmamalı.
 
 ## n8n workflow yapısı (özet — detaylar aşağıda)
 
@@ -79,6 +87,25 @@ Doğrulandı: `docker exec services-n8n-1 cat /srv/insights/findings.json`
 sunucuda hatasız çalıştı, `/srv/charts/` altındaki PNG'ler container içinden
 görünüyor.
 
+**İKİNCİ İZİN KATMANI (n8n'in KENDİ dosya erişim kısıtlaması):** Mount
+düzeltildikten sonra "Read Chart Image" node'u hâlâ hata verdi — bu sefer
+Docker/Linux izni değil, n8n'in kendi güvenlik özelliği:
+`Access to the file is not allowed. Allowed paths: /home/node/.n8n-files`.
+n8n, `Read/Write File` gibi node'ların rastgele host path'i okumasını
+varsayılan olarak sadece `/home/node/.n8n-files`'a kısıtlıyor. Çözüm,
+`docker-compose.yml`'e `N8N_RESTRICT_FILE_ACCESS_TO` ortam değişkeni eklemek:
+
+```yaml
+environment:
+  - N8N_RESTRICT_FILE_ACCESS_TO=/home/node/.n8n-files,/srv/charts,/srv/insights
+```
+
+Doğrulandı: `docker exec services-n8n-1 printenv | grep N8N_RESTRICT` doğru
+değeri gösteriyor. **Özet: bu path'e erişmek için üç ayrı izin katmanı vardı
+— (1) Docker bind mount, (2) Linux dosya izinleri (`/root` sorunu), (3) n8n'in
+kendi `N8N_RESTRICT_FILE_ACCESS_TO` allowlist'i — üçü de ayrı ayrı
+çözülmesi gerekiyordu.**
+
 Bu path'ler ayrıca artık HER ZAMAN `/` ayracı ve SADECE ASCII karakter
 içeriyor (Windows'ta üretilse bile) — `chart_selector.py`'deki `.as_posix()`
 ve `unicodedata`-tabanlı dosya adı temizliği bunu garanti ediyor.
@@ -109,7 +136,7 @@ Rolün: Sen, "Ribat Games Studio" markasının veri odaklı, hyper-fast ve görs
 
 Aşağıda, veri motorumuzun bulduğu ve istatistiksel olarak DOĞRULANMIŞ (Mann-Whitney U testi + Benjamini-Hochberg FDR düzeltmesi + etki büyüklüğü eşiği + bootstrap güven aralığı) TEK bir bulgu var. Gerçek, ham veriden hesaplanmıştır — hiçbir sayıyı sen uydurmuyorsun, sadece anlatıyorsun:
 
-{{ $json }}
+{{ JSON.stringify($json, null, 2) }}
 
 Bu bulgu şu alanları taşır: "baslik" (bulgunun konusu), "claim" (veriden üretilmiş kanıtlı cümle — bunu OLDUĞU GİBİ kullan, sayıları değiştirme), "evidence" (n=örneklem büyüklüğü, effect=etki büyüklüğü, effect_ci=güven aralığı, q_value=istatistiksel güven — effect_ci "NaN" ise bu alanı YOK SAY, sadece effect ve claim'e odaklan), "hook" (video açılışı için öneri), "confidence" ("high" veya "medium" — medium ise videoda belirsizlik ifade et), "exemplars" (varsa gerçek oyun adı örnekleri — SADECE bunları kullan, oyun adı UYDURMA), "chart_path" (bu alanı YOK SAY, sadece n8n kullanıyor, sen metinde bahsetme).
 
