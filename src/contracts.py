@@ -126,6 +126,28 @@ def select_top_findings(findings: list[Finding], max_n: int = MAX_FINDINGS_FOR_L
     return selected
 
 
+def _replace_nan_with_none(obj):
+    """JSON'a yazmadan önce ağacı gezip float NaN'ları None'a çevirir.
+
+    NEDEN GEREKLİ (2026-08-06 bulundu, n8n canlı testinde): Python'un
+    json.dumps'u varsayılan olarak NaN'ı ham `NaN` token'ı olarak yazıyor
+    (allow_nan=True) — bu geçerli JSON DEĞİL, sadece Python/JS'in gevşek
+    parser'ları kabul ediyor. n8n'in "Parse findings JSON" node'u standart
+    JSON.parse() kullanıyor, `NaN` görünce "Unexpected token 'N'" ile
+    çöküyordu. temporal_trend ailesi effect_ci=(NaN, NaN) ve q_value=NaN
+    üretiyor (bootstrap uygulamıyor, bkz. families/temporal.py) — bu değerler
+    findings.json'a giden tek NaN kaynağı. `null` standart JSON'da geçerli
+    ve n8n/JS tarafında sorunsuz parse ediliyor.
+    """
+    if isinstance(obj, float) and obj != obj:  # NaN != NaN, en hızlı NaN kontrolü
+        return None
+    if isinstance(obj, dict):
+        return {k: _replace_nan_with_none(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_replace_nan_with_none(v) for v in obj]
+    return obj
+
+
 def write_findings_contract(all_findings: list[Finding], universe_n: int,
                               snapshot: str = "march2025") -> Path:
     """findings.json'u yazar — n8n'in okuyacağı tam kanıt sözleşmesi."""
@@ -144,6 +166,7 @@ def write_findings_contract(all_findings: list[Finding], universe_n: int,
         "total_findings_sent": len(rendered),
         "findings": rendered,
     }
+    contract = _replace_nan_with_none(contract)
 
     path = OUTPUT_DIR / "findings.json"
     path.write_text(json.dumps(contract, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
