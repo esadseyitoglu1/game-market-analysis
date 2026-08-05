@@ -27,6 +27,7 @@ from src.discovery.generators import (
     generate_pairwise_hypotheses,
     generate_numeric_split_hypotheses,
     generate_boolean_flag_hypotheses,
+    generate_price_band_hypotheses,
 )
 from src.discovery.families.studio_repeat import test_studio_repeat
 from src.discovery.families.temporal import test_temporal_trend
@@ -50,7 +51,7 @@ HISTORY_RESET_THRESHOLD = 5  # taze bulgu sayısı bunun altına düşerse hafı
 # iki ayrı video script'i, %90 aynı içerik). average_playtime_forever
 # temsilci olarak bırakıldı (playtime ailesinin daha yaygın kullanılan alanı).
 NUMERIC_COLUMNS = ["achievements", "dlc_count", "average_playtime_forever",
-                    "required_age", "discount"]
+                    "required_age", "discount", "peak_ccu", "metacritic_score"]
 BOOLEAN_COLUMNS = ["windows", "mac", "linux"]
 
 # temporal_trend ailesi için taranacak popüler tag'ler — tüm tag'leri taramak
@@ -91,6 +92,12 @@ def collect_all_findings(snapshot: str = "march2025") -> tuple[list[Finding], in
     all_hypotheses = []
     all_hypotheses += generate_categorical_group_hypotheses(universe, "tags_list", min_count=50)
     all_hypotheses += generate_pairwise_hypotheses(universe, "tags_list", top_n=40, min_count=30)
+    # categories_list = oyun modu/platform özellikleri (Co-op, VR Only,
+    # Remote Play...) — tags_list'ten AYRI bir kolon, ikisi de generic
+    # jeneratörü çağırıyor (bkz. plan Adım A: prototiple 10 bulgu doğrulandı,
+    # hepsi aksiyona dönüşen özellik kararları).
+    all_hypotheses += generate_categorical_group_hypotheses(universe, "categories_list", min_count=100)
+    all_hypotheses += generate_price_band_hypotheses(universe, "price", min_count=100)
     for col in NUMERIC_COLUMNS:
         all_hypotheses += generate_numeric_split_hypotheses(universe, col, min_count=100)
     all_hypotheses += generate_boolean_flag_hypotheses(universe, BOOLEAN_COLUMNS, min_count=100)

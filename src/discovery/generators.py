@@ -150,6 +150,44 @@ def generate_numeric_split_hypotheses(
     return [hyp]
 
 
+PRICE_BANDS = [
+    (0.0, 0.01, "Ücretsiz"),
+    (0.01, 5.0, "0-5 dolar"),
+    (5.0, 10.0, "5-10 dolar"),
+    (10.0, 20.0, "10-20 dolar"),
+    (20.0, float("inf"), "20+ dolar"),
+]
+
+
+def generate_price_band_hypotheses(
+    df: pd.DataFrame, column: str = "price", min_count: int = 100, metric: str = DEFAULT_METRIC
+) -> list[Hypothesis]:
+    """Fiyatı sabit bantlara böler (Ücretsiz / 0-5 / 5-10 / 10-20 / 20+ dolar).
+
+    NEDEN AYRI BİR JENERATÖR (generate_numeric_split'ten farklı — bkz. plan
+    "AKTİF PLAN 2026-08-05" Adım A): generate_numeric_split_hypotheses tek bir
+    medyan noktasından ikiye bölüyor ("fiyat > 5.99 mu değil mi") — bu, "hangi
+    fiyat aralığı en görünür" sorusuna cevap vermiyor, sadece "pahalı mı ucuz
+    mu" diyor. Editör/geliştirici için asıl aksiyona dönüşen soru "hangi banda
+    girmeliyim" — bu yüzden sabit, insan-anlaşılır bantlar kullanılıyor.
+    Prototiple doğrulandı (gerçek veri): 20+ dolar effect=+0.53, 0-5 dolar
+    effect=-0.27 — ikisi de gate'i geçiyor.
+    """
+    values = pd.to_numeric(df[column], errors="coerce")
+
+    hypotheses = []
+    for lo, hi, label in PRICE_BANDS:
+        mask = ((values >= lo) & (values < hi)).values
+        if mask.sum() < min_count:
+            continue
+        hypotheses.append(Hypothesis(
+            family="price_band", label=label, mask=mask,
+            baseline="rest", metric=metric, chart_hint="bar_comparison",
+        ))
+    log.info(f"  [price_band] {len(hypotheses)}/{len(PRICE_BANDS)} bant n>={min_count} eşiğini geçti")
+    return hypotheses
+
+
 def generate_boolean_flag_hypotheses(
     df: pd.DataFrame, columns: list[str], min_count: int = 100, metric: str = DEFAULT_METRIC
 ) -> list[Hypothesis]:

@@ -240,3 +240,65 @@ SESLENDİRME: [Yorumlara davet.]
   Maliyet farkı önemsiz (Sonnet 5, ayda birkaç kuruş) ama n8n'in rate-limit
   ayarlarına göre turlar arası küçük bir gecikme (`Wait` node) eklemek
   gerekebilir.
+
+---
+
+## 2026-08-05 — Editör gözüyle bulunan 3 teslimat hatası (canlı test)
+
+Kullanıcı ilk gerçek "Execute workflow" çalıştırmasını yapıp Telegram
+çıktısını paylaştı. Editör gözüyle okununca üç mekanik hata bulundu (içerik
+değeri sorunları — etiket bulguları, jargon — ayrı olarak `src/contracts.py`
+ve `src/narrative/templates.py`'de çözüldü, bkz. plan Adım B/C):
+
+1. **"✅ Haftalık analiz tamamlandı" mesajı 5 KEZ gönderiliyordu.** Bu n8n'in
+   bilinen bir bug'ı ([GitHub Issue #21376](https://github.com/n8n-io/n8n/issues/21376))
+   — `Split In Batches`'ın "done" çıkışı, dokümantasyonun aksine, bazı
+   sürümlerde her iterasyonda tetikleniyor. Çözüm: `Loop Over Items` ile
+   `Telegram Done` arasına **yeni bir `IF` node'u ("Loop Bitti mi?")**
+   eklendi — koşul `{{ $("Loop Over Items").context.noItemsLeft }} === true`.
+   Sadece gerçekten son turdaysa `Telegram Done`'a gider.
+2. **LLM'in kendi kendine konuşma cümleleri Telegram'a gidiyordu** —
+   *"Başlıyorum:"*, *"CAPTION'ı yazıyorum:"* gibi meta-yorumlar caption'ın
+   başına sızmıştı. İki katmanlı düzeltme: (a) prompt'a MUTLAK KURAL eklendi
+   — cevap doğrudan 📷 emojisiyle başlamalı, hiçbir giriş cümlesi yazılmamalı;
+   (b) `Split Caption Script` node'una `stripPreamble()` eklendi — ilk emoji
+   karakterine kadar olan metni (varsa, ilk 200 karakter içindeyse) kırpar,
+   LLM kurala uymasa bile son bir savunma hattı olsun diye.
+3. **Bazı bulgularda script hiç gitmiyordu** (Bullet Hell, Visual Novel'de
+   sadece caption vardı). Kök neden: LLM bazı turlarda `---CAPTION_END---`
+   ayracını hiç yazmamış, `parts[1]` sessizce boş kalmıştı. İki katmanlı
+   düzeltme: (a) prompt'a MUTLAK KURAL eklendi — ayraç mutlaka yazılmalı;
+   (b) `Split Caption Script`'e fallback eklendi — ayraç yoksa TÜM metin
+   `script` olarak gönderilir, `caption` için ilk paragraf kullanılır (eskiden
+   bu durumda script tamamen kayboluyordu).
+
+**Güncel `docs/n8n_workflow.json`'ı tekrar import etmek, tüm bu düzeltmeleri
+otomatik uygular** — node ID'leri korunduğu için mevcut credential
+bağlantıları bozulmaz, sadece "Loop Bitti mi?" adında yeni bir node eklenir
+ve mevcut bağlantılar/kodlar güncellenir.
+
+## 2026-08-05 — İçerik değeri sorunları (aynı canlı testten)
+
+Yukarıdaki 3 mekanik hatanın yanında, kullanıcı **içeriğin kendisinin**
+kayda değer olup olmadığını sorguladı. İki büyük değişiklik kod tarafında
+yapıldı (n8n'de dokunulacak bir şey yok, findings.json'un içeriği değişti):
+
+1. **Etiket bulguları LLM'e artık gönderilmiyor** (`src/contracts.py`,
+   `NON_ACTIONABLE_FAMILIES`). *"'Boomer Shooter' etiketi koy, 18 puan daha
+   görünür ol"* gibi bulgular tuzak içerikti — etiket bir SONUÇ, sebep değil.
+   Önce keşif motoru genişletildi (fiyat bandı, oyun modu/platform kategorileri
+   — `src/discovery/run_all.py`), 276 bulgunun 267'sinin etiket ailesinden
+   geldiği ölçüldü, filtre öncesi bu genişletme yapılmasaydı havuz 9 bulguya
+   düşüp 2 ayda tükenirdi. Şimdi havuz ~24 aksiyona-dönüşen bulgu içeriyor
+   (fiyat bandı, Co-op/VR/MMO gibi oyun modları, oynanma süresi, achievement,
+   Metacritic, peak CCU).
+2. **Video kalıbı çeşitliliği eklendi** — prompt artık 3 alternatif kalıptan
+   (Kimlik Sarsma / Karşılaştırma / Sayı Şoku) findings'in temasına göre
+   birini seçiyor, her video aynı "Sen yanlış biliyorsun" formülünde değil.
+3. **Grafikler büyütüldü** (`src/narrative/chart_selector.py`) — font boyutları
+   ve `figure.dpi` artırıldı, kaynak damgası tek satıra indirildi, mobilde
+   okunabilirlik iyileştirildi.
+
+`findings.json`'un yeni içeriğini test etmek için: `python -m src.discovery.run_all`
+çalıştırıp `outputs/insights/findings.json`'daki `evidence.family` alanlarının
+hiçbirinin `tags_list_single`/`tags_list_pair` olmadığını doğrula.

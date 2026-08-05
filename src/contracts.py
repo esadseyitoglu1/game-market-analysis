@@ -57,6 +57,24 @@ def build_universe_metadata(n: int, min_reviews: int = 10,
 
 MAX_PER_FAMILY = 2  # aynı aileden LLM'e gidecek en fazla bulgu sayısı
 
+# AKSİYONA DÖNÜŞMEYEN AİLELER (bkz. plan "AKTİF PLAN 2026-08-05" Adım B).
+# Kullanıcı canlı n8n çıktısını inceleyip şu teşhisi koydu: "'Boomer Shooter'
+# etiketi koy, 18 puan daha görünür ol" gibi bulgular TUZAK içerik — etiket
+# bir SONUÇ, sebep değil. İzleyici etiketi ekleyince görünür olmuyor; o 139
+# oyun zaten iyi yapıldığı için hem etiketi hem görünürlüğü kazanmış. Fiyat
+# bandı, oyun modu (Co-op/VR/MMO), oynanma süresi gibi bulgular ise
+# geliştiricinin GERÇEKTEN karar verdiği/kontrol ettiği şeyler — bu yüzden
+# etiket aileleri (tags_list_single, tags_list_pair) LLM'e hiç gönderilmiyor.
+#
+# ÖLÇÜLDÜ (2026-08-05): etiketleri yasaklamadan önce 276 bulgunun 267'si
+# (%97) bu iki aileden geliyordu — filtre öncesi keşif motoru genişletilmeden
+# (bkz. Adım A) etiketsiz havuz sadece 9 bulguya düşüyordu, ayda 5 video ile
+# 2 ayda tükenirdi. Adım A'daki categories_list/price_band eklemesiyle havuz
+# 24'e çıktı. Yine de küçük kalabileceği ihtimaline karşı FALLBACK var
+# (aşağıda) — havuz max_n'den azsa etiketler geri devreye girer, sistem asla
+# boş/eksik rapor üretmez.
+NON_ACTIONABLE_FAMILIES = {"tags_list_single", "tags_list_pair"}
+
 
 def select_top_findings(findings: list[Finding], max_n: int = MAX_FINDINGS_FOR_LLM,
                           max_per_family: int = MAX_PER_FAMILY) -> list[Finding]:
@@ -74,9 +92,16 @@ def select_top_findings(findings: list[Finding], max_n: int = MAX_FINDINGS_FOR_L
     takılmamış en güçlü bulgularla (yine |effect| sırasına göre) doldurulur.
     Seçim hâlâ tamamen deterministik — sadece iki geçişli (aile-sınırlı, sonra
     dolgu) bir sıralama, rastgelelik yok.
+
+    AKSİYONA DÖNÜŞMEYEN FİLTRE (2026-08-05 eklendi): önce NON_ACTIONABLE_FAMILIES
+    elenir. Elenen havuz max_n'den azsa (fallback), etiket bulguları GERİ
+    devreye girer — sistem hiçbir zaman boş/eksik rapor üretmesin diye.
     """
     non_fragile = [f for f in findings if not f.fragile]
-    ranked = sorted(non_fragile, key=lambda f: -abs(f.effect))
+    actionable = [f for f in non_fragile if f.family not in NON_ACTIONABLE_FAMILIES]
+
+    pool = actionable if len(actionable) >= max_n else non_fragile
+    ranked = sorted(pool, key=lambda f: -abs(f.effect))
 
     selected: list[Finding] = []
     family_counts: dict[str, int] = {}

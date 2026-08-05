@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from src.discovery.base import Finding
+from src.narrative.plain_language import plain_language_condition, plain_language_gap
 
 log = logging.getLogger(__name__)
 
@@ -45,16 +46,23 @@ C = {
 
 
 def _style():
-    """visualizer.py:_style() ile aynı — dark tema rcParams ayarı."""
+    """visualizer.py:_style() ile aynı — dark tema rcParams ayarı.
+
+    NOT (2026-08-05 büyütüldü, bkz. plan Adım E): kullanıcı Telegram'da
+    grafiklerin mobilde küçük/okunaksız göründüğünü bildirdi. Font boyutları
+    ve figure.dpi artırıldı — mobil ekranda küçük thumbnail'de bile başlık
+    ve eksen etiketleri okunabilsin diye.
+    """
     plt.rcParams.update({
         "figure.facecolor": C["bg"],   "axes.facecolor":   C["bg"],
         "axes.edgecolor":   C["grid"], "axes.labelcolor":  C["text"],
         "axes.titlecolor":  C["text"], "xtick.color":      C["text"],
         "ytick.color":      C["text"], "grid.color":       C["grid"],
         "grid.linewidth":   0.7,       "text.color":       C["text"],
-        "font.family":      "sans-serif", "font.size":     11,
-        "axes.titlesize":   14,        "axes.labelsize":   11,
-        "figure.dpi":       150,
+        "font.family":      "sans-serif", "font.size":     13,
+        "axes.titlesize":   17,        "axes.labelsize":   13,
+        "xtick.labelsize":  12,        "ytick.labelsize":  12,
+        "figure.dpi":       180,
     })
 
 
@@ -79,55 +87,12 @@ def _note(ax, text: str, y: float = -0.22):
     HEM bu fonksiyona uygun bir `y` değeri veriyor — ikisi birbiriyle
     orantılı olmalı, biri değişirse diğeri de kontrol edilmeli.
     """
-    full_text = (
-        f"{text}\n"
-        "Veri: Kaggle (artermiloff/steam-games-dataset, Mart 2025, ~90k oyun) + SteamSpy API  |  "
-        "Metrik: yıl-içi log-review percentile (visibility_pct) — owners KULLANILMADI."
-    )
+    # 2026-08-05: kaynak damgası TEK satıra indirildi (eskiden 2 satırdı,
+    # Telegram'da küçük gösterilen görselde hiç okunmuyordu). Tam metodoloji
+    # detayı yerine kısa bir kaynak notu — asıl bilgi zaten `text` parametresi.
+    full_text = f"{text}  |  Kaggle + SteamSpy, Mart 2025 (~90k oyun)"
     ax.text(0.01, y, full_text, transform=ax.transAxes,
-            fontsize=7.5, color=C["muted"], va="top", wrap=True)
-
-
-# numeric_split/boolean_flag bulguları teknik kolon adlarını taşıyor
-# (örn. "average_playtime_forever > 0", "achievements > medyan (11.0)") —
-# bunlar Finding.label'a generators.py'de kolon adından otomatik üretiliyor,
-# editöre hiçbir şey ifade etmiyor. Grafikte insan-okunur karşılığı gösterilir.
-COLUMN_PLAIN_NAMES = {
-    "average_playtime_forever": "oynanma süresi",
-    "median_playtime_forever": "oynanma süresi",
-    "achievements": "başarım (achievement) sayısı",
-    "dlc_count": "DLC sayısı",
-    "required_age": "yaş sınırı",
-    "discount": "indirim",
-}
-
-
-def _plain_language_condition(label: str) -> str:
-    """'average_playtime_forever > 0' -> 'Oynanma süresi olan oyunlar' gibi
-    bir ifadeye çevirir. Eşleşme bulunamazsa label'ı olduğu gibi döndürür
-    (ör. tag isimleri zaten insan-okunur, buraya hiç girmez)."""
-    for col, plain in COLUMN_PLAIN_NAMES.items():
-        if label.startswith(col):
-            return f"{plain.capitalize()} olan oyunlar"
-    return f"'{label}' koşulunu sağlayan oyunlar"
-
-
-def _plain_language_gap(group_median: float, baseline_median: float) -> str:
-    """İki medyan percentile arasındaki farkı GÜNDELİK dile çevirir.
-
-    NEDEN BU FONKSİYON VAR (kullanıcı geri bildirimi, 2026-08-04): "etki=+0.49
-    n=139 q=0.0000" gibi başlıklar istatistikçiye konuşuyor, editöre değil —
-    editörün derdi grafiğin NE ANLATTIĞINI anında kavramak, rank-biserial
-    korelasyonun büyüklüğünü değil. Rank-biserial etki değerinin kendisi
-    ("+0.49") yüzdeye ÇEVRİLEMEZ (farklı bir istatistik, matematiksel olarak
-    yanlış olur) — bunun yerine iki grubun medyan percentile'ı arasındaki HAM
-    farkı puan cinsinden ifade ediyoruz, bu dürüst ve doğrudan anlaşılır.
-    """
-    gap_points = round((group_median - baseline_median) * 100)
-    if gap_points == 0:
-        return "aralarında belirgin bir fark yok"
-    direction = "daha görünür" if gap_points > 0 else "daha az görünür"
-    return f"{abs(gap_points)} puan {direction}"
+            fontsize=9.5, color=C["muted"], va="top", wrap=True)
 
 
 def _safe_filename(label: str) -> str:
@@ -151,7 +116,7 @@ def chart_bar_comparison(finding: Finding) -> Path:
     medyan karşılaştırması, tek bir yatay bar çifti.
     """
     _style()
-    fig, ax = plt.subplots(figsize=(8, 3.5))
+    fig, ax = plt.subplots(figsize=(10, 4.5))
 
     labels = [finding.label, "Diğerleri (baseline)"]
     values = [finding.group_median, finding.baseline_median]
@@ -160,9 +125,9 @@ def chart_bar_comparison(finding: Finding) -> Path:
     bars = ax.barh(labels, values, color=colors, height=0.5)
     for bar, val in zip(bars, values):
         ax.text(bar.get_width() + 0.01, bar.get_y() + bar.get_height() / 2,
-                 f"{val:.2f}", va="center", color=C["text"], fontsize=10)
+                 f"{val:.2f}", va="center", color=C["text"], fontsize=13)
 
-    gap_desc = _plain_language_gap(finding.group_median, finding.baseline_median)
+    gap_desc = plain_language_gap(finding.group_median, finding.baseline_median)
     ax.set_xlabel("Görünürlük (yüksek = Steam'de daha çok öne çıkıyor)")
     ax.set_title(f"'{finding.label}' taşıyan oyunlar {gap_desc}\n{finding.n:,} oyun karşılaştırıldı")
     ax.set_xlim(0, 1.1)
@@ -183,19 +148,21 @@ def chart_box_plot(finding: Finding) -> Path:
     array'lerini de geçirmek gerekir (bkz. Adım 5 entegrasyonu).
     """
     _style()
-    fig, ax = plt.subplots(figsize=(6, 4))
+    fig, ax = plt.subplots(figsize=(8, 5.5))
 
     color = C["green"] if finding.direction == "positive" else C["red"]
     ax.bar(["Grup\n(koşulu sağlayan)", "Baseline\n(sağlamayan)"],
            [finding.group_median, finding.baseline_median],
            color=[color, C["gray"]], width=0.5)
 
-    gap_desc = _plain_language_gap(finding.group_median, finding.baseline_median)
-    condition_desc = _plain_language_condition(finding.label)
-    ax.set_ylabel("Görünürlük (yüksek = Steam'de daha çok öne çıkıyor)")
+    gap_desc = plain_language_gap(finding.group_median, finding.baseline_median)
+    condition_desc = plain_language_condition(finding.label)
+    ax.set_ylabel("Görünürlük (yüksek = Steam'de\ndaha çok öne çıkıyor)")
     ax.set_title(f"{condition_desc} {gap_desc}\n{finding.n:,} oyun karşılaştırıldı")
     _note(ax, f"{finding.n:,} oyun (bu grup) / {finding.n_baseline:,} oyun (karşılaştırma) üzerinden istatistiksel olarak doğrulandı")
-    fig.subplots_adjust(bottom=0.28)
+    # 2026-08-05: top/left eklendi — font büyütmesinden sonra başlık y-ekseni
+    # etiketiyle çakışıyordu (bkz. plan Adım E, gerçek çıktıda görüldü).
+    fig.subplots_adjust(bottom=0.28, top=0.82, left=0.18)
 
     return _save(fig, f"finding_{_safe_filename(finding.label)}_box.png")
 
@@ -205,7 +172,7 @@ def chart_before_after(finding: Finding) -> Path:
     öncesi/sonrası çizgi grafiği.
     """
     _style()
-    fig, ax = plt.subplots(figsize=(6, 4))
+    fig, ax = plt.subplots(figsize=(8, 5.5))
 
     color = C["green"] if finding.direction == "positive" else C["red"]
     x = ["İlk oyun", "Sonraki oyunlar"]
@@ -215,7 +182,7 @@ def chart_before_after(finding: Finding) -> Path:
     for xi, yi in zip(x, y):
         ax.text(xi, yi + 0.02, f"{yi:.2f}", ha="center", color=C["text"])
 
-    gap_desc = _plain_language_gap(finding.group_median, finding.baseline_median)
+    gap_desc = plain_language_gap(finding.group_median, finding.baseline_median)
     ax.set_ylabel("Görünürlük (yüksek = Steam'de daha çok öne çıkıyor)")
     ax.set_title(f"İkinci oyunlar ilk oyuna göre {gap_desc}\n{finding.n:,} tekrar-stüdyo karşılaştırıldı")
     ax.set_ylim(0, 1.1)
@@ -236,7 +203,7 @@ def chart_trend_line(finding: Finding) -> Path:
     mı ondan hızlı yükseliyor" ayrımını görsel olarak anında yakalar.
     """
     _style()
-    fig, ax = plt.subplots(figsize=(8, 4.5))
+    fig, ax = plt.subplots(figsize=(10, 6))
 
     yearly = finding.evidence.get("yearly_series", {})
     market = finding.evidence.get("market_yearly_series", {})
@@ -255,7 +222,7 @@ def chart_trend_line(finding: Finding) -> Path:
                 linewidth=1.8, linestyle="--", label="Pazar geneli (tüm indie)", zorder=2)
         ax.fill_between(years, tag_vals, market_vals, color=color, alpha=0.12, zorder=1)
 
-        ax.legend(loc="upper left", framealpha=0.2, labelcolor=C["text"], fontsize=9)
+        ax.legend(loc="upper left", framealpha=0.2, labelcolor=C["text"], fontsize=12)
 
         # Sabit eksen-koordinatı (0-1) kullanılıyor — veri noktasına göre
         # (xy=son yıl, son değer) konumlandırma başlıkla çakışıyordu (son
@@ -264,7 +231,7 @@ def chart_trend_line(finding: Finding) -> Path:
         gap_word = "üstünde" if last_gap >= 0 else "altında"
         ax.text(0.98, 0.04, f"Son yılda: {abs(last_gap):.1f} puan pazarın {gap_word}",
                 transform=ax.transAxes, ha="right", va="bottom",
-                fontsize=9.5, color=color, fontweight="bold",
+                fontsize=12.5, color=color, fontweight="bold",
                 bbox=dict(boxstyle="round,pad=0.3", facecolor=C["panel"], edgecolor=color, linewidth=1))
     else:
         ax.text(0.5, 0.5, "Yıllık seri verisi yok", ha="center", va="center",
@@ -292,7 +259,7 @@ def chart_scatter_gap(finding: Finding) -> Path:
     ama tek bir Finding etrafında kurulmuş minimal versiyon.
     """
     _style()
-    fig, ax = plt.subplots(figsize=(6, 6))
+    fig, ax = plt.subplots(figsize=(8, 8))
 
     ax.axline((0, 0), slope=1, color=C["gray"], linestyle="--", linewidth=1)
     color = C["green"] if finding.direction == "positive" else C["red"]

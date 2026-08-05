@@ -73,6 +73,10 @@ IGNORE_VALUES = {
     "Steam Achievements", "Steam Cloud", "Steam Trading Cards",
     "Full controller support", "Partial Controller Support",
     "Stats", "Steam Leaderboards", "Steam Workshop",
+    # categories_list taraması eklendiğinde (bkz. plan "AKTİF PLAN 2026-08-05"
+    # Adım A) çok sık geçen, ayırt edici olmayan değerler — "Single-player"
+    # engaged_universe'in ~%96'sında var, hiçbir gruplamayı ayırt etmiyor.
+    "Single-player", "Family Sharing",
 }
 
 # İÇERİK UYGUNLUĞU FİLTRESİ — bunlar meta-tag değil, gerçek/istatistiksel olarak

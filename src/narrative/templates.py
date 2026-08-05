@@ -11,9 +11,21 @@ Burada TERSİNE çalışıyoruz: şablon iki versiyon içerir ("positive"/"negat
 hangisinin kullanılacağına `Finding.direction` karar verir — yani veri
 söylüyor, şablon veriye uyuyor, tersi değil. Her sayı `Finding` nesnesinin bir
 alanından gelir; şablonda TEK BİR serbest/hardcoded sayı yoktur.
+
+GÜNDELİK DİL (2026-08-05 eklendi, bkz. plan "AKTİF PLAN 2026-08-05" Adım C):
+Kullanıcı canlı n8n çıktısını inceleyip şablonların istatistikçiye konuştuğunu
+fark etti — "etki büyüklüğü +0.49, %95 güven aralığı [+0.42, +0.56]" gibi
+cümleler LLM'e SADAKATLE aktarıldığı için doğrudan script'e sızıyordu, editör
+bunu ekran yazısı olarak kullanamıyordu. Şablonlar artık `plain_language.py`
+üzerinden ("18 puan daha görünür" gibi) HAM PUAN FARKINI kullanıyor — etki
+büyüklüğü, güven aralığı, p/q-değeri gibi teknik terimler artık `claim`
+cümlesinde HİÇ geçmiyor (istatistiksel titizlik kaybolmuyor — bunlar hâlâ
+`evidence` alanında, findings.json'da duruyor, sadece izleyiciye giden
+cümleden çıkarıldı).
 """
 
 from src.discovery.base import Finding
+from src.narrative.plain_language import plain_language_condition, plain_language_gap
 
 # Nedensellik/abartı iması taşıyan, kanıtlanmamış iddialara yol açan kelimeler.
 # tests/test_narrative.py bunları üretilen metinde arar — biri geçerse test kırılır.
@@ -23,88 +35,18 @@ FORBIDDEN_WORDS = [
     "kesin", "mutlaka", "hep",
 ]
 
-TEMPLATES: dict[str, dict[str, str]] = {
-    "tags_list_single": {
-        "positive": (
-            "'{label}' etiketini taşıyan {n} indie oyun, taşımayanlara göre "
-            "daha yüksek görünürlükte (medyan percentile {group_median:.2f} vs "
-            "{baseline_median:.2f}, etki büyüklüğü {effect:+.2f}, "
-            "%95 güven aralığı [{ci_lo:+.2f}, {ci_hi:+.2f}])."
-        ),
-        "negative": (
-            "'{label}' etiketini taşıyan {n} indie oyun, taşımayanlara göre "
-            "daha DÜŞÜK görünürlükte (medyan percentile {group_median:.2f} vs "
-            "{baseline_median:.2f}, etki büyüklüğü {effect:+.2f}, "
-            "%95 güven aralığı [{ci_lo:+.2f}, {ci_hi:+.2f}])."
-        ),
-    },
-    "tags_list_pair": {
-        "positive": (
-            "'{label}' birleşimini birlikte taşıyan {n} oyun, benzerlerine göre "
-            "daha yüksek görünürlük diliminde (etki {effect:+.2f}, "
-            "%95 GA [{ci_lo:+.2f}, {ci_hi:+.2f}])."
-        ),
-        "negative": (
-            "'{label}' birleşimini birlikte taşıyan {n} oyun, benzerlerine göre "
-            "daha DÜŞÜK görünürlük diliminde (etki {effect:+.2f}, "
-            "%95 GA [{ci_lo:+.2f}, {ci_hi:+.2f}])."
-        ),
-    },
-    "boolean_flag": {
-        "positive": (
-            "'{label}' özelliğine sahip {n} oyun, sahip olmayanlara göre daha "
-            "yüksek görünürlükte (etki {effect:+.2f}, %95 GA [{ci_lo:+.2f}, {ci_hi:+.2f}])."
-        ),
-        "negative": (
-            "'{label}' özelliğine sahip {n} oyun, sahip olmayanlara göre daha "
-            "DÜŞÜK görünürlükte (etki {effect:+.2f}, %95 GA [{ci_lo:+.2f}, {ci_hi:+.2f}])."
-        ),
-    },
-    "numeric_split": {
-        "positive": (
-            "'{label}' koşulunu sağlayan {n} oyun, sağlamayanlara göre daha "
-            "yüksek görünürlükte (etki {effect:+.2f}, %95 GA [{ci_lo:+.2f}, {ci_hi:+.2f}])."
-        ),
-        "negative": (
-            "'{label}' koşulunu sağlayan {n} oyun, sağlamayanlara göre daha "
-            "DÜŞÜK görünürlükte (etki {effect:+.2f}, %95 GA [{ci_lo:+.2f}, {ci_hi:+.2f}])."
-        ),
-    },
-    "entity_repeat": {
-        "positive": (
-            "{n} tekrar-stüdyonun sonraki oyunları, ilk oyunlarına göre daha "
-            "yüksek görünürlükte (etki {effect:+.2f}, %95 GA [{ci_lo:+.2f}, {ci_hi:+.2f}])."
-        ),
-        "negative": (
-            "{n} tekrar-stüdyonun sonraki oyunları, ilk oyunlarına göre daha "
-            "DÜŞÜK görünürlükte (etki {effect:+.2f}, %95 GA [{ci_lo:+.2f}, {ci_hi:+.2f}])."
-        ),
-    },
-    # temporal_trend: GA içermez (bu aile bootstrap uygulamıyor, effect_ci
-    # her zaman NaN — bkz. families/temporal.py). Etki, pazarla-arasındaki
-    # FARKIN yıllar içindeki eğimini ölçen bir Spearman ρ, klasik grup-karşı-
-    # baseline GA'sı değil, bu yüzden ayrı ve doğru şekilde ifade ediliyor.
-    "temporal_trend": {
-        "positive": (
-            "'{label}' grubundaki {n} oyun, pazarın genel trendine göre zamanla "
-            "görünürlük farkını AÇIYOR (Spearman ilişkisi {effect:+.2f})."
-        ),
-        "negative": (
-            "'{label}' grubundaki {n} oyun, pazarın genel trendine göre zamanla "
-            "görünürlük farkını KAYBEDİYOR (Spearman ilişkisi {effect:+.2f})."
-        ),
-    },
-    # Tag-tek/tag-çift/vb. dışında kalan aileler için genel şablon (fallback)
-    "default": {
-        "positive": (
-            "'{label}' grubundaki {n} oyun, karşılaştırma grubuna göre daha "
-            "yüksek görünürlükte (etki {effect:+.2f}, %95 GA [{ci_lo:+.2f}, {ci_hi:+.2f}])."
-        ),
-        "negative": (
-            "'{label}' grubundaki {n} oyun, karşılaştırma grubuna göre daha "
-            "DÜŞÜK görünürlükte (etki {effect:+.2f}, %95 GA [{ci_lo:+.2f}, {ci_hi:+.2f}])."
-        ),
-    },
+# Şablon anahtarı -> (özne cümlesi üreten fonksiyon). Her fonksiyon
+# finding.label'dan "bu grubu ne yaptı" ifadesini üretir; gap_desc (ham puan
+# farkı, plain_language_gap'ten) ile birleşip tam cümleyi oluşturur.
+_SUBJECT_BUILDERS = {
+    "tags_list_single": lambda f: f"'{f.label}' etiketini taşıyan {f.n:,} oyun, taşımayanlara göre",
+    "tags_list_pair": lambda f: f"'{f.label}' birleşimini birlikte taşıyan {f.n:,} oyun, benzerlerine göre",
+    "categories_list_single": lambda f: f"'{f.label}' özelliğine sahip {f.n:,} oyun, sahip olmayanlara göre",
+    "boolean_flag": lambda f: f"'{f.label}' özelliğine sahip {f.n:,} oyun, sahip olmayanlara göre",
+    "price_band": lambda f: f"'{f.label}' fiyat bandındaki {f.n:,} oyun, diğer bantlara göre",
+    "numeric_split": lambda f: f"{plain_language_condition(f.label)} ({f.n:,} oyun), sağlamayanlara göre",
+    "entity_repeat": lambda f: f"{f.n:,} tekrar-stüdyonun sonraki oyunları, ilk oyunlarına göre",
+    "default": lambda f: f"'{f.label}' grubundaki {f.n:,} oyun, karşılaştırma grubuna göre",
 }
 
 
@@ -116,8 +58,12 @@ def _template_key_for_family(family: str) -> str:
         return "tags_list_single"
     if family.endswith("_pair"):
         return "tags_list_pair"
+    if family == "categories_list_single":
+        return "categories_list_single"
     if family == "boolean_flag":
         return "boolean_flag"
+    if family == "price_band":
+        return "price_band"
     if family.endswith("_split"):
         return "numeric_split"
     if family == "entity_repeat":
@@ -128,25 +74,28 @@ def _template_key_for_family(family: str) -> str:
 
 
 def render_claim(finding: Finding) -> str:
-    """Bir Finding'i tek bir kanıta-bağlı cümleye çevirir.
+    """Bir Finding'i tek bir kanıta-bağlı, GÜNDELİK dilde cümleye çevirir.
 
     KURAL (bkz. plan): şablon seçimi finding.direction'a göre yapılır (veri
     tersine dönerse cümle de döner); her sayı finding'in kendi alanından
-    f-string ile enjekte edilir, serbest metin YOK.
+    gelir, serbest metin YOK. İstatistiksel jargon (etki büyüklüğü, güven
+    aralığı, p/q-değeri, percentile) cümlede HİÇ geçmez — bunlar
+    findings.json'un `evidence` alanında ayrıca duruyor.
     """
     key = _template_key_for_family(finding.family)
-    template_group = TEMPLATES.get(key, TEMPLATES["default"])
-    template = template_group[finding.direction]
 
-    return template.format(
-        label=finding.label,
-        n=finding.n,
-        effect=finding.effect,
-        ci_lo=finding.effect_ci[0],
-        ci_hi=finding.effect_ci[1],
-        group_median=finding.group_median,
-        baseline_median=finding.baseline_median,
-    )
+    if key == "temporal_trend":
+        # GA/etki içermez — bu aile bootstrap uygulamıyor (effect_ci her
+        # zaman NaN, bkz. families/temporal.py). "Farkını açıyor/kaybediyor"
+        # zaten yön+büyüklük taşıyan gündelik bir ifade.
+        verb = "farkını pazara karşı açıyor" if finding.direction == "positive" else "farkını pazara karşı kaybediyor"
+        return f"'{finding.label}' grubundaki {finding.n:,} oyun, pazarın genel trendine göre zamanla {verb}."
+
+    subject_fn = _SUBJECT_BUILDERS.get(key, _SUBJECT_BUILDERS["default"])
+    subject = subject_fn(finding)
+    gap_desc = plain_language_gap(finding.group_median, finding.baseline_median)
+
+    return f"{subject} {gap_desc} ({finding.n:,} oyun üzerinden doğrulandı)."
 
 
 def contains_forbidden_words(text: str) -> list[str]:

@@ -26,30 +26,54 @@ def _make_finding(direction="positive", effect=0.35, family="tags_list_single") 
 
 
 def test_render_claim_direction_matches_finding():
-    """Şablon seçimi finding.direction'a göre olmalı — pozitif etki için
-    'daha yüksek', negatif etki için 'daha DÜŞÜK' cümlesi üretilmeli.
+    """Şablon seçimi finding.direction'a göre olmalı — group_median >
+    baseline_median olduğunda 'daha görünür', tersinde 'daha az görünür'
+    ifadesi üretilmeli (bkz. plan Adım C — gündelik dile çevrildi).
     """
-    positive_finding = _make_finding(direction="positive")
+    positive_finding = _make_finding(direction="positive")  # group=0.75 > baseline=0.60
     claim_pos = render_claim(positive_finding)
-    assert "daha yüksek" in claim_pos
-    assert "DÜŞÜK" not in claim_pos
+    assert "daha görünür" in claim_pos
+    assert "daha az görünür" not in claim_pos
 
     negative_finding = _make_finding(direction="negative")
+    negative_finding.group_median, negative_finding.baseline_median = 0.60, 0.75
     claim_neg = render_claim(negative_finding)
-    assert "DÜŞÜK" in claim_neg
+    assert "daha az görünür" in claim_neg
 
 
 def test_render_claim_contains_all_evidence_numbers():
-    """Üretilen cümlede Finding'in n, effect, ci değerleri GEÇMELİ — yani
-    cümle gerçekten o Finding'den türemiş olmalı, hardcoded değil.
+    """Üretilen cümlede Finding'in n değeri ve medyan farkından türeyen puan
+    farkı GEÇMELİ — yani cümle gerçekten o Finding'den türemiş olmalı,
+    hardcoded değil. İstatistiksel jargon (effect/ci) artık claim'de HİÇ
+    geçmiyor (bkz. plan Adım C) — bunlar evidence alanında ayrıca duruyor.
     """
     finding = _make_finding()
     claim = render_claim(finding)
 
-    assert str(finding.n) in claim
-    assert f"{finding.effect:+.2f}" in claim
-    assert f"{finding.effect_ci[0]:+.2f}" in claim
-    assert f"{finding.effect_ci[1]:+.2f}" in claim
+    assert f"{finding.n:,}" in claim
+    expected_gap = round((finding.group_median - finding.baseline_median) * 100)
+    assert str(abs(expected_gap)) in claim
+
+
+def test_render_claim_no_statistical_jargon():
+    """claim cümlesinde istatistik jargonu (etki büyüklüğü, güven aralığı,
+    percentile, Spearman, p/q-değeri) HİÇ geçmemeli — editöre gidecek metin
+    bu (bkz. plan Adım C, kullanıcı geri bildirimi: LLM jargonu script'e
+    sadakatle aktarıyordu çünkü kaynağı claim cümlesiydi).
+    """
+    jargon = ["etki büyüklüğü", "güven aralığı", "percentile", "Spearman",
+              "p-değeri", "q-değeri", " GA ", "effect"]
+    for direction in ["positive", "negative"]:
+        for family in ["tags_list_single", "tags_list_pair", "boolean_flag",
+                        "categories_list_single", "price_band",
+                        "achievements_split", "entity_repeat", "temporal_trend",
+                        "unknown_family"]:
+            finding = _make_finding(direction=direction, family=family)
+            claim = render_claim(finding)
+            for term in jargon:
+                assert term.lower() not in claim.lower(), (
+                    f"family={family} direction={direction}: jargon '{term}' claim'de bulundu: {claim}"
+                )
 
 
 def test_render_claim_no_forbidden_words():
