@@ -75,6 +75,7 @@ def render_finding(finding: Finding) -> dict:
         "confidence": finding.confidence,
         "fragile": finding.fragile,
         "exemplars": finding.exemplars,
+        "alternatives": finding.alternatives,
     }
 
 

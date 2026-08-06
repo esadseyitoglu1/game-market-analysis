@@ -382,3 +382,45 @@ girmedi, (b) n8n'in kendisi o item'da bir hata verip sessizce atladı. Bir
 sonraki canlı testte bu bulgu tekrar ederse, n8n'in "Executions" geçmişinden
 o spesifik item'ın "Message a model" çıktısına bakılıp gerçek sebep
 bulunmalı.
+
+## 2026-08-06 (devam) — "İçi boş tavsiye" sorunu: `alternatives` alanı eklendi
+
+Kullanıcı script'lerin somut aksiyon önerisi veremediğini fark etti —
+"Bullet Hell düşüyor" diyordu ama "onun yerine ne yapmalı" sorusuna "tag
+kombinasyonlarını test et" gibi genel/boş bir cevap veriyordu. Sebep: LLM'e
+tek bir bulgu gidiyordu, elinde alternatif önerecek somut veri yoktu.
+
+Kullanıcının kendi önerisi kilit noktaydı: *"adam zaten Bullet Hell
+yapıyorsa temel tag'i değiştiremez — asıl soru hangi İKİNCİ tag'i eklerse
+daha görünür olur."* Bu tam olarak `tags_list_pair` ailesinin ölçtüğü şey.
+
+**Eklenen özellik:** `src/contracts.py:attach_alternatives()` — seçilen her
+bulgunun etiketini `tags_list_pair` havuzunda arar, en güçlü 2 pozitif
+eşleşmeyi `Finding.alternatives` alanına ekler (`added_tag`, `n`,
+`gap_points`). `findings.json`'a yeni bir alan olarak yazılıyor. Bulgu
+bulunamazsa (çoğu ailede — numeric_split, price_band gibi tag'i olmayan
+bulgularda hiç anlamlı değil) `alternatives` boş liste kalıyor, LLM'e "boşsa
+zorlama" talimatı verildi.
+
+**Kapsam genişletmesi gerekli oldu:** Bullet Hell (popülerlik sırası 84)
+gibi orta-popülerlikteki tag'ler eski `top_n=40` sınırının dışında kalıyordu,
+hiç eşleşme bulunamıyordu. `generate_pairwise_hypotheses`'teki `top_n`
+40'tan **100**'e çıkarıldı — süre ~2 dakikadan **~7 dakikaya** çıktı (kabul
+edildi, kapsam değeri süreden önemli bulundu).
+
+**Bu genişletme yan etki doğurdu — eski bir confounding artefaktı geri
+döndü:** "Visual Novel + FPS" (plan dosyasında önceden "confounding
+artefaktı, gerçek değil" diye teşhis edilmiş bir kombinasyon) `top_n=100`
+ile tekrar gate'i geçti (n=61). Kontrol edildi: bu grubun ortalama tag
+sayısı **19.1**, geri kalanın **14.8**'i — yani gerçek bir tür değil,
+mağaza sayfasını maksimum tag'le doldurmuş ("tag-spam") oyunlar grubu.
+`generate_pairwise_hypotheses`'e yeni bir filtre eklendi
+(`MAX_TAG_COUNT_GAP = 3.0`): bir kombinasyonu taşıyan grubun ortalama
+`n_tags`'i rest'ten 3'ten fazla yüksekse, o hipotez hiç ÜRETİLMİYOR.
+Doğrulandı: "Visual Novel + FPS" artık üretilmiyor.
+
+**n8n'de elle yapılması gereken:** Prompt'a yeni bir MUTLAK KURAL eklendi —
+`alternatives` doluysa LLM somut veriyi ("X + Y kombinasyonu Z oyunda test
+edildi, W puan fark") kullanmalı, boşsa genel tavsiye verebilir ama tag
+UYDURMAMALI. Güncel `docs/n8n_workflow.json`'ı tekrar import et ya da
+prompt metnini elle güncelle.

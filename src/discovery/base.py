@@ -70,6 +70,7 @@ class Finding:
 
     evidence: dict = field(default_factory=dict)     # ham destekleyici sayılar
     exemplars: list[dict] = field(default_factory=list)  # 3 gerçek oyun adı (LLM'in uydurmasını önler)
+    alternatives: list[dict] = field(default_factory=list)  # aksiyona dönüşen somut öneriler (bkz. contracts.py:attach_alternatives)
 
     chart_hint: Optional[str] = None  # "bar_comparison" | "box_plot" | "trend_line" | ...
     chart_path: Optional[str] = None  # chart_selector.py doldurur

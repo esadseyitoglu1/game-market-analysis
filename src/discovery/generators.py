@@ -71,6 +71,9 @@ def generate_categorical_group_hypotheses(
     return hypotheses
 
 
+MAX_TAG_COUNT_GAP = 3.0  # bkz. docstring — tag-spam confound eşiği
+
+
 def generate_pairwise_hypotheses(
     df: pd.DataFrame, column: str, top_n: int = 40, min_count: int = 30, metric: str = DEFAULT_METRIC
 ) -> list[Hypothesis]:
@@ -82,19 +85,39 @@ def generate_pairwise_hypotheses(
     olanlardır (çok tag taşıyan oyunlar zaten daha "ilgilenilmiş" oyunlardır).
     Bu yüzden bu jeneratör SADECE engaged_universe (>=10 review tabanlı, bkz.
     metrics.py) üzerinde çağrılmalıdır — tam evrende değil.
+
+    TAG-SPAM CONFOUND FİLTRESİ (2026-08-06 eklendi — bkz. plan, kullanıcı
+    geri bildirimi): `total_reviews >= 10` tabanı genel confound'u
+    0.64→0.208'e düşürüyor (bkz. plan Context) ama TEK BİR spesifik
+    kombinasyonu tam elemeyebilir. Canlı testte "Visual Novel + FPS"
+    kombinasyonu top_n=40→100 genişletmesiyle GERİ DÖNDÜ (n=61) — bu grubun
+    ortalama tag sayısı 19.1 iken rest'in 14.8'i, yani bu "tür" değil,
+    mağaza sayfasını maksimum tag'le doldurmuş (tag-spam) oyunlar. `df`'te
+    `n_tags` kolonu varsa, bu kombinasyonu taşıyan grubun ortalama `n_tags`'i
+    rest'ten `MAX_TAG_COUNT_GAP`'ten fazla yüksekse hipotez ÜRETİLMİYOR.
     """
     spec = get_spec(column)
     min_n = spec.min_n if spec else min_count
+    has_n_tags = "n_tags" in df.columns
 
     all_values = pd.Series([v for row in df[column] for v in row])
     value_counts = all_values.value_counts()
     top_values = [v for v in value_counts.head(top_n).index if v not in _EXCLUDED_VALUES]
 
     hypotheses = []
+    skipped_tag_spam = 0
     for v1, v2 in combinations(top_values, 2):
         mask = df[column].apply(lambda lst: v1 in lst and v2 in lst).values
         if mask.sum() < min_n:
             continue
+
+        if has_n_tags:
+            group_n_tags = df.loc[mask, "n_tags"].mean()
+            rest_n_tags = df.loc[~mask, "n_tags"].mean()
+            if group_n_tags - rest_n_tags > MAX_TAG_COUNT_GAP:
+                skipped_tag_spam += 1
+                continue
+
         hypotheses.append(Hypothesis(
             family=f"{column}_pair",
             label=f"{v1} + {v2}",
@@ -103,7 +126,8 @@ def generate_pairwise_hypotheses(
             metric=metric,
             chart_hint="bar_comparison",
         ))
-    log.info(f"  [{column}] pairwise: {len(top_values)} değerden {len(hypotheses)} çift n>={min_n} eşiğini geçti")
+    log.info(f"  [{column}] pairwise: {len(top_values)} değerden {len(hypotheses)} çift n>={min_n} eşiğini geçti "
+             f"({skipped_tag_spam} tag-spam confound şüphesiyle elendi)")
     return hypotheses
 
 

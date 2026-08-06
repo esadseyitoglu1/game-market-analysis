@@ -91,7 +91,13 @@ def collect_all_findings(snapshot: str = "march2025") -> tuple[list[Finding], in
     # --- 1. Batch-uyumlu aileler: tek evren, tek values dizisi, TEK BH-FDR havuzu ---
     all_hypotheses = []
     all_hypotheses += generate_categorical_group_hypotheses(universe, "tags_list", min_count=50)
-    all_hypotheses += generate_pairwise_hypotheses(universe, "tags_list", top_n=40, min_count=30)
+    # top_n 40'tan 100'e çıkarıldı (2026-08-06, bkz. plan "alternatives"
+    # özelliği) — 40'ta orta-popülerlikte tag'ler (ör. "Bullet Hell", rank 84)
+    # hiç kombinasyon havuzuna girmiyordu, bu yüzden o tag'in tekil bulgusuna
+    # eşlik edecek "birlikte kullan" önerisi bulunamıyordu. 100 hem Bullet
+    # Hell'i kapsıyor hem hesaplama süresini makul tutuyor (~6x kombinasyon
+    # adayı, ama gate.py çoğunu min_count'ta eliyor).
+    all_hypotheses += generate_pairwise_hypotheses(universe, "tags_list", top_n=100, min_count=30)
     # categories_list = oyun modu/platform özellikleri (Co-op, VR Only,
     # Remote Play...) — tags_list'ten AYRI bir kolon, ikisi de generic
     # jeneratörü çağırıyor (bkz. plan Adım A: prototiple 10 bulgu doğrulandı,

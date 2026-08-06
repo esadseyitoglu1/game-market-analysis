@@ -126,6 +126,54 @@ def select_top_findings(findings: list[Finding], max_n: int = MAX_FINDINGS_FOR_L
     return selected
 
 
+def attach_alternatives(selected: list[Finding], all_findings: list[Finding],
+                          max_alternatives: int = 2) -> None:
+    """Seçilen her bulguya, AYNI ETİKETİ içeren en güçlü POZİTİF tag-pair
+    kombinasyonlarını "alternatives" alanına ekler — in-place, dönüş yok.
+
+    NEDEN BU FONKSİYON VAR (bkz. plan, kullanıcı geri bildirimi 2026-08-06):
+    LLM'e tek bir bulgu gittiği için "Bullet Hell düşüyor" diyebiliyordu ama
+    "peki ne yapmalı" sorusuna içi boş tavsiyeler ("tag kombinasyonlarını
+    test et") veriyordu — çünkü elinde somut veri yoktu. Kullanıcının kendi
+    önerisi: "adam zaten Bullet Hell yapıyorsa temel tag'i değiştiremez, asıl
+    soru hangi İKİNCİ tag'i eklerse daha görünür olur." Bu tam olarak
+    tags_list_pair ailesinin ölçtüğü şey — bu fonksiyon, seçilen bulgunun
+    etiketini tags_list_pair havuzunda arayıp en güçlü pozitif eşleşmeleri
+    ekliyor.
+
+    NOT: tags_list_single/tags_list_pair NON_ACTIONABLE_FAMILIES'de olduğu
+    için LLM'e ANA bulgu olarak hiç gitmiyor — ama burada YARDIMCI bilgi
+    olarak (ana bulgunun "alternatives" alanında) kullanılması, "etiket
+    koy görünür ol" tuzağından farklı: burada net bir aksiyon var ("mevcut
+    oyununa X'i ekle"), tek başına "bu etiketi tak" tavsiyesi değil.
+
+    Her Finding'in `label`'ından ana etiketi çıkarır (temporal_trend için
+    " (pazara göre..." son ekini, diğerleri için olduğu gibi kullanır) ve
+    tags_list_pair bulgularında bu etiketi arar.
+    """
+    pair_findings = [f for f in all_findings
+                      if f.family == "tags_list_pair" and f.direction == "positive"]
+
+    for finding in selected:
+        # Ana etiketi çıkar: "Bullet Hell (pazara göre göreli trend, ...)" -> "Bullet Hell"
+        main_tag = finding.label.split(" (")[0]
+
+        matches = [f for f in pair_findings if main_tag in f.label.split(" + ")]
+        matches.sort(key=lambda f: -f.effect)
+
+        alternatives = []
+        for m in matches[:max_alternatives]:
+            other_tag = [t for t in m.label.split(" + ") if t != main_tag]
+            other_tag = other_tag[0] if other_tag else m.label
+            alternatives.append({
+                "combo_label": m.label,
+                "added_tag": other_tag,
+                "n": m.n,
+                "gap_points": round((m.group_median - m.baseline_median) * 100),
+            })
+        finding.alternatives = alternatives
+
+
 def _replace_nan_with_none(obj):
     """JSON'a yazmadan önce ağacı gezip float NaN'ları None'a çevirir.
 
@@ -154,6 +202,7 @@ def write_findings_contract(all_findings: list[Finding], universe_n: int,
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     top_findings = select_top_findings(all_findings)
+    attach_alternatives(top_findings, all_findings)
     rendered = render_findings(top_findings)
 
     contract = {
