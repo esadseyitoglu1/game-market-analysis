@@ -349,3 +349,36 @@ yetmiyor):**
   "done" çıkışını hiçbir yere bağlama (boş bırak).
 - İstersen bunun yerine güncel `docs/n8n_workflow.json`'ı tekrar import et —
   otomatik olarak bu iki node olmadan gelir.
+
+## 2026-08-06 (devam) — "22 puan" ne demek, hiçbir yerde açıklanmıyordu
+
+Kullanıcı üçüncü canlı testte iki bulgunun (Metacritic, oynanma süresi)
+**ikisinin de** "22 puan daha görünür" demesini fark etti ve sordu — bu bir
+hata mı, yoksa gerçekten mi öyle? Kontrol edildi: **hata değil**, tesadüf —
+iki grup arasında sadece %44 örtüşme var (confounding değil), gate.py'nin
+etki büyüklüğü eşiği ikisinde de benzer bir puan farkına denk gelmiş. Ama
+kullanıcının asıl sorduğu şey daha temel: **"puan" hiçbir yerde
+tanımlanmıyordu** — izleyici bunun satış mı, kalite puanı mı, ne olduğunu
+bilmiyordu.
+
+**Gerçek tanım:** `visibility_pct`, oyunun REVIEW SAYISININ (kaç kişi yorum
+yazdığı — review PUANI/pozitif oranı DEĞİL) kendi ÇIKIŞ YILINDAKİ diğer
+oyunlara göre yüzdelik dilimidir. "22 puan daha görünür" = "bu grup, aynı
+yıl çıkan oyunlara kıyasla review alma sıralamasında ortalama %22 daha üst
+dilimde" — SATIŞ veya KALİTE değil, İLGİ/BİLİNİRLİK ölçer.
+
+**Çözüm:** Prompt'a yeni bir MUTLAK KURAL eklendi — [03-15sn - VERİ GERÇEĞİ]
+bölümünde "puan" kelimesi ilk geçtiğinde, cümlenin sonuna zorunlu bir
+parantez açıklaması eklenmesi isteniyor (ör. "...22 puan daha görünür (yani
+Steam'de review alma sıralamasında daha üst dilimde, satış rakamı değil)").
+
+## Bilinen, henüz çözülmemiş sorun: bazı bulguların script'i hiç gelmiyor
+
+Üçüncü testte "Visual Novel" bulgusunun SADECE grafiği geldi, caption/script
+hiç gelmedi (diğer 4 bulgu tam geldi). Kök neden henüz kesin tespit
+edilemedi — olası ihtimaller: (a) LLM o turda `---CAPTION_END---` ayracını
+hiç yazmadı VE fallback mantığı da (tüm metni script yap) bir sebeple devreye
+girmedi, (b) n8n'in kendisi o item'da bir hata verip sessizce atladı. Bir
+sonraki canlı testte bu bulgu tekrar ederse, n8n'in "Executions" geçmişinden
+o spesifik item'ın "Message a model" çıktısına bakılıp gerçek sebep
+bulunmalı.
