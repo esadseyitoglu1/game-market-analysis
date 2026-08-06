@@ -227,12 +227,28 @@ def chart_trend_line(finding: Finding) -> Path:
         # Sabit eksen-koordinatı (0-1) kullanılıyor — veri noktasına göre
         # (xy=son yıl, son değer) konumlandırma başlıkla çakışıyordu (son
         # nokta genelde grafiğin üst kısmında oluyor, başlık da orada).
+        #
+        # 2026-08-06 DÜZELTİLDİ (kullanıcı geri bildirimi — canlı çıktıda
+        # görüldü): kutucuk sadece "son yılda X puan üstünde" diyordu, bu
+        # başlıktaki "farkını kaybediyor" ifadesiyle ÇELİŞİYORMUŞ gibi
+        # görünüyordu. İkisi farklı şeyi ölçüyor: kutucuk ANLIK durumu (hâlâ
+        # üstünde olabilir), başlık ZAMAN İÇİNDEKİ EĞİLİMİ (fark daralıyor
+        # olabilir) — ikisi aynı anda doğru olabilir ama yan yana görülünce
+        # kafa karıştırıyordu. Çözüm: kutucuk artık İLK YIL ile KIYASLAYARAK
+        # ikisini birlikte anlatıyor ("hâlâ üstünde AMA fark daralıyor: X'ten
+        # Y'ye").
+        first_gap = tag_vals[0] - market_vals[0]
         last_gap = tag_vals[-1] - market_vals[-1]
         gap_word = "üstünde" if last_gap >= 0 else "altında"
-        ax.text(0.98, 0.04, f"Son yılda: {abs(last_gap):.1f} puan pazarın {gap_word}",
+        if finding.direction == "negative":
+            trend_note = f"fark daralıyor: {years[0]}'da {abs(first_gap):.1f} puan → {years[-1]}'de {abs(last_gap):.1f} puan"
+        else:
+            trend_note = f"fark açılıyor: {years[0]}'da {abs(first_gap):.1f} puan → {years[-1]}'de {abs(last_gap):.1f} puan"
+        box_text = f"Hâlâ pazarın {gap_word} ({abs(last_gap):.1f} puan) — ama {trend_note}"
+        ax.text(0.98, 0.04, box_text,
                 transform=ax.transAxes, ha="right", va="bottom",
-                fontsize=12.5, color=color, fontweight="bold",
-                bbox=dict(boxstyle="round,pad=0.3", facecolor=C["panel"], edgecolor=color, linewidth=1))
+                fontsize=11, color=color, fontweight="bold",
+                bbox=dict(boxstyle="round,pad=0.4", facecolor=C["panel"], edgecolor=color, linewidth=1))
     else:
         ax.text(0.5, 0.5, "Yıllık seri verisi yok", ha="center", va="center",
                 transform=ax.transAxes, color=C["muted"])

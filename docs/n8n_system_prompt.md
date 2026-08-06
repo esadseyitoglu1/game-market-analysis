@@ -274,8 +274,16 @@ ve `src/narrative/templates.py`'de çözüldü, bkz. plan Adım B/C):
 
 **Güncel `docs/n8n_workflow.json`'ı tekrar import etmek, tüm bu düzeltmeleri
 otomatik uygular** — node ID'leri korunduğu için mevcut credential
-bağlantıları bozulmaz, sadece "Loop Bitti mi?" adında yeni bir node eklenir
-ve mevcut bağlantılar/kodlar güncellenir.
+bağlantıları bozulmaz.
+
+**NOT (2026-08-06 GERİ ALINDI):** "Loop Bitti mi?" IF node'u ("done"
+çıkışının 5 kez tetiklenmesini çözmek için) eklenmişti, ama canlı testte bu
+sayıyı 5'ten 2'ye düşürdü, 1'e değil — `noItemsLeft` kontrolü n8n'in bu
+bug'ını (GitHub #21376) tam çözmüyor. Kullanıcı kararıyla `Telegram Done` VE
+`Loop Bitti mi?` node'ları TAMAMEN KALDIRILDI. Gerekçe: 5 foto+script zaten
+geldiğinde kullanıcı işin bittiğini anlıyor, "tamamlandı" mesajı bilgi
+değeri taşımıyordu — sorunun kaynağını ortadan kaldırmak, kısmi bir
+workaround'dan daha güvenilir.
 
 ## 2026-08-05 — İçerik değeri sorunları (aynı canlı testten)
 
@@ -302,3 +310,42 @@ yapıldı (n8n'de dokunulacak bir şey yok, findings.json'un içeriği değişti
 `findings.json`'un yeni içeriğini test etmek için: `python -m src.discovery.run_all`
 çalıştırıp `outputs/insights/findings.json`'daki `evidence.family` alanlarının
 hiçbirinin `tags_list_single`/`tags_list_pair` olmadığını doğrula.
+
+---
+
+## 2026-08-06 — İkinci canlı test: hâlâ kesilen script'ler + NaN + 2x mesaj
+
+Kullanıcı yukarıdaki düzeltmelerle tekrar denedi. İki bulgu daha çıktı:
+
+1. **`findings.json` `NaN` içerdiği için "Parse findings JSON" node'u
+   `SyntaxError: Unexpected token 'N'` ile çöküyordu.** Kök neden koddaydı
+   (n8n'de düzeltilecek bir şey yok): Python'un `json.dumps`'u `temporal_trend`
+   ailesinin `effect_ci=(NaN, NaN)` / `q_value=NaN` alanlarını ham `NaN`
+   token'ı olarak yazıyordu — geçerli JSON değil. `src/contracts.py`'ye
+   `_replace_nan_with_none()` eklendi, artık `null` yazılıyor. Kod tarafında
+   çözüldü, sunucuda yeniden çalıştırıldı, doğrulandı (`grep -c NaN` → 0).
+
+2. **Script'ler hâlâ cümle ortasında kesiliyordu** (ör. "...Metacr" diye
+   bitiyordu), `Split Caption Script` kodu doğru olduğu hâlde. Kullanıcı
+   `Message a model` node'undaki `Max Tokens to Sample` değerinin `2048`
+   olduğunu doğruladı — bu, LLM'in kendi cevabının fiziksel olarak
+   kesilmesi için yeterince düşük bir limitti (prompt uzun: video kalıbı
+   kuralları + tam blueprint yapısı + JSON overhead). **`4096`'ya çıkarıldı.**
+   Ayrıca prompt'taki "SCRIPT EN FAZLA 3200 karakter" ifadesi kod tarafındaki
+   `trimToBoundary` limitiyle (3800) tutarsızdı — `3600` olarak birleştirildi,
+   ayrıca "CTA bölümü DAHİL tam bitmiş olmalı" ifadesi eklendi.
+
+3. **"✅ Haftalık analiz tamamlandı" mesajı, önceki turda eklenen "Loop Bitti
+   mi?" IF node'una rağmen hâlâ 2 kez gidiyordu** (5'ten 2'ye düştü ama 1
+   olmadı) — `noItemsLeft` kontrolü n8n'in bilinen bug'ını (GitHub #21376)
+   tam çözmüyor. Kullanıcı kararıyla `Telegram Done` ve `Loop Bitti mi?`
+   node'ları **tamamen kaldırıldı** — 5 foto+script zaten geldiğinde iş
+   bittiği belli oluyor, ekstra mesajın bilgi değeri yoktu.
+
+**n8n'de elle yapılması gerekenler (senin tarafında, kod değişikliği
+yetmiyor):**
+- `Message a model` → Options → Max Tokens to Sample → **4096** yap.
+- `Telegram Done` ve `Loop Bitti mi?` node'larını sil, `Loop Over Items`'ın
+  "done" çıkışını hiçbir yere bağlama (boş bırak).
+- İstersen bunun yerine güncel `docs/n8n_workflow.json`'ı tekrar import et —
+  otomatik olarak bu iki node olmadan gelir.
