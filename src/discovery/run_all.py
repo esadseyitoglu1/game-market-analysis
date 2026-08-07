@@ -33,7 +33,10 @@ from src.discovery.families.studio_repeat import test_studio_repeat
 from src.discovery.families.temporal import test_temporal_trend
 from src.discovery.families.quality_cliff import test_cliff_at_80, test_quality_trap
 from src.narrative.chart_selector import render_chart_for_finding
-from src.contracts import write_findings_contract, select_top_findings, attach_alternatives
+from src.contracts import (
+    write_findings_contract, select_top_findings, attach_alternatives,
+    select_actionable_findings, write_findings_library, write_markdown_report,
+)
 
 log = logging.getLogger(__name__)
 
@@ -59,9 +62,19 @@ BOOLEAN_COLUMNS = ["windows", "mac", "linux"]
 # geçen sabit bir liste kullanılıyor. Bu liste feature_registry.IGNORE_VALUES
 # ile çakışmayan, gerçek tür/mekanik etiketlerinden oluşuyor.
 TEMPORAL_CANDIDATE_TAGS = [
+    # Mevcut liste — negatif trend bulundu (2016-2025)
     "Roguelike", "Metroidvania", "City Builder", "Visual Novel",
     "Top-Down Shooter", "Survival", "Puzzle", "Battle Royale",
     "Tower Defense", "Zombies", "Deck Building", "Bullet Hell",
+    # Pozitif trend adayları (2026-08-07 eklendi — sistematik tarama):
+    # Bunlar ya son yıllarda büyüyen Steam kategorileri ya da sosyal/viral
+    # mekanikleri olan türler; bazıları negatif çıkabilir, önemli olan
+    # pozitif olanları yüzeye çıkarmak (şimdiye kadar hiç taranmadı).
+    "Cozy", "Farming Sim", "Life Sim", "Auto Battler",
+    "Souls-like", "Extraction Shooter", "Horror", "Psychological Horror",
+    "Walking Simulator", "Narrative", "Dating Sim", "Creature Collector",
+    "Automation", "Factory", "Management", "Grand Strategy",
+    "Anime", "JRPG", "Tactical RPG", "Roguevania",
 ]
 
 
@@ -78,15 +91,19 @@ def _save_history(labels: list[str]) -> None:
             f.write(label + "\n")
 
 
-def collect_all_findings(snapshot: str = "march2025") -> tuple[list[Finding], int]:
+def collect_all_findings(snapshot: str = "march2025") -> tuple[list[Finding], int, int]:
     """Tüm hipotez ailelerini üretir, TEK bir BH-FDR havuzunda değerlendirir.
 
-    Döndürür: (findings, engaged_universe_büyüklüğü)
+    Döndürür: (findings, engaged_universe_büyüklüğü, end_year)
+    end_year: engaged_universe()'in kullandığı gerçek üst yıl sınırı — artık
+    sabit 2024 değil, snapshot'taki en son yıl (bkz. metrics.py 2026-08-07
+    değişikliği) — contracts.py'nin metadata metnine yansıtması için taşınıyor.
     """
     df = load_universe(snapshot)
     universe = engaged_universe(df).reset_index(drop=True)
     values = universe["visibility_pct"].values
     n_universe = len(universe)
+    end_year = int(universe["release_year"].max())
 
     # --- 1. Batch-uyumlu aileler: tek evren, tek values dizisi, TEK BH-FDR havuzu ---
     all_hypotheses = []
@@ -135,7 +152,7 @@ def collect_all_findings(snapshot: str = "march2025") -> tuple[list[Finding], in
 
     log.info(f"  Özel ailelerden (studio_repeat/temporal/quality_cliff) {len(special_findings)} bulgu geçti")
 
-    return batch_findings + special_findings, n_universe
+    return batch_findings + special_findings, n_universe, end_year
 
 
 def run_discovery(snapshot: str = "march2025") -> Path:
@@ -149,12 +166,14 @@ def run_discovery(snapshot: str = "march2025") -> Path:
     GRAFİK ÜRETİMİ (bkz. plan — kullanıcının isteği: "bu içeriği destekleyecek
     grafik tarzı şeyler de üretmeli"): chart_selector.py zaten yazılmıştı ama
     hiçbir yerden çağrılmıyordu — findings.json'a chart_path hiç girmiyordu,
-    n8n'e giden video script'lerinin hiçbir görseli yoktu. Burada SADECE
-    LLM'e gidecek (en fazla 5) bulgu için grafik üretiliyor — 277 bulgunun
-    hepsi için değil, çünkü her grafik matplotlib çizimi gerektiriyor ve
-    gereksiz 272 dosya üretmenin bir faydası yok.
+    n8n'e giden video script'lerinin hiçbir görseli yoktu. Burada LLM'e giden
+    5 bulgu İÇİN grafik üretilirken, geriye kalan aksiyona-dönüşen bulgular
+    da (bkz. write_findings_library) kendi grafikleriyle depoya yazılıyor —
+    331 ham bulgunun (tags_list_single/pair dahil) hepsi için değil, sadece
+    aksiyona dönüşenler (~24) için, çünkü etiket aileleri zaten LLM'e hiç
+    gitmiyor (bkz. contracts.py NON_ACTIONABLE_FAMILIES).
     """
-    all_findings, n_universe = collect_all_findings(snapshot)
+    all_findings, n_universe, end_year = collect_all_findings(snapshot)
 
     used_labels = _load_history()
     fresh = [f for f in all_findings if f.label not in used_labels]
@@ -186,11 +205,32 @@ def run_discovery(snapshot: str = "march2025") -> Path:
     for finding in to_chart:
         render_chart_for_finding(finding)
 
-    path = write_findings_contract(fresh, universe_n=n_universe, snapshot=snapshot)
+    path = write_findings_contract(fresh, universe_n=n_universe, snapshot=snapshot, end_year=end_year)
 
     # findings.json'a GİDEN bulguların etiketlerini hafızaya yaz — sadece
     # görülenler tekrar önerilmesin.
     _save_history([f.label for f in to_chart])
+
+    # --- Depo: TÜM aksiyona-dönüşen bulgular, hafıza filtresinden BAĞIMSIZ ---
+    # NEDEN all_findings (fresh değil): kütüphane "sistemin bulabildiği her
+    # şeyi" göstermeli — bir bulgu geçen hafta LLM'e gittiği (ve hafızaya
+    # yazıldığı) için depodan kaybolmamalı. to_chart'takiler zaten grafik
+    # üretti (render_chart_for_finding chart_path'i doldurdu); geri kalan
+    # aksiyona-dönüşen bulgular için de burada ayrıca üretiliyor.
+    actionable = select_actionable_findings(all_findings)
+    to_chart_labels = {f.label for f in to_chart}
+    remaining = [f for f in actionable if f.label not in to_chart_labels]
+
+    attach_alternatives(remaining, all_findings)
+    log.info(f"  Depo için {len(remaining)} ek bulgunun grafiği üretiliyor "
+             f"(toplam aksiyona-dönüşen: {len(actionable)})...")
+    for finding in remaining:
+        render_chart_for_finding(finding)
+
+    write_findings_library(actionable)
+    write_markdown_report(actionable, universe_n=n_universe,
+                           total_discovered=len(all_findings), snapshot=snapshot,
+                           end_year=end_year)
 
     return path
 
