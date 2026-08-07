@@ -53,9 +53,14 @@ HISTORY_RESET_THRESHOLD = 5  # taze bulgu sayısı bunun altına düşerse hafı
 # "farklı bulgu" gibi sunma riski taşıyordu (canlı n8n testinde görüldü —
 # iki ayrı video script'i, %90 aynı içerik). average_playtime_forever
 # temsilci olarak bırakıldı (playtime ailesinin daha yaygın kullanılan alanı).
-NUMERIC_COLUMNS = ["achievements", "dlc_count", "average_playtime_forever",
-                    "required_age", "discount", "peak_ccu", "metacritic_score"]
-BOOLEAN_COLUMNS = ["windows", "mac", "linux"]
+# NOT (2026-08-07 güncellendi): discount/peak_ccu/metacritic_score/average_playtime_forever
+# NON_ACTIONABLE_FAMILIES'e taşındı — discovery bunları hesaplamaya devam
+# etmek yerine hiç üretmiyoruz, gereksiz BH-FDR havuzu kirlenmesini de önlüyor.
+# required_age: "18+ oyunlar daha az görünür" trivial/kontrol edilemez.
+# windows/mac/linux: platform desteği görünürlük farkı üretmiyor (doğrulandı).
+NUMERIC_COLUMNS = ["achievements", "dlc_count"]
+BOOLEAN_COLUMNS = []  # şimdilik boş — bulgularla desteklenen bir flag bulunursa ekle
+
 
 # temporal_trend ailesi için taranacak popüler tag'ler — tüm tag'leri taramak
 # yerine (yüzlerce Spearman testi + çoklu-karşılaştırma riski büyür) en sık
