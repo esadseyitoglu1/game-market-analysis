@@ -372,6 +372,36 @@ bölümünde "puan" kelimesi ilk geçtiğinde, cümlenin sonuna zorunlu bir
 parantez açıklaması eklenmesi isteniyor (ör. "...22 puan daha görünür (yani
 Steam'de review alma sıralamasında daha üst dilimde, satış rakamı değil)").
 
+## 2026-08-07 — Fiyat bandı bulgularında ters-nedensellik riski
+
+Kullanıcı content_library önizlemesinde "10-20 dolar → görünürlük artışı"
+bulgusunu görüp haklı bir şüphe belirtti: *"oyunu 10-20 dolar yapan şey biraz
+da kalitesi falandır, bu değişmez mi?"* Gerçek veriyle kontrol edildi:
+
+```
+Spearman(price, review_score)   = 0.10  (kaliteyle korelasyon ÇOK ZAYIF)
+Spearman(price, visibility_pct) = 0.28  (görünürlükle korelasyon belirgin)
+```
+
+Yani kalite farkı önemsiz küçük ama görünürlük farkı büyük — "kaliteli oyun
+zaten pahalı satılıyor" tezi zayıf. Asıl olası açıklama: fiyat, oyunun içerik
+miktarı/geliştirme ciddiyetinin bir vekili (proxy). Ucuz oyunlar genelde
+deneme niteliğinde/az içerikli olduğu için düşük fiyata düşüyor — bu da
+`achievements > medyan` ve `dlc_count > 0` bulgularının AYNI kökten
+(içerik hacmi) gelmiş olabileceğini düşündürüyor.
+
+**Sonuç: bulgu istatistiksel olarak sağlam kaldı (elenmedi), ama yorumu
+sıkılaştırıldı.** Prompt'a `price_band` ailesi için özel bir kural eklendi
+(hem `docs/n8n_system_prompt.md` hem `src/content_generator.py`'de senkron):
+"fiyatını yükselt" gibi düz bir tavsiye YASAK, mesaj "o fiyat bandını hak
+edecek içerik/kalite önce gelir" yönünde olmalı — genel korelasyon-nedensellik
+uyarısına EK, onun yerine geçmiyor.
+
+n8n'de elle yapılması gereken: ana prompt'a (yukarıdaki "Güncel prompt"
+bölümüne) "FİYAT BANDI (price_band) BULGULARINDA TERS-NEDENSELLİK UYARISI"
+kuralını ekle — `src/content_generator.py`'deki `SYSTEM_PROMPT` sabitinde
+birebir metni var, oradan kopyalanabilir.
+
 ## Bilinen, henüz çözülmemiş sorun: bazı bulguların script'i hiç gelmiyor
 
 Üçüncü testte "Visual Novel" bulgusunun SADECE grafiği geldi, caption/script
@@ -452,3 +482,63 @@ Prompt'a da bir not eklendi: `alternatives` doluysa, LLM'in [25-40sn]
 GÖRSEL alanında YENİ bir görsel tarif etmesi değil, gönderilen fotonun
 sağındaki panele atıf yapması ("az önceki grafikte sağdaki küçük panelde
 gördüğün gibi") isteniyor.
+
+---
+
+## 2026-08-07 (bu oturum) — İçerik kalitesi filtreleme + pozitif trend taraması
+
+Git commit: `7ac8fb8` — `master` branch, push edildi.
+
+### 1. `NON_ACTIONABLE_FAMILIES` genişletildi (`src/contracts.py`)
+
+Önceki liste sadece `tags_list_single` ve `tags_list_pair`'i elediyordu.
+Aşağıdaki 5 aile eklendi — bunlar istatistiksel olarak geçerli ama içerik
+olarak ya tautolojik ya da geliştirici tarafından kontrol edilemez:
+
+| Aile | Neden elendi |
+|---|---|
+| `discount_split` | İndirim döneminde Steam zaten oyunu öne çıkarıyor (platform mekaniği), n=156 küçük, anlık bir taktik |
+| `peak_ccu_split` | Neden-sonuç ters: popüler oyunun hem CCU'su hem görünürlüğü yüksek |
+| `metacritic_score_split` | "Metacritic puanı al" tavsiyesi verilemez, medya ilgisi gerektirir |
+| `average_playtime_forever_split` | Oynanma süresi = oyun satılmış/oynandı — görünürlüğün sonucu, nedeni değil |
+| `cliff_80` | Review skoru geliştirici tarafından doğrudan ayarlanamaz |
+
+**Etki:** 24 aksiyona-dönüşen bulgudan 5 elenecek → depoda ~19 kalır.
+Fallback mekanizması korundu: eğer kalan havuz `MAX_FINDINGS_FOR_LLM`'den
+(5) azsa, etiket bulguları geri devreye girer.
+
+### 2. `TEMPORAL_CANDIDATE_TAGS` 12 → 32 tag (`src/discovery/run_all.py`)
+
+Önceki liste sadece negatif trend bulduğu bilinen türleri tarıyordu
+(Bullet Hell, Visual Novel, Metroidvania, Puzzle...). Pozitif trend adayları
+hiç taranmamıştı. Eklenenler:
+
+`Cozy`, `Farming Sim`, `Life Sim`, `Auto Battler`, `Souls-like`,
+`Extraction Shooter`, `Horror`, `Psychological Horror`, `Walking Simulator`,
+`Narrative`, `Dating Sim`, `Creature Collector`, `Automation`, `Factory`,
+`Management`, `Grand Strategy`, `Anime`, `JRPG`, `Tactical RPG`, `Roguevania`
+
+**Beklenen etki:** Bir sonraki pipeline çalışmasında bu türlerin bazılarında
+pozitif trend bulgusu çıkabilir — "X türü büyüyor, şimdi fırsatı var" mesajı
+"Y türü kaybediyor" bulgularıyla denge kurar, içerik deposu tek-yönlü
+("kaçın bundan") olmaktan çıkar.
+
+**Not:** `test_temporal_trend()` (`src/discovery/families/temporal.py`)
+Spearman korelasyonu kullanıyor, `q_value=NaN` geliyor (bootstrap yok) —
+bu beklenen davranış, `effect` ve `n` yine de geçerli.
+
+### 3. Pipeline durumu (bu oturumda tetiklendi, sonuç bekleniyor)
+
+`python -m src.main` sunucuda arka planda çalışıyor. Sonuç:
+`outputs/insights/findings.json` (LLM'e gidecek 5 bulgu) ve
+`outputs/insights/findings_library.json` (tüm aksiyona-dönüşen bulgular,
+depo için) güncellenecek. Yeni `rapor.md` ve grafikler de üretilecek.
+
+**Bir sonraki Claude Code oturumunda öncelik:**
+1. `findings.json` ve `rapor.md`'nin yeni içeriğini incele — pozitif temporal
+   trend bulgusu çıktı mı? Hangi yeni bulgular var?
+2. Remote Play üçlemesini birleştir (Tablet/Phone/TV ayrı ayrı değil tek video
+   önerisi) — bu `contracts.py:select_actionable_findings()` veya rapor
+   formatında ele alınabilir.
+3. İçerik deposu UI'ında (Claude artifact) "bu bulgu non-actionable" uyarısı
+   göster ya da zaten elenmiş olduğu için görünmeyecek.
