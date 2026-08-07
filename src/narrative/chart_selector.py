@@ -201,9 +201,23 @@ def chart_trend_line(finding: Finding) -> Path:
     göstermiyordu. Artık iki çizgi birden çizilir (tag vs pazar medyanı) ve
     aradaki fark taranarak vurgulanır — izleyici "tag mi düşüyor yoksa pazar
     mı ondan hızlı yükseliyor" ayrımını görsel olarak anında yakalar.
+
+    İKİNCİ PANEL — ALTERNATİF ÖNERİ (2026-08-06 eklendi, kullanıcı geri
+    bildirimi): LLM'in script'te "İki sütun yan yana..." diye tarif ettiği
+    bir görsel HİÇ ÜRETİLMİYORDU — editör var olmayan bir görsele atıf
+    yapan talimat okuyordu. Kullanıcının önerisi: ayrı bir foto/n8n zinciri
+    yerine, TEK grafikte ikinci bir panel olarak göster, "editör video
+    akışında o kısma geldiğinde zoomlar." finding.alternatives doluysa,
+    en güçlü öneri (`alternatives[0]`) sağda küçük bir bar karşılaştırması
+    olarak eklenir. Boşsa (çoğu bulguda böyle, örn. numeric_split ailesi tag
+    taşımaz) tek panelli eski davranış korunur.
     """
     _style()
-    fig, ax = plt.subplots(figsize=(10, 6))
+    has_alt = bool(finding.alternatives)
+    if has_alt:
+        fig, (ax, ax2) = plt.subplots(1, 2, figsize=(14, 6), gridspec_kw={"width_ratios": [2.2, 1]})
+    else:
+        fig, ax = plt.subplots(figsize=(10, 6))
 
     yearly = finding.evidence.get("yearly_series", {})
     market = finding.evidence.get("market_yearly_series", {})
@@ -262,9 +276,38 @@ def chart_trend_line(finding: Finding) -> Path:
     ax.set_xlabel("Yıl")
     ax.set_ylabel("Medyan review skoru (yüksek = daha çok beğenilmiş)")
     ax.set_title(f"'{tag_name}' etiketi pazara göre {trend_word}\n{finding.n:,} oyun, {year_range_text} arası izlendi")
-    _note(ax, f"{finding.n:,} oyun  |  Kesikli çizgi = tüm indie pazarının aynı yıllardaki medyanı  |  "
-              f"Kırmızı/yeşil çizgi ile kesikli çizgi arasındaki fark, bu türün pazardan ne kadar geride/önde olduğunu gösterir")
-    fig.subplots_adjust(bottom=0.26)
+
+    if has_alt:
+        alt = finding.alternatives[0]
+        alt_labels = [alt["combo_label"], "Diğerleri (baseline)"]
+        alt_values = [alt["group_median"], alt["baseline_median"]]
+        alt_colors = [C["green"], C["gray"]]
+
+        bars = ax2.barh(alt_labels, alt_values, color=alt_colors, height=0.5)
+        for bar, val in zip(bars, alt_values):
+            ax2.text(bar.get_width() + 0.01, bar.get_y() + bar.get_height() / 2,
+                      f"{val:.2f}", va="center", color=C["text"], fontsize=11)
+
+        alt_gap = plain_language_gap(alt["group_median"], alt["baseline_median"])
+        ax2.set_xlim(0, 1.15)
+        ax2.set_title(f"Öneri: '{alt['added_tag']}' Ekle\n{alt['n']:,} oyunda {alt_gap}", fontsize=13)
+        ax2.set_xlabel("Görünürlük", fontsize=11)
+
+        # 2026-08-06 DÜZELTİLDİ: _note() SADECE ax'e (sol panele) yazılıyordu,
+        # fig.text() ile FİGÜRÜN TAMAMINA göre (iki panelin ortak altına)
+        # taşındı — canlı testte sağ panelin altı boş, sol panelin y-ekseni
+        # etiketi kesik görünüyordu (left boşluğu iki-panelli düzen için
+        # yetersizdi). left=0.09 eklendi, wspace artırıldı.
+        note_text = (f"{finding.n:,} oyun  |  Kesikli çizgi = tüm indie pazarının aynı yıllardaki medyanı  |  "
+                     f"Kırmızı/yeşil çizgi ile kesikli çizgi arasındaki fark, bu türün pazardan ne kadar geride/önde olduğunu gösterir"
+                     f"  |  Kaggle + SteamSpy, Mart 2025 (~90k oyun)")
+        fig.text(0.02, 0.02, note_text, fontsize=9.5, color=C["muted"], va="bottom", wrap=True)
+
+        fig.subplots_adjust(bottom=0.22, left=0.13, right=0.97, wspace=0.4)
+    else:
+        _note(ax, f"{finding.n:,} oyun  |  Kesikli çizgi = tüm indie pazarının aynı yıllardaki medyanı  |  "
+                  f"Kırmızı/yeşil çizgi ile kesikli çizgi arasındaki fark, bu türün pazardan ne kadar geride/önde olduğunu gösterir")
+        fig.subplots_adjust(bottom=0.26)
 
     return _save(fig, f"finding_{_safe_filename(finding.label)}_trend.png")
 
@@ -331,4 +374,5 @@ def render_chart_for_finding(finding: Finding) -> Finding:
         log.info(f"  chart_selector: '{finding.label}' -> {path.name}")
     except Exception as e:
         log.warning(f"  chart_selector: '{finding.label}' için grafik üretilemedi: {e}")
+
     return finding

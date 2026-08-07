@@ -150,6 +150,16 @@ def attach_alternatives(selected: list[Finding], all_findings: list[Finding],
     Her Finding'in `label`'ından ana etiketi çıkarır (temporal_trend için
     " (pazara göre..." son ekini, diğerleri için olduğu gibi kullanır) ve
     tags_list_pair bulgularında bu etiketi arar.
+
+    GÖRSELLEŞTİRME (2026-08-06 revize edildi): ilk versiyonda her alternatif
+    için AYRI bir grafik dosyası üretiliyordu ve n8n'in ikinci bir foto
+    zinciri olarak göndermesi planlanıyordu. Kullanıcı daha zarif bir çözüm
+    önerdi: ayrı foto yerine, ana bulgunun grafiğine (bkz.
+    chart_selector.py:chart_trend_line) ikinci bir panel olarak gömülüyor —
+    editör tek görselde her şeyi görüyor, videoda ilgili ana geldiğinde
+    zoomlayabiliyor. Bu yüzden burada `chart_path` alanı YOK — grafik
+    üretimi `render_chart_for_finding()`'in `alternatives[0]`'ı okuyup ana
+    grafiğin içine çizmesiyle oluyor.
     """
     pair_findings = [f for f in all_findings
                       if f.family == "tags_list_pair" and f.direction == "positive"]
@@ -168,8 +178,12 @@ def attach_alternatives(selected: list[Finding], all_findings: list[Finding],
             alternatives.append({
                 "combo_label": m.label,
                 "added_tag": other_tag,
+                "main_tag": main_tag,
                 "n": m.n,
+                "n_baseline": m.n_baseline,
                 "gap_points": round((m.group_median - m.baseline_median) * 100),
+                "group_median": m.group_median,
+                "baseline_median": m.baseline_median,
             })
         finding.alternatives = alternatives
 

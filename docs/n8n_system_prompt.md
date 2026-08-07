@@ -424,3 +424,31 @@ Doğrulandı: "Visual Novel + FPS" artık üretilmiyor.
 edildi, W puan fark") kullanmalı, boşsa genel tavsiye verebilir ama tag
 UYDURMAMALI. Güncel `docs/n8n_workflow.json`'ı tekrar import et ya da
 prompt metnini elle güncelle.
+
+## 2026-08-06 (devam 2) — `alternatives` görselleştirme: ayrı foto yerine ikinci panel
+
+Kullanıcı canlı çıktıda script'in [25-40sn - RİBAT ANALİZİ / ÇÖZÜM] bölümünde
+*"GÖRSEL: İki sütun yan yana: 'Sadece Bullet Hell' solda, 'Anime + Bullet
+Hell' sağda"* diye bir talimat yazdığını fark etti — ama böyle bir görsel
+**hiç üretilmiyordu**, editör var olmayan bir görsele atıf yapan bir talimat
+okuyordu.
+
+**İlk deneme (geri alındı):** Her `alternatives` elemanı için ayrı bir PNG
+üretmek ve n8n'e ikinci bir "Read Chart Image + Send Photo" zinciri eklemek
+planlandı, prototiplendi ve çalıştığı doğrulandı. Ama kullanıcı daha zarif
+bir çözüm önerdi: *"direkt tek grafikte ifade edilebiliyorsa tek grafiğe
+yeni sütun eklemek ve videoda yeri geldikçe zoomlamak daha mantıklı olmaz
+mı?"*
+
+**Uygulanan çözüm:** `chart_selector.py:chart_trend_line()` artık
+`finding.alternatives` doluysa **iki panelli** bir grafik üretiyor —
+solda mevcut trend çizgisi (değişmedi), sağda küçük bir bar karşılaştırması
+("Sadece X" vs "X + Y ekle", `alternatives[0]`'dan). Boşsa (çoğu bulguda —
+numeric_split gibi tag taşımayan ailelerde) tek panelli eski davranış
+korunuyor. **n8n tarafında HİÇBİR değişiklik gerekmiyor** — hâlâ tek bir
+foto gönderiliyor, sadece o fotonun içeriği zenginleşti.
+
+Prompt'a da bir not eklendi: `alternatives` doluysa, LLM'in [25-40sn]
+GÖRSEL alanında YENİ bir görsel tarif etmesi değil, gönderilen fotonun
+sağındaki panele atıf yapması ("az önceki grafikte sağdaki küçük panelde
+gördüğün gibi") isteniyor.
