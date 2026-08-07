@@ -33,7 +33,7 @@ from src.discovery.families.studio_repeat import test_studio_repeat
 from src.discovery.families.temporal import test_temporal_trend
 from src.discovery.families.quality_cliff import test_cliff_at_80, test_quality_trap
 from src.narrative.chart_selector import render_chart_for_finding
-from src.contracts import write_findings_contract, select_top_findings
+from src.contracts import write_findings_contract, select_top_findings, attach_alternatives
 
 log = logging.getLogger(__name__)
 
@@ -172,6 +172,16 @@ def run_discovery(snapshot: str = "march2025") -> Path:
     # burada üretilen chart_path'lerin contract'a giden Finding'lerle
     # eşleştiğinden emin olabiliyoruz.
     to_chart = select_top_findings(fresh)
+
+    # 2026-08-07 DÜZELTİLDİ (canlı testte bulunan bug): attach_alternatives
+    # grafik üretiminden ÖNCE çağrılmalı — chart_trend_line, finding.alternatives
+    # doluysa ikinci bir panel çiziyor (bkz. chart_selector.py). Eskiden bu
+    # sıralama tersti: grafik önce çizilip (alternatives hâlâ boşken) sonra
+    # write_findings_contract() içinde attach_alternatives çağrılıyordu —
+    # findings.json'a doğru "alternatives" verisi giriyordu ama GRAFİK hep
+    # tek panelli kalıyordu, çünkü zaten diskteki PNG'ye yazılmıştı.
+    attach_alternatives(to_chart, fresh)
+
     log.info(f"  {len(to_chart)} bulgu için grafik üretiliyor...")
     for finding in to_chart:
         render_chart_for_finding(finding)
