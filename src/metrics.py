@@ -119,7 +119,7 @@ def add_visibility_pct(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def engaged_universe(df: pd.DataFrame, min_reviews: int = 10,
-                      year_range: tuple[int, int] = (MIN_RELEASE_YEAR, 2024)) -> pd.DataFrame:
+                      year_range: tuple[int, int] | None = None) -> pd.DataFrame:
     """Keşif motorunun hipotez taradığı ANA evren.
 
     NEDEN BU TABAN GEREKLİ (bkz. plan — planlama sırasında bulunan kritik gerçek):
@@ -136,7 +136,17 @@ def engaged_universe(df: pd.DataFrame, min_reviews: int = 10,
     Böyle bir analiz karşılaştırmalı bir hipotez değil, basit bir orandır —
     istatistiksel gate'e hiç girmez. Kodda bu ayrım `universe="full"` vs
     `universe="engaged"` etiketiyle açıkça belirtilmelidir.
+
+    year_range=None (2026-08-07 eklendi, "live" snapshot'a geçişte bulundu):
+    eskiden üst sınır 2024'e SABİT kodluydu — "live" snapshot'ta 2025'te 952
+    oyunluk (>=10 review) gerçek bir kohort olduğu halde TÜM keşif motoru
+    (price_band, categories_list, numeric_split...) bu oyunları hiç görmüyordu,
+    sessizce dışlanıyorlardı. Artık None verilirse üst sınır df'teki EN SON
+    yıl olur — min_reviews kapısı zaten yetersiz veri taşıyan yarım yılları
+    (örn. henüz review birikmemiş sonraki yıl) doğal olarak eler.
     """
+    if year_range is None:
+        year_range = (MIN_RELEASE_YEAR, int(df["release_year"].max()))
     mask = (
         df["is_indie"]
         & (df["total_reviews"] >= min_reviews)
