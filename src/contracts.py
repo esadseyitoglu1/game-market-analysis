@@ -99,6 +99,10 @@ NON_ACTIONABLE_FAMILIES = {
     # cliff_80 (Very Positive eşiği): review skoru geliştirici tarafından
     #   doğrudan ayarlanamaz — iyi oyun yapılırsa zaten geliyor.
     "cliff_80",
+    # price_band (2026-08-07 eklendi): "10-20 dolar yap görünür ol" tavsiyesi
+    # yanıltıcı. Fiyat görünürlüğü değil, oyunun hacmi hem fiyatı hem görünürlüğü
+    # belirliyor.
+    "price_band",
 }
 
 
@@ -246,7 +250,33 @@ def select_actionable_findings(findings: list[Finding]) -> list[Finding]:
     kütüphaneye).
     """
     non_fragile = [f for f in findings if not f.fragile]
-    return [f for f in non_fragile if f.family not in NON_ACTIONABLE_FAMILIES]
+    filtered = [f for f in non_fragile if f.family not in NON_ACTIONABLE_FAMILIES]
+    
+    # 2026-08-07: Remote Play (Tablet/Phone/TV) bulgularını tek bir bulguda birleştir.
+    # Bu özellikler aynı teknolojinin farklı cihazları olduğu için ayrı ayrı
+    # 3 video üretmek gereksiz tekrara yol açıyor.
+    remote_play_findings = [f for f in filtered if f.label.startswith("Remote Play on ")]
+    other_findings = [f for f in filtered if not f.label.startswith("Remote Play on ")]
+    
+    if remote_play_findings:
+        # En güçlü etkiye sahip olanı temsilci seç
+        best_rp = max(remote_play_findings, key=lambda f: abs(f.effect))
+        # Etiketini genelleştir
+        best_rp.label = "Remote Play Support"
+        # Claim cümlesini genelleştir (eğer varsa)
+        if best_rp.evidence and "claim" in best_rp.evidence:
+            best_rp.evidence["claim"] = best_rp.evidence["claim"].replace(
+                "özelliğine sahip", "gibi 'Remote Play' özelliklerine sahip"
+            ).replace(
+                "Remote Play on Tablet", "Remote Play"
+            ).replace(
+                "Remote Play on Phone", "Remote Play"
+            ).replace(
+                "Remote Play on TV", "Remote Play"
+            )
+        other_findings.append(best_rp)
+        
+    return other_findings
 
 
 def write_findings_library(actionable: list[Finding]) -> Path:

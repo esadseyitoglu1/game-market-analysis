@@ -46,9 +46,10 @@ def compute_cagr(df: pd.DataFrame, tag: str, start_year: int, end_year: int) -> 
 
 
 def test_temporal_trend(df: pd.DataFrame, tag: str, start_year: int = 2016,
-                          end_year: int = 2024, min_n_per_year: int = 10,
-                          metric: str = "review_score") -> Finding | None:
+                          end_year: int | None = None, min_n_per_year: int = 10,
+                          metric: str = "visibility_pct") -> Finding | None:
     """Bir tag'in yıllar içindeki kalite/görünürlük trendini test eder.
+
 
     Eski anomaly_detector.py'nin "Decay Anomalisi" ailesinin (hardcoded
     slope<-2.0 eşiği, hiç anlamlılık testi yok) yerine geçer.
@@ -66,7 +67,18 @@ def test_temporal_trend(df: pd.DataFrame, tag: str, start_year: int = 2016,
     Test artık "yıl vs (tag_medyanı - pazar_medyanı)" üzerinde Spearman
     korelasyonu çalıştırıyor — yani soru "bu tag zamanla değişiyor mu" değil,
     "bu tag PAZARDAN FARKLI bir hızda değişiyor mu" oluyor.
+
+    end_year=None (2026-08-07 eklendi, "live" snapshot'a geçişte bulundu):
+    eskiden 2024'e SABİT kodluydu — güncel veriye (canlı Steam API'den çekilen
+    "live" snapshot) geçildiğinde 2025'te 952 oyunluk (>=10 review) gerçek bir
+    kohort olduğu halde grafikler hâlâ 2024'te kesiliyordu. Artık None
+    verilirse, evrendeki (indie, MIN_YEARS_FOR_TREND filtresine tabi) EN SON
+    yılı kullanır — min_n_per_year kapısı zaten yetersiz veri taşıyan yarım
+    yılları (örn. henüz review birikmemiş 2026) otomatik eler, elle sabit
+    yıl girmeye gerek kalmaz.
     """
+    if end_year is None:
+        end_year = int(df["release_year"].max())
     market = df[df["release_year"].between(start_year, end_year)]
     market_yearly = market.groupby("release_year")[metric].median()
 
