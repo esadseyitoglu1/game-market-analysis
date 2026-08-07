@@ -103,6 +103,14 @@ NON_ACTIONABLE_FAMILIES = {
     # yanıltıcı. Fiyat görünürlüğü değil, oyunun hacmi hem fiyatı hem görünürlüğü
     # belirliyor.
     "price_band",
+    # dlc_count_split / achievements_split (2026-08-07 eklendi): DLC genelde
+    # başarılı olan oyuna yapılır. Achievement sayısı oyunun büyüklüğüyle orantılıdır.
+    # "Daha çok achievement ekle" veya "DLC çıkar" tavsiyesi ters nedensellik taşır.
+    "dlc_count_split",
+    "achievements_split",
+    # studio_repeat: "2. oyununu yap daha başarılı olursun" actionable bir
+    # tavsiye değil, sadece bir pazar gerçeğidir.
+    "studio_repeat",
 }
 
 
